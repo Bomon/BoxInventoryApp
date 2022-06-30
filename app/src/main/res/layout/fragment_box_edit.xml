@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.notifications.ItemsFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:background="#9A9A9A"
+        tools:ignore="RtlHardcoded">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:padding="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/box_edit_id_label"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="0dp"
+                android:text="ID" />
+            <EditText
+                android:id="@+id/box_edit_id"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="0dp"
+                android:text="ID" />
+
+            <TextView
+                android:id="@+id/box_edit_qrcode_label"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="0dp"
+                android:text="QRCode" />
+            <EditText
+                android:id="@+id/box_edit_qrcode"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="0dp"
+                android:text="code" />
+
+            <TextView
+                android:id="@+id/box_edit_name_label"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="0dp"
+                android:text="Name" />
+            <EditText
+                android:id="@+id/box_edit_name"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="0dp"
+                android:text="Name" />
+
+            <TextView
+                android:id="@+id/box_edit_location_label"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="0dp"
+                android:text="Standort" />
+            <EditText
+                android:id="@+id/box_edit_location"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="0dp"
+                android:text="Name" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_marginVertical="10dp"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/box_edit_image"
+                    android:src="@drawable/ic_thw"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="5dp"
+                    android:adjustViewBounds="true"
+                    android:foreground="@drawable/ic_baseline_edit_24"
+                    android:scaleType="centerCrop" />
+
+
+                <ImageView
+                    android:id="@+id/box_edit_location_image"
+                    android:src="@drawable/ic_thw"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="10dp"
+                    android:adjustViewBounds="true"
+                    android:foreground="@drawable/ic_baseline_edit_24"
+                    android:scaleType="centerCrop" />
+
+            </LinearLayout>
+
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="0dp"
+                android:text="Inhalt" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/box_edit_content"
+                android:layout_width="match_parent"
+                android:layout_height="800dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginRight="10dp"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/box_edit_add_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginBottom="32dp"
+        android:src="@drawable/ic_baseline_add_24"
+        android:background="@color/thw_blue"
+        app:backgroundTint="@color/thw_blue"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

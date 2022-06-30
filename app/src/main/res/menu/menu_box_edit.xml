@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/box_edit_btn_save"
+        android:icon="@drawable/ic_baseline_save_24"
+        android:title="Speichern"
+        app:showAsAction="always|collapseActionView"></item>
+    <item
+        android:id="@+id/box_edit_btn_cancel"
+        android:icon="@drawable/ic_baseline_cancel_24"
+        android:title="Abbrechen"
+        app:showAsAction="always"></item>
+</menu>

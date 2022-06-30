@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">inventory-app</string>
+    <string name="title_home">Übersicht</string>
+    <string name="title_qrscanner">QR</string>
+    <string name="title_notifications">Ausrüstung</string>
+
+    <string name="item_id">Item ID</string>
+    <string name="item_count">XX</string>
+    <string name="box_id">Box ID</string>
+    <string name="box_name">Box Name</string>
+    <string name="box_location">Box Location</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_box">BoxActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+</resources>

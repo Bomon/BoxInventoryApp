@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "350626015988",
+    "firebase_url": "https://thw-inventory-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "thw-inventory",
+    "storage_bucket": "thw-inventory.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350626015988:android:48c33670b375a577f3cca1",
+        "android_client_info": {
+          "package_name": "com.thw.inventory"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "350626015988-b2gas230krgdojfspk76p4isam7biufd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDprndBIYemBo7pbe-B61ebI--LvUxs4U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "350626015988-b2gas230krgdojfspk76p4isam7biufd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350626015988:android:847cd9d93fb1a109f3cca1",
+        "android_client_info": {
+          "package_name": "com.thw.inventory_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "350626015988-b2gas230krgdojfspk76p4isam7biufd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDprndBIYemBo7pbe-B61ebI--LvUxs4U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "350626015988-b2gas230krgdojfspk76p4isam7biufd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
