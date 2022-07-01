@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">inventory-app</string>
-    <string name="title_home">Übersicht</string>
+    <string name="title_home">Boxen</string>
     <string name="title_qrscanner">QR</string>
     <string name="title_notifications">Ausrüstung</string>
 
@@ -20,4 +20,8 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="content_description_media">Content Description</string>
+    <string name="title">Title</string>
+    <string name="secondary_text">Secondary Text</string>
+    <string name="supporting_text">Supporting Text</string>
 </resources>

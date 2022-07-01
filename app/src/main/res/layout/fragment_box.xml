@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".ui.notifications.ItemsFragment">
 
     <ScrollView xmlns:tools="http://schemas.android.com/tools"
@@ -81,7 +82,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/box_summary_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="1000dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="0dp"
                 android:layout_marginRight="10dp" />

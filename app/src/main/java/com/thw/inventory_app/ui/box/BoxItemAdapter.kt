@@ -75,7 +75,7 @@ class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, private val
                 val item: ItemModel = ItemModel(im.item_id, im.item_name, im.item_description, im.item_tags, im.item_image)
                 val myFragment: Fragment = ItemFragment.newInstance(item)
                 val context = view.getContext()
-                Utils.pushFragment(myFragment, context, view, "ItemView")
+                Utils.pushFragment(myFragment, context, "ItemView")
             }
         }
     }

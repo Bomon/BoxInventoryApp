@@ -97,23 +97,8 @@ class QRScannerFragment : Fragment() {
                             val qrcode = box.child("qrcode").value.toString()
                             if (qrcode.lowercase() == it.text.lowercase()){
                                 cardList.clear()
-                                val image = box.child("image").value.toString()
-                                val location_image = box.child("location_image").value.toString()
-                                val location = box.child("location").value.toString()
-                                val id = box.child("id").value.toString()
-                                val name = box.child("name").value.toString()
-                                val qrcode = box.child("qrcode").value.toString()
-
-                                val content = box.child("content")
-                                val contentList = ArrayList<ContentItem>()
-                                for (c: DataSnapshot in content.children){
-                                    val itemAmount = c.child("amount").value.toString()
-                                    val itemId = c.child("id").value.toString()
-                                    val itemInvNum = c.child("invnum").value.toString()
-                                    contentList.add(ContentItem(itemAmount, itemId, itemInvNum))
-                                }
-
-                                cardList.add(BoxModel(id, name, qrcode, location, image, location_image, contentList))
+                                val boxModel = Utils.readBoxModelFromDataSnapshot(box)
+                                cardList.add(boxModel)
                                 qr_content = it.text
                                 toast?.cancel()
                                 adapter.setFilter(cardList)
@@ -178,7 +163,9 @@ class QRScannerFragment : Fragment() {
     override fun onDestroyView() {
         Log.w("qr","destroy")
         super.onDestroyView()
-        FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
+        if (::firebase_listener.isInitialized) {
+            FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
+        }
         //_binding = null
     }
 

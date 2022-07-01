@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:background="#9A9A9A"
+        android:background="@color/black"
         tools:ignore="RtlHardcoded">
 
         <LinearLayout
@@ -68,7 +68,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/item_summary_containing_boxes"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="1000dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="0dp"
                 android:layout_marginRight="10dp" />

@@ -69,12 +69,13 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                 if (view != null) {
                     val itemModel: ItemModel = ItemModel("", "", "", "", "")
                     val editFragment: Fragment = ItemEditFragment.newInstance(itemModel, true)
-                    val transaction: FragmentTransaction =
-                        (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                    transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    transaction.addToBackStack("edit")
-                    transaction.commit()
+                    Utils.pushFragment(editFragment, requireContext(), "editFragment")
+                    //val transaction: FragmentTransaction =
+                    //    (context as FragmentActivity).supportFragmentManager.beginTransaction()
+                    //transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
+                    //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    //transaction.addToBackStack("add")
+                    //transaction.commit()
                 }
             }
         })
@@ -98,8 +99,8 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                     val id = box.child("id").value.toString()
                     val image = box.child("image").value.toString()
                     val name = box.child("name").value.toString()
-                    val tag = box.child("tag").value.toString()
-                    itemList.add(ItemModel(id, name, description, tag, image))
+                    val tags = box.child("tags").value.toString()
+                    itemList.add(ItemModel(id, name, description, tags, image))
                 }
                 adapter.setFilter(itemList)
             }

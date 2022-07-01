@@ -74,7 +74,7 @@ class ContainingBoxAdapter(private val mDataList: ArrayList<BoxModel>, private v
             if (view != null) {
                 val myFragment: Fragment = BoxFragment.newInstance(mDataList[adapterPosition])
                 val context = view.getContext()
-                Utils.pushFragment(myFragment, context, view, "ItemView")
+                Utils.pushFragment(myFragment, context, "ItemView")
             }
         }
     }

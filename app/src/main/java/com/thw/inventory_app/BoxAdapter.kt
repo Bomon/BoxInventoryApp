@@ -72,30 +72,9 @@ class BoxAdapter(private val mDataList: ArrayList<BoxModel>, private val do_anim
             if (view != null) {
                 val myFragment: Fragment = BoxFragment.newInstance(mBoxModelList[adapterPosition])
                 val context = view.getContext()
-                pushFragment(myFragment, context, view)
+                Utils.pushFragment(myFragment, context, "BoxAdapter")
             }
-            //mClickListener.onClick(adapterPosition, itemView)
         }
-    }
-
-    fun pushFragment(newFragment: Fragment, context: Context, view: View) {
-        //val bottomNavigationView: BottomNavigationView
-        //bottomNavigationView = view.findViewById(R.id.nav_view) as BottomNavigationView
-        //bottomNavigationView.selectedItemId = R.id.navigation_home
-
-
-        //val f: Fragment? =
-        //    (context as FragmentActivity).supportFragmentManager.findFragmentById(R.id.nav_view)
-        //if (f is QRScannerFragment) // do something with f
-        //    (f as QRScannerFragment).pause()
-
-        //(context as FragmentActivity).supportFragmentManager.popBackStackImmediate()
-        val transaction: FragmentTransaction =
-            (context as FragmentActivity).supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.nav_host_fragment_activity_main, newFragment)
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        transaction.addToBackStack("test")
-        transaction.commit()
     }
 
     private fun setAnimation(viewToAnimate: View) {

@@ -115,12 +115,13 @@ class ItemFragment : Fragment() {
         if (item.itemId == R.id.item_btn_edit) {
             if (view != null) {
                 val editFragment: Fragment = ItemEditFragment.newInstance(item_model, false)
-                val transaction: FragmentTransaction =
-                    (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                transaction.addToBackStack("edit")
-                transaction.commit()
+                Utils.pushFragment(editFragment, requireContext(), "itemEditFragment")
+                //val transaction: FragmentTransaction =
+                //    (context as FragmentActivity).supportFragmentManager.beginTransaction()
+                //transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
+                //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                //transaction.addToBackStack("edit")
+                //transaction.commit()
             }
             return true
         } else if (item.itemId == R.id.item_btn_delete) {
@@ -195,16 +196,10 @@ class ItemFragment : Fragment() {
 
                 val boxes = dataSnapshot.child("boxes")
                 for (box: DataSnapshot in boxes.children){
-                    val image = box.child("image").value.toString()
-                    val location_img = box.child("location_image").value.toString()
-                    val location = box.child("location").value.toString()
-                    val id = box.child("id").value.toString()
-                    val name = box.child("name").value.toString()
-                    val qrcode = box.child("qrcode").value.toString()
-                    val box_model = BoxModel(id, name, qrcode, location, image, location_img, ArrayList<ContentItem>())
                     for (boxContent: DataSnapshot in box.child("content").children) {
                         if (boxContent.child("id").value.toString() == item_model.id) {
-                            boxList.add(box_model)
+                            val boxModel = Utils.readBoxModelFromDataSnapshot(box)
+                            boxList.add(boxModel)
                         }
                     }
                 }

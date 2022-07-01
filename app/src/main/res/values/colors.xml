@@ -13,4 +13,12 @@
     <color name="thw_cyan">#00FFFF</color>
     <color name="thw_cyan_30">#B3FFFF</color>
 
+    <color name="primaryColor">#00387b</color>
+    <color name="primaryLightColor">#4561ab</color>
+    <color name="primaryDarkColor">#00144e</color>
+    <color name="secondaryColor">#ffeb3b</color>
+    <color name="secondaryLightColor">#ffff72</color>
+    <color name="secondaryDarkColor">#c8b900</color>
+    <color name="primaryTextColor">#ffffff</color>
+    <color name="secondaryTextColor">#000000</color>
 </resources>

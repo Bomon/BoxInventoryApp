@@ -48,7 +48,15 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+
     override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStackImmediate()
+        } else {
+            super.onBackPressed()
+        }
+    }
+    /*override fun onBackPressed() {
         val fragments: List<Fragment> = supportFragmentManager.fragments
         if (fragments.size > 1) {
             val currentFragment: Fragment? =
@@ -60,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
-    }
+    }*/
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)

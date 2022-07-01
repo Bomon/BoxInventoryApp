@@ -1,34 +1,23 @@
 package com.thw.inventory_app.ui.home
 
-import android.app.AlertDialog
 import android.app.Dialog
-import android.content.DialogInterface
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.Nullable
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import co.lujun.androidtagview.TagContainerLayout
-import co.lujun.androidtagview.TagView
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.thw.inventory_app.*
 import com.thw.inventory_app.R
 import com.thw.inventory_app.ui.box.BoxEditFragment
-import com.thw.inventory_app.ui.box.BoxFragment
 import com.thw.inventory_app.ui.box.BoxItemModel
 
 
@@ -74,14 +63,16 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             R.id.home_btn_add -> {
                 //filter_dialog.show()
                 if (view != null) {
-                    val boxModel: BoxModel = BoxModel("", "", "", "", "", "", ArrayList<ContentItem>())
+                    val boxModel: BoxModel = BoxModel("", "", "", "", "", "", "", "", "", ArrayList<ContentItem>())
                     val editFragment: Fragment = BoxEditFragment.newInstance(boxModel, ArrayList<BoxItemModel>(), true)
-                    val transaction: FragmentTransaction =
-                        (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                    transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    transaction.addToBackStack("edit")
-                    transaction.commit()
+                    Utils.pushFragment(editFragment, requireContext(), "boxEditFragment")
+
+                    //val transaction: FragmentTransaction =
+                    //    (context as FragmentActivity).supportFragmentManager.beginTransaction()
+                    //transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
+                    //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    //transaction.addToBackStack("edit")
+                    //transaction.commit()
                 }
                 true
             }
@@ -134,7 +125,6 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-
     }
 
     fun initFirebase() {
@@ -144,22 +134,8 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                 boxList.clear()
                 val boxes = dataSnapshot.child("boxes")
                 for (box: DataSnapshot in boxes.children){
-                    val image = box.child("image").value.toString()
-                    val location_image = box.child("location_image").value.toString()
-                    val location = box.child("location").value.toString()
-                    val id = box.child("id").value.toString()
-                    val name = box.child("name").value.toString()
-                    val qrcode = box.child("qrcode").value.toString()
-                    val content = box.child("content")
-
-                    val contentList = ArrayList<ContentItem>()
-                    for (c: DataSnapshot in content.children){
-                        val itemAmount = c.child("amount").value.toString()
-                        val itemId = c.child("id").value.toString()
-                        val itemInvNum = c.child("invnum").value.toString()
-                        contentList.add(ContentItem(itemAmount, itemId, itemInvNum))
-                    }
-                    boxList.add(BoxModel(id, name, qrcode, location, image, location_image, contentList))
+                    val boxModel = Utils.readBoxModelFromDataSnapshot(box)
+                    boxList.add(boxModel)
                 }
                 adapter.setFilter(boxList)
             }

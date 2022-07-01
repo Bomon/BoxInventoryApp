@@ -34,72 +34,70 @@ class Utils {
             return Base64.encodeToString(byteFormat, Base64.NO_WRAP)
         }
 
-        fun pushFragment(newFragment: Fragment, context: Context, view: View, backStackName: String) {
-            val transaction: FragmentTransaction =
-                (context as FragmentActivity).supportFragmentManager.beginTransaction()
+        fun pushFragment(newFragment: Fragment, context: Context, backStackName: String) {
+            val fragmentManager = (context as FragmentActivity).supportFragmentManager
+            val transaction: FragmentTransaction = fragmentManager.beginTransaction()
+            transaction.setCustomAnimations(
+                R.anim.slide_in,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.slide_out)
             transaction.replace(R.id.nav_host_fragment_activity_main, newFragment)
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             transaction.addToBackStack(backStackName)
             transaction.commit()
         }
 
-        fun getItemModel(item_id: String): ItemModel {
-            val itemsRef = FirebaseDatabase.getInstance().reference.child("items")
-            var id: String = ""
-            var description: String = ""
-            var name: String = ""
-            var tags: String = ""
-            var image: String = ""
+        fun readBoxModelFromDataSnapshot(box: DataSnapshot): BoxModel {
+            val image = box.child("image").value.toString()
+            val location_image = box.child("location_image").value.toString()
+            val location = box.child("location").value.toString()
+            val id = box.child("id").value.toString()
+            val name = box.child("name").value.toString()
+            val qrcode = box.child("qrcode").value.toString()
+            val notes = box.child("notes").value.toString()
+            val color = box.child("color").value.toString()
+            val status = box.child("status").value.toString()
+            val content = box.child("content")
 
+            val contentList = ArrayList<ContentItem>()
+            for (c: DataSnapshot in content.children){
+                val itemAmount = c.child("amount").value.toString()
+                val itemId = c.child("id").value.toString()
+                val itemInvNum = c.child("invnum").value.toString()
+                val itemStatus = c.child("status").value.toString()
+                contentList.add(ContentItem(c.key.toString(), itemAmount, itemId, itemInvNum, itemStatus))
+            }
+            return BoxModel(id, name, qrcode, location, image, location_image, notes, color, status, contentList)
+        }
 
-            var response: ItemModel = ItemModel("", "", "", "", "")
+        fun updateFirebaseEntities(){
+            val itemsRef = FirebaseDatabase.getInstance().reference.child("boxes")
             itemsRef.get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val items: DataSnapshot? = task.result
-                    if (items != null) {
-                        for (item: DataSnapshot in items.children) {
-                            id = item.child("id").value.toString()
-                            if (id == item_id) {
-                                Log.e("Error", "Found box to delete in")
-                                description = item.child("description").value.toString()
-                                name = item.child("name").value.toString()
-                                tags = item.child("tags").value.toString()
-                                image = item.child("image").value.toString()
-                                response.id = id
-                                response.name = name
-                                response.tags = tags
-                                response.image = image
-                                response.image = image
+                    val boxes: DataSnapshot? = task.result
+                    if (boxes != null) {
+                        for (box: DataSnapshot in boxes.children) {
+                            val boxKey = box.key.toString()
+                            if (!box.hasChild("status")) {
+                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("status").setValue("")
+                            }
+                            if (!box.hasChild("notes")) {
+                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("notes").setValue("")
+                            }
+                            if (!box.hasChild("color")) {
+                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("color").setValue("")
+                            }
+                            for (contentItem: DataSnapshot in box.child("content").children){
+                                val contentItemKey = contentItem.key.toString()
+                                if (!contentItem.hasChild("status")) {
+                                    FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").child(contentItemKey).child("status").setValue("")
+                                }
                             }
                         }
                     }
                 }
             }
-            return response
-
-
-            itemsRef.get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val items: DataSnapshot? = task.result
-                    if (items != null) {
-                        for (item: DataSnapshot in items.children) {
-                            id = item.child("id").value.toString()
-                            if (id == item_id) {
-                                Log.e("Error", "Found box to delete in")
-                                description = item.child("description").value.toString()
-                                name = item.child("name").value.toString()
-                                tags = item.child("tags").value.toString()
-                                image = item.child("image").value.toString()
-                            }
-                        }
-                    }
-                }
-            }
-            Log.e("Error", id )
-            Log.e("Error", name)
-            Log.e("Error", description)
-            Log.e("Error", tags)
-            return ItemModel(id, name, description, tags, image)
         }
     }
 

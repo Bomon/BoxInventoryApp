@@ -85,16 +85,6 @@ class ItemAddAdapter(private val mDataList: ArrayList<ItemModel>, private val bo
         }
     }
 
-
-    fun pushFragment(newFragment: Fragment, context: Context, view: View) {
-        val transaction: FragmentTransaction =
-            (context as FragmentActivity).supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.nav_host_fragment_activity_main, newFragment)
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        transaction.addToBackStack("test")
-        transaction.commit()
-    }
-
     private fun setAnimation(viewToAnimate: View) {
         if (do_animate) {
             val animation: Animation =

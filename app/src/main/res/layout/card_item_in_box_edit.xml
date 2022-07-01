@@ -35,7 +35,7 @@
         <!--Text View to display Course Name-->
 
         <EditText
-            android:id="@+id/item_edit_amount"
+            android:id="@+id/box_item_edit_amount"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -48,7 +48,16 @@
 
 
         <EditText
-            android:id="@+id/item_edit_invnum"
+            android:id="@+id/box_item_edit_invnum"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:inputType="number"
+            android:textColor="@color/thw_blue"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/box_item_edit_status"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:inputType="number"
@@ -57,7 +66,7 @@
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/item_edit_img"
+            android:id="@+id/box_item_delete_btn"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"
@@ -70,7 +79,7 @@
             app:icon="@drawable/ic_baseline_delete_24" />
 
         <TextView
-            android:id="@+id/item_edit_delete_btn"
+            android:id="@+id/box_item_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"

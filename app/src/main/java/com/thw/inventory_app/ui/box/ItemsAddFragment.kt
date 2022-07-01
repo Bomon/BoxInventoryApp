@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.thw.inventory_app.ItemModel
 import com.thw.inventory_app.R
+import com.thw.inventory_app.Utils
 import com.thw.inventory_app.ui.item.ItemEditFragment
 
 class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener, ItemAddAdapter.Callbacks {
@@ -75,12 +76,13 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener, ItemAddAdap
                 if (view != null) {
                     val itemModel: ItemModel = ItemModel("", "", "", "", "")
                     val editFragment: Fragment = ItemEditFragment.newInstance(itemModel, true)
-                    val transaction: FragmentTransaction =
-                        (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                    transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    transaction.addToBackStack("edit")
-                    transaction.commit()
+                    Utils.pushFragment(editFragment, requireContext(), "itemEditFragment")
+                    //val transaction: FragmentTransaction =
+                    //    (context as FragmentActivity).supportFragmentManager.beginTransaction()
+                    //transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
+                    //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    //transaction.addToBackStack("edit")
+                    //transaction.commit()
                 }
             }
         })
@@ -104,8 +106,8 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener, ItemAddAdap
                     val id = box.child("id").value.toString()
                     val image = box.child("image").value.toString()
                     val name = box.child("name").value.toString()
-                    val tag = box.child("tag").value.toString()
-                    itemList.add(ItemModel(id, name, description, tag, image))
+                    val tags = box.child("tags").value.toString()
+                    itemList.add(ItemModel(id, name, description, tags, image))
                 }
                 adapter.setFilter(itemList)
             }

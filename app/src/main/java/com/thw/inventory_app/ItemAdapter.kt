@@ -73,18 +73,9 @@ class ItemAdapter(private val mDataList: ArrayList<ItemModel>, private val do_an
             if (view != null) {
                 val myFragment: Fragment = ItemFragment.newInstance(mDataList[adapterPosition])
                 val context = view.getContext()
-                pushFragment(myFragment, context, view)
+                Utils.pushFragment(myFragment, context, "ItemAdapter")
             }
         }
-    }
-
-    fun pushFragment(newFragment: Fragment, context: Context, view: View) {
-        val transaction: FragmentTransaction =
-            (context as FragmentActivity).supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.nav_host_fragment_activity_main, newFragment)
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        transaction.addToBackStack("test")
-        transaction.commit()
     }
 
     private fun setAnimation(viewToAnimate: View) {

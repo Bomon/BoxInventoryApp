@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.thw.inventory_app.R
 import com.thw.inventory_app.Utils
 
-data class ItemCardUpdate(val item_key: String, val item_id: String, val amount: String, val invnum: String, val delete_index: Int)
+data class ItemCardUpdate(val item_key: String, val item_id: String, val amount: String, val invnum: String, val status: String, val delete_index: Int)
 
 class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private val do_animate: Boolean, private val handler: BoxItemEditAdapter.Callbacks) : RecyclerView.Adapter<BoxItemEditAdapter.BoxItemViewHolder>() {
 
@@ -53,34 +53,43 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
 
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
-        var item_amount: EditText
-        var item_invnum: EditText
+        var item_edit_amount: EditText
+        var item_edit_invnum: EditText
+        var item_edit_status: EditText
         var item_name: TextView
         var item_delete_button: Button
 
         init {
             itemView.setOnClickListener(this)
-            item_amount = itemView.findViewById<EditText>(R.id.item_edit_amount)
-            item_invnum = itemView.findViewById<EditText>(R.id.item_edit_invnum)
-            item_name = itemView.findViewById<TextView>(R.id.item_edit_delete_btn)
-            item_delete_button = itemView.findViewById<Button>(R.id.item_edit_img)
+            item_edit_amount = itemView.findViewById<EditText>(R.id.box_item_edit_amount)
+            item_edit_invnum = itemView.findViewById<EditText>(R.id.box_item_edit_invnum)
+            item_edit_status = itemView.findViewById<EditText>(R.id.box_item_edit_status)
+            item_name = itemView.findViewById<EditText>(R.id.box_item_name)
+            item_delete_button = itemView.findViewById<Button>(R.id.box_item_delete_btn)
             item_delete_button.setOnClickListener {
                 Log.e("Error", "Adapter pos: " + adapterPosition.toString())
-                handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, mItemModel[adapterPosition].item_invnum, adapterPosition))
+                handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, mItemModel[adapterPosition].item_invnum, mItemModel[adapterPosition].item_status, adapterPosition))
                 Log.e("Error", "Delete Card")
             }
 
-            item_amount.doAfterTextChanged {  e ->
+            item_edit_amount.doAfterTextChanged {  e ->
                 e?.let {
                     mItemModel[adapterPosition].item_amount = it.toString()
-                    handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, it.toString(), mItemModel[adapterPosition].item_invnum, -1))
+                    handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, it.toString(), mItemModel[adapterPosition].item_invnum, mItemModel[adapterPosition].item_status, -1))
                 }
             }
 
-            item_invnum.doAfterTextChanged {  e ->
+            item_edit_invnum.doAfterTextChanged {  e ->
                 e?.let {
                     mItemModel[adapterPosition].item_invnum = it.toString()
-                    handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, it.toString(), -1))
+                    handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, it.toString(), mItemModel[adapterPosition].item_status, -1))
+                }
+            }
+
+            item_edit_status.doAfterTextChanged {  e ->
+                e?.let {
+                    mItemModel[adapterPosition].item_invnum = it.toString()
+                    handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, mItemModel[adapterPosition].item_invnum, it.toString(), -1))
                 }
             }
         }
@@ -88,7 +97,9 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
 
         fun bind(model: BoxItemModel): Unit {
             item_name.text = model.item_name
-            item_amount.setText(model.item_amount)
+            item_edit_amount.setText(model.item_amount)
+            item_edit_invnum.setText(model.item_invnum)
+            item_edit_status.setText(model.item_status)
         }
 
 

@@ -1,11 +1,13 @@
 package com.thw.inventory_app.ui.box
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
@@ -56,20 +58,59 @@ class BoxFragment : Fragment() {
         inflater.inflate(R.menu.menu_box, menu)
     }
 
+    fun deleteBox() {
+        val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
+        boxesRef.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val boxes: DataSnapshot? = task.result
+                if (boxes != null) {
+                    for (box: DataSnapshot in boxes.children) {
+                        val id = box.child("id").value.toString()
+                        val boxKey = box.key.toString()
+                        if (id == box_model.id) {
+                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).removeValue()
+                            break
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun showDeleteDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Box Löschen?")
+        builder.setMessage("Soll die Box wirklich gelöscht werden?")
+
+        builder.setPositiveButton("Ja") { dialog, which ->
+            Toast.makeText(requireContext(),
+                "yes", Toast.LENGTH_SHORT).show()
+            deleteBox()
+            parentFragmentManager.popBackStack()
+        }
+
+        builder.setNegativeButton("Nein") { dialog, which ->
+            Toast.makeText(requireContext(),
+                "no", Toast.LENGTH_SHORT).show()
+        }
+        builder.show()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.box_btn_edit) {
             if (view != null) {
                 val editFragment: Fragment = BoxEditFragment.newInstance(box_model, itemList, false)
-                val transaction: FragmentTransaction =
-                    (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
+                Utils.pushFragment(editFragment, requireContext(), "boxEditFragment")
+                //val transaction: FragmentTransaction =
+                //    (context as FragmentActivity).supportFragmentManager.beginTransaction()
+                //transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
                 //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                transaction.addToBackStack("edit")
-                transaction.commit()
+                //transaction.addToBackStack("edit")
+                //transaction.commit()
             }
-
-
+            return true
         } else if (item.itemId == R.id.box_btn_delete) {
+            showDeleteDialog()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -155,21 +196,7 @@ class BoxFragment : Fragment() {
                 val boxes = dataSnapshot.child("boxes")
                 for (box: DataSnapshot in boxes.children){
                     if (box.child("id").value.toString() == box_model.id){
-                        val contentList = ArrayList<ContentItem>()
-                        for (c: DataSnapshot in box.child("content").children){
-                            val itemAmount = c.child("amount").value.toString()
-                            val itemId = c.child("id").value.toString()
-                            val itemInvNum = c.child("invnum").value.toString()
-                            contentList.add(ContentItem(c.key.toString(), itemAmount, itemId, itemInvNum))
-                        }
-
-                        val image = box.child("image").value.toString()
-                        val location_img = box.child("location_image").value.toString()
-                        val location = box.child("location").value.toString()
-                        val id = box.child("id").value.toString()
-                        val name = box.child("name").value.toString()
-                        val qrcode = box.child("qrcode").value.toString()
-                        box_model = BoxModel(id, name, qrcode, location, image, location_img, contentList)
+                        box_model = Utils.readBoxModelFromDataSnapshot(box)
                         updateContent()
                         break
                     }
@@ -186,7 +213,7 @@ class BoxFragment : Fragment() {
                         val tags = item.child("tags").value.toString()
                         val itemid = item.child("id").value.toString()
                         if (itemid == contentItem.id) {
-                            itemList.add(BoxItemModel(contentItem.key, contentItem.id, contentItem.amount, contentItem.invnum, name, description, tags, image))
+                            itemList.add(BoxItemModel(contentItem.key, contentItem.id, contentItem.amount, contentItem.invnum, name, description, tags, contentItem.status, image))
                         }
                     }
                 }

@@ -54,6 +54,9 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
     private lateinit var box_edit_id_field: EditText
     private lateinit var box_edit_location_field: EditText
     private lateinit var box_edit_qrcode_field: EditText
+    private lateinit var box_edit_color_field: EditText
+    private lateinit var box_edit_notes_field: EditText
+    private lateinit var box_edit_status_field: EditText
 
 
     private var is_new_box: Boolean = false
@@ -103,7 +106,7 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
                             val id = box.child("id").value.toString()
                             if (id == box_model.id) {
                                 val boxKey: String = box.key.toString()
-                                var new_item = ContentItem(amount = data.amount, id = data.item_id, invnum = data.invnum)
+                                var new_item = ContentItem(data.amount, data.item_id, data.invnum, data.status)
                                 FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").push().setValue(new_item)
                                 break
                             }
@@ -190,6 +193,9 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
                             FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("name").setValue(box_edit_name_field.text.toString())
                             FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("qrcode").setValue(box_edit_qrcode_field.text.toString())
                             FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("location").setValue(box_edit_location_field.text.toString())
+                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("notes").setValue(box_edit_notes_field.text.toString())
+                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("color").setValue(box_edit_color_field.text.toString())
+                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("status").setValue(box_edit_status_field.text.toString())
                             if (::image_bitmap.isInitialized){
                                 FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("image").setValue(Utils.getEncoded64ImageStringFromBitmap(image_bitmap))
                             }
@@ -206,6 +212,9 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
         box_model.name = box_edit_name_field.text.toString()
         box_model.qrcode = box_edit_qrcode_field.text.toString()
         box_model.location = box_edit_location_field.text.toString()
+        box_model.notes = box_edit_notes_field.text.toString()
+        box_model.color = box_edit_color_field.text.toString()
+        box_model.status = box_edit_status_field.text.toString()
         box_model.img = ""
         if (::image_bitmap.isInitialized){
             box_model.img = Utils.getEncoded64ImageStringFromBitmap(image_bitmap)
@@ -329,6 +338,9 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
         box_edit_id_field = v.findViewById(R.id.box_edit_id)
         box_edit_location_field = v.findViewById(R.id.box_edit_location)
         box_edit_qrcode_field = v.findViewById(R.id.box_edit_qrcode)
+        box_edit_notes_field = v.findViewById(R.id.box_edit_notes)
+        box_edit_color_field = v.findViewById(R.id.box_edit_color)
+        box_edit_status_field = v.findViewById(R.id.box_edit_status)
         val box_edit_add_button: FloatingActionButton = v.findViewById(R.id.box_edit_add_button)
         box_image_field = v.findViewById(R.id.box_edit_image)
         box_location_image_field = v.findViewById(R.id.box_edit_location_image)
@@ -341,6 +353,11 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
         box_edit_name_field.setText(box_model.name)
         box_edit_id_field.setText(box_model.id)
         box_edit_location_field.setText(box_model.location)
+        box_edit_qrcode_field.setText(box_model.qrcode)
+        box_edit_notes_field.setText(box_model.notes)
+        box_edit_color_field.setText(box_model.color)
+        box_edit_status_field.setText(box_model.status)
+
         if (box_model.img == "") {
             val myLogo = (ResourcesCompat.getDrawable(this.resources, R.drawable.ic_baseline_photo_size_select_actual_24, null) as VectorDrawable).toBitmap()
             box_image_field.setImageBitmap(myLogo)
@@ -368,12 +385,14 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
                     itemAddFragment.setFragmentCallback(this_frag_callback)
                     val context = v?.getContext()
 
-                    val transaction: FragmentTransaction =
-                        (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                    transaction.replace(R.id.nav_host_fragment_activity_main, itemAddFragment)
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    transaction.addToBackStack("test")
-                    transaction.commit()
+
+                    Utils.pushFragment(itemAddFragment, requireContext(), "itemAddFragment")
+                    //val transaction: FragmentTransaction =
+                    //    (context as FragmentActivity).supportFragmentManager.beginTransaction()
+                    //transaction.replace(R.id.nav_host_fragment_activity_main, itemAddFragment)
+                    //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    //transaction.addToBackStack("test")
+                    //transaction.commit()
                 }
             }
         })
@@ -408,6 +427,7 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
                 val args = Bundle()
                 args.putSerializable("model", boxModel)
                 args.putSerializable("items", itemList)
+                Log.e("Error", itemList.toString())
                 args.putSerializable("isNewBox", isNewBox)
                 val fragment = BoxEditFragment()
                 fragment.arguments = args
@@ -431,10 +451,10 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
                             val item_image = item.child("images").value.toString()
                             val item_description = item.child("description").value.toString()
                             val item_tags = item.child("tags").value.toString()
-                            itemList.add(BoxItemModel(temp_key, item_id, "1", "", item_name, item_description, item_tags, item_image))
+                            itemList.add(BoxItemModel(temp_key, item_id, "1", "", item_name, item_description, item_tags, "", item_image))
                             box_item_edit_adapter.addToItemList(itemList)
 
-                            items_to_add[temp_key] = ItemCardUpdate(temp_key, item_id, "1", "", -1)
+                            items_to_add[temp_key] = ItemCardUpdate(temp_key, item_id, "1", "", "", -1)
                             new_keys.add(temp_key)
                             return@addOnCompleteListener;
                         }

@@ -1,5 +1,4 @@
-<com.google.android.material.card.MaterialCardView
-    android:id="@+id/card"
+<com.google.android.material.card.MaterialCardView android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
@@ -35,6 +34,7 @@
                 android:text="@string/title"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 />
+
             <TextView
                 android:id="@+id/box_name"
                 android:layout_width="wrap_content"
@@ -42,8 +42,7 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/secondary_text"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="?android:attr/textColorSecondary"
-                />
+                android:textColor="?android:attr/textColorSecondary" />
             <TextView
                 android:id="@+id/box_location"
                 android:layout_width="wrap_content"
