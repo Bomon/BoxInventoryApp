@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:id="@+id/fragment_home"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:transitionGroup="true"
     android:background="@color/black"
     tools:context=".MainActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RV_home"
         android:layout_width="match_parent"
-        android:layout_marginBottom="70dp"
+        android:transitionGroup="true"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         android:layout_height="match_parent" />
 
 </RelativeLayout>

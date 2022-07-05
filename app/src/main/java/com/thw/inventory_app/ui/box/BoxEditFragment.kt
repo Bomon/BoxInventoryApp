@@ -1,7 +1,6 @@
 package com.thw.inventory_app.ui.box
 
 import android.app.Activity.RESULT_OK
-import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.VectorDrawable
@@ -9,20 +8,25 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.*
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.allViews
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.thw.inventory_app.*
@@ -48,15 +52,17 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
 
     private lateinit var box_model: BoxModel
 
-    private lateinit var box_image_field: ImageView
-    private lateinit var box_location_image_field: ImageView
-    private lateinit var box_edit_name_field: EditText
-    private lateinit var box_edit_id_field: EditText
-    private lateinit var box_edit_location_field: EditText
-    private lateinit var box_edit_qrcode_field: EditText
-    private lateinit var box_edit_color_field: EditText
-    private lateinit var box_edit_notes_field: EditText
-    private lateinit var box_edit_status_field: EditText
+    private lateinit var box_edit_image_field: ImageView
+    private lateinit var box_edit_location_image_field: ImageView
+    private lateinit var box_edit_name_field: TextInputEditText
+    private lateinit var box_edit_id_field: TextInputEditText
+    private lateinit var box_edit_description_field: TextInputEditText
+    private lateinit var box_edit_location_field: TextInputEditText
+    private lateinit var box_edit_status_chips: ChipGroup
+    private lateinit var box_edit_status_input: TextInputEditText
+    //private lateinit var box_edit_qrcode_field: EditText
+    //private lateinit var box_edit_color_field: EditText
+    //private lateinit var box_edit_status_field: NachoTextView
 
 
     private var is_new_box: Boolean = false
@@ -191,11 +197,12 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
                             val boxKey: String = box.key.toString()
                             FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("id").setValue(box_edit_id_field.text.toString())
                             FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("name").setValue(box_edit_name_field.text.toString())
-                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("qrcode").setValue(box_edit_qrcode_field.text.toString())
+                            //FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("qrcode").setValue(box_edit_qrcode_field.text.toString())
                             FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("location").setValue(box_edit_location_field.text.toString())
-                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("notes").setValue(box_edit_notes_field.text.toString())
-                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("color").setValue(box_edit_color_field.text.toString())
-                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("status").setValue(box_edit_status_field.text.toString())
+                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("description").setValue(box_edit_description_field.text.toString())
+                            //FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("color").setValue(box_edit_color_field.text.toString())
+
+                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("status").setValue(chipListToString())
                             if (::image_bitmap.isInitialized){
                                 FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("image").setValue(Utils.getEncoded64ImageStringFromBitmap(image_bitmap))
                             }
@@ -204,17 +211,16 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
                 }
             }
         }
-
     }
 
     fun createBox(){
         box_model.id = box_edit_id_field.text.toString()
         box_model.name = box_edit_name_field.text.toString()
-        box_model.qrcode = box_edit_qrcode_field.text.toString()
+        //box_model.qrcode = box_edit_qrcode_field.text.toString()
         box_model.location = box_edit_location_field.text.toString()
-        box_model.notes = box_edit_notes_field.text.toString()
-        box_model.color = box_edit_color_field.text.toString()
-        box_model.status = box_edit_status_field.text.toString()
+        box_model.description = box_edit_description_field.text.toString()
+        //box_model.color = box_edit_color_field.text.toString()
+        box_model.status = chipListToString()
         box_model.img = ""
         if (::image_bitmap.isInitialized){
             box_model.img = Utils.getEncoded64ImageStringFromBitmap(image_bitmap)
@@ -228,13 +234,10 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
     }
 
     fun showSaveDialog() {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setTitle("Änderungen Speichern?")
-        builder.setMessage("We have a message")
 
         builder.setPositiveButton("Ja") { dialog, which ->
-            Toast.makeText(requireContext(),
-                "yes", Toast.LENGTH_SHORT).show()
             if (is_new_box){
                 createBox()
             }
@@ -242,30 +245,24 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
             parentFragmentManager.popBackStack()
         }
 
-        builder.setNegativeButton("Nein") { dialog, which ->
-            Toast.makeText(requireContext(),
-                "no", Toast.LENGTH_SHORT).show()
-            items_to_add.clear()
-            items_to_update.clear()
-            items_to_delete.clear()
-            parentFragmentManager.popBackStack()
-        }
+        //builder.setNegativeButton("Nein") { dialog, which ->
+        //    items_to_add.clear()
+        //    items_to_update.clear()
+        //    items_to_delete.clear()
+        //    parentFragmentManager.popBackStack()
+        //}
 
         builder.setNeutralButton("Abbrechen") { dialog, which ->
-            Toast.makeText(requireContext(),
-                "cancel", Toast.LENGTH_SHORT).show()
         }
         builder.show()
     }
 
     fun showDismissDialog() {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setTitle("Änderungen Verwerfen?")
-        builder.setMessage("We have a message")
+        //builder.setMessage("Das ist ein Untertitel")
 
         builder.setPositiveButton("Ja") { dialog, which ->
-            Toast.makeText(requireContext(),
-                "yes", Toast.LENGTH_SHORT).show()
             items_to_add.clear()
             items_to_update.clear()
             items_to_delete.clear()
@@ -273,8 +270,6 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
         }
 
         builder.setNegativeButton("Nein") { dialog, which ->
-            Toast.makeText(requireContext(),
-                "no", Toast.LENGTH_SHORT).show()
         }
         builder.show()
     }
@@ -316,11 +311,33 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
             val uri: Uri = data?.data!!
             image_bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
             // Use Uri object instead of File to avoid storage permissions
-            box_image_field.setImageURI(uri)
+            box_edit_image_field.setImageURI(uri)
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(context, "Task Cancelled", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun chipListToString(): String{
+        var chipString = ""
+        for (chip in box_edit_status_chips.allViews) {
+            if (chip is Chip){
+                chipString += ";" + chip.text.toString()
+            }
+        }
+        return chipString.removePrefix(";")
+    }
+
+    private fun addChipToGroup(chipText: String) {
+        val chip = Chip(context)
+        chip.text = chipText
+        chip.isCloseIconVisible = true
+        chip.isClickable = true
+        chip.isCheckable = false
+        box_edit_status_chips.addView(chip)
+        chip.setOnCloseIconClickListener {
+            box_edit_status_chips.removeView(chip as View)
         }
     }
 
@@ -337,13 +354,39 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
         box_edit_name_field = v.findViewById(R.id.box_edit_name)
         box_edit_id_field = v.findViewById(R.id.box_edit_id)
         box_edit_location_field = v.findViewById(R.id.box_edit_location)
-        box_edit_qrcode_field = v.findViewById(R.id.box_edit_qrcode)
-        box_edit_notes_field = v.findViewById(R.id.box_edit_notes)
-        box_edit_color_field = v.findViewById(R.id.box_edit_color)
-        box_edit_status_field = v.findViewById(R.id.box_edit_status)
-        val box_edit_add_button: FloatingActionButton = v.findViewById(R.id.box_edit_add_button)
-        box_image_field = v.findViewById(R.id.box_edit_image)
-        box_location_image_field = v.findViewById(R.id.box_edit_location_image)
+        //box_edit_qrcode_field = v.findViewById(R.id.box_edit_qrcode)
+        box_edit_description_field = v.findViewById(R.id.box_edit_description)
+        //box_edit_color_field = v.findViewById(R.id.box_edit_color)
+        val box_edit_add_button: Button = v.findViewById(R.id.box_edit_add_button)
+        box_edit_image_field = v.findViewById(R.id.box_edit_image)
+        box_edit_location_image_field = v.findViewById(R.id.box_edit_location_image)
+        box_edit_status_chips = v.findViewById(R.id.box_edit_status_chips)
+        box_edit_status_input = v.findViewById(R.id.box_edit_status_input)
+
+        val confirmationChars = listOf(";", "\n")
+        box_edit_status_input.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val text = s.toString()
+                if (text.isNotEmpty() && (text.last().toString() in confirmationChars))
+                    box_edit_status_input.setText("")
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!s.isNullOrEmpty()) {
+                    if (s.length > 1 && s.last().toString() in confirmationChars) {
+                        var text = s.toString()
+                        for (cf in confirmationChars) {
+                            text = text.replace(cf, "")
+                        }
+                        addChipToGroup(text)
+                        box_edit_status_input.setText("")
+                    }
+                }
+            }
+        })
 
         // Get the arguments from the caller fragment/activity
         box_model = arguments?.getSerializable("model") as BoxModel
@@ -353,21 +396,26 @@ class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbac
         box_edit_name_field.setText(box_model.name)
         box_edit_id_field.setText(box_model.id)
         box_edit_location_field.setText(box_model.location)
-        box_edit_qrcode_field.setText(box_model.qrcode)
-        box_edit_notes_field.setText(box_model.notes)
-        box_edit_color_field.setText(box_model.color)
-        box_edit_status_field.setText(box_model.status)
+        //box_edit_qrcode_field.setText(box_model.qrcode)
+        box_edit_description_field.setText(box_model.description)
+        //box_edit_color_field.setText(box_model.color)
+
+        for (chip in box_model.status.split(";")){
+            addChipToGroup(chip)
+        }
+
+
 
         if (box_model.img == "") {
             val myLogo = (ResourcesCompat.getDrawable(this.resources, R.drawable.ic_baseline_photo_size_select_actual_24, null) as VectorDrawable).toBitmap()
-            box_image_field.setImageBitmap(myLogo)
+            box_edit_image_field.setImageBitmap(myLogo)
         } else {
-            box_image_field.setImageBitmap(Utils.StringToBitMap(box_model.img))
+            box_edit_image_field.setImageBitmap(Utils.StringToBitMap(box_model.img))
         }
 
         val thisFragment = this
 
-        box_image_field.setOnClickListener(object : View.OnClickListener {
+        box_edit_image_field.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 ImagePicker.with(thisFragment)
                     .crop(4f, 3f)	    			//Crop image(Optional), Check Customization for more option

@@ -2,6 +2,7 @@ package com.thw.inventory_app.ui.box
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.thw.inventory_app.ItemModel
 import com.thw.inventory_app.R
 import com.thw.inventory_app.Utils
@@ -23,7 +26,7 @@ import com.thw.inventory_app.ui.item.ItemFragment
 class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, private val do_animate: Boolean) : RecyclerView.Adapter<BoxItemAdapter.BoxItemViewHolder>() {
 
     lateinit var context: Context
-    private var mItemModel: ArrayList<BoxItemModel> = ArrayList()
+    private var mItemList: ArrayList<BoxItemModel> = ArrayList()
 
     init {
         setFilter(mDataList)
@@ -37,61 +40,46 @@ class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, private val
     }
 
     override fun getItemCount(): Int {
-        return mItemModel.size
+        return mItemList.size
     }
 
     override fun onBindViewHolder(holder: BoxItemViewHolder, position: Int) {
-        (holder as BoxItemViewHolder).bind(mItemModel[position]);
-        setAnimation(holder.itemView);
-    }
+        holder.item_amount.text = mItemList[position].item_amount
+        holder.item_name.text = mItemList[position].item_name
 
-    inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
-
-        var item_amount: TextView? = null
-        var item_name: TextView? = null
-        var item_image: ImageView? = null
-
-        init {
-            itemView.setOnClickListener(this)
-            item_amount = itemView.findViewById<TextView>(R.id.item_amount)
-            item_name = itemView.findViewById<TextView>(R.id.item_name)
-            item_image = itemView.findViewById<ImageView>(R.id.item_img)
-        }
-
-
-        fun bind(model: BoxItemModel): Unit {
-            item_name?.text = model.item_name
-            val img = Utils.StringToBitMap(model.item_image)
-            if (img != null){
-                item_image?.setImageBitmap(img)
-            }
-            item_amount?.text = model.item_amount
-        }
-
-        @SuppressLint("ResourceType")
-        override fun onClick(view: View?) {
-            if (view != null) {
-                val im: BoxItemModel = mItemModel[adapterPosition]
-                val item: ItemModel = ItemModel(im.item_id, im.item_name, im.item_description, im.item_tags, im.item_image)
-                val myFragment: Fragment = ItemFragment.newInstance(item)
-                val context = view.getContext()
-                Utils.pushFragment(myFragment, context, "ItemView")
+        holder.item_invnums.removeAllViews()
+        for (tag in mItemList[position].item_invnum.split(";")){
+            if (tag != ""){
+                val chip = Chip(context)
+                chip.setTextAppearance(android.R.style.TextAppearance_Material_Small)
+                chip.text = tag
+                holder.item_invnums.addView(chip)
             }
         }
+
+        if (mItemList[position].item_status != "") {
+            holder.box_status.setBackgroundColor(context.getColor(R.color.md_theme_light_secondary))
+        }
+
+        val img = Utils.StringToBitMap(mItemList[position].item_image)
+        if (img != null){
+            holder.item_image.setImageBitmap(img)
+        }
+        Utils.setRecyclerViewCardAnimation(holder.itemView, context);
     }
 
-    private fun setAnimation(viewToAnimate: View) {
-        if (do_animate) {
-            val animation: Animation =
-                AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left)
-            viewToAnimate.startAnimation(animation)
-        }
+    inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+        var box_status = itemView.findViewById<View>(R.id.item_status)
+        var item_amount: TextView = itemView.findViewById<TextView>(R.id.item_amount)
+        var item_name = itemView.findViewById<TextView>(R.id.item_name)
+        var item_invnums = itemView.findViewById<ChipGroup>(R.id.item_invnums)
+        var item_image = itemView.findViewById<ImageView>(R.id.item_img)
     }
 
 
     fun setFilter(itemList: List<BoxItemModel>) {
-        mItemModel.clear()
-        mItemModel.addAll(itemList)
+        mItemList.clear()
+        mItemList.addAll(itemList)
         this.notifyDataSetChanged()
 
     }

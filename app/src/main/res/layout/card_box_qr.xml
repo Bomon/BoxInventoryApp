@@ -32,7 +32,7 @@
 
         <!--ImageVIew to display our Course Image-->
         <ImageView
-            android:id="@+id/box_img"
+            android:id="@+id/box_qr_img"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginStart="10dp"
@@ -45,12 +45,12 @@
 
         <!--Text View to display Course Name-->
         <TextView
-            android:id="@+id/box_id"
+            android:id="@+id/box_qr_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:layout_toEndOf="@id/box_img"
+            android:layout_toEndOf="@id/box_qr_img"
             android:text="@string/box_id"
             android:textColor="@color/thw_blue"
             android:textSize="18sp"
@@ -59,26 +59,26 @@
         <!--Text VIew to display COurse Rating-->
         <!--Image used in present in drawable folder-->
         <TextView
-            android:id="@+id/box_name"
+            android:id="@+id/box_qr_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/box_id"
+            android:layout_below="@id/box_qr_id"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:layout_toEndOf="@id/box_img"
+            android:layout_toEndOf="@id/box_qr_img"
             android:drawablePadding="2dp"
             android:text="@string/box_name"
             android:textColor="@color/thw_blue"
             app:drawableStartCompat="@drawable/ic_dashboard_black_24dp" />
 
         <TextView
-            android:id="@+id/box_location"
+            android:id="@+id/box_qr_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/box_name"
+            android:layout_below="@id/box_qr_name"
             android:layout_marginStart="10dp"
             android:layout_marginTop="15dp"
-            android:layout_toEndOf="@id/box_img"
+            android:layout_toEndOf="@id/box_qr_img"
             android:drawablePadding="2dp"
             android:text="@string/box_location"
             android:textColor="@color/thw_blue"

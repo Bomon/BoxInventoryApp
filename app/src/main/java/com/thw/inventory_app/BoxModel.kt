@@ -14,6 +14,7 @@ data class ContentItem(
 class BoxModel(
     var id: String,
     var name: String,
+    var description: String,
     var qrcode: String,
     var location: String,
     var img: String,

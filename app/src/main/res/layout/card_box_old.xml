@@ -1,7 +1,10 @@
-<com.google.android.material.card.MaterialCardView android:id="@+id/card"
+<com.google.android.material.card.MaterialCardView
+    android:id="@+id/card_box"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    android:clickable="true"
+    style="?attr/materialCardViewElevatedStyle"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -12,7 +15,7 @@
 
         <!-- Media -->
         <ImageView
-            android:id="@+id/box_img"
+            android:id="@+id/box_img_old"
             android:layout_width="match_parent"
             android:layout_height="194dp"
             app:srcCompat="@drawable/ic_baseline_add_24"
@@ -28,30 +31,27 @@
 
             <!-- Title, secondary and supporting text -->
             <TextView
-                android:id="@+id/box_id"
+                android:id="@+id/box_id_old"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/title"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 />
-
             <TextView
-                android:id="@+id/box_name"
+                android:id="@+id/box_name_old"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/secondary_text"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="?android:attr/textColorSecondary" />
-            <TextView
-                android:id="@+id/box_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/supporting_text"
-                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?android:attr/textColorSecondary"
                 />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/box_location_old"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_height="wrap_content"
+                android:text="@string/supporting_text"/>
 
         </LinearLayout>
 

@@ -72,7 +72,9 @@ class ContainingBoxAdapter(private val mDataList: ArrayList<BoxModel>, private v
         @SuppressLint("ResourceType")
         override fun onClick(view: View?) {
             if (view != null) {
-                val myFragment: Fragment = BoxFragment.newInstance(mDataList[adapterPosition])
+                //val action = MainFragmentDirections.actionMainFragmentToReportsFragment()
+                //navController.navigate(action)
+                val myFragment: Fragment = BoxFragment.newInstance(mDataList[adapterPosition], adapterPosition)
                 val context = view.getContext()
                 Utils.pushFragment(myFragment, context, "ItemView")
             }

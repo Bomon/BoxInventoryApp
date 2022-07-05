@@ -11,19 +11,23 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.transition.platform.MaterialContainerTransform
+import com.google.android.material.transition.platform.MaterialElevationScale
 import com.google.firebase.database.*
 import com.thw.inventory_app.*
 import com.thw.inventory_app.R
 import com.thw.inventory_app.ui.box.BoxEditFragment
+import com.thw.inventory_app.ui.box.BoxFragment
 import com.thw.inventory_app.ui.box.BoxItemModel
 import com.thw.inventory_app.ui.box.ItemsAddFragment
 import com.thw.inventory_app.ui.item.ItemEditFragment
+import com.thw.inventory_app.ui.item.ItemFragment
 
 class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     var itemList: ArrayList<ItemModel> = ArrayList<ItemModel>()
     lateinit var adapter: ItemAdapter
-    lateinit var recyclerview: RecyclerView
+    lateinit var rv: RecyclerView
     lateinit var firebase_listener: ValueEventListener
 
 
@@ -57,7 +61,12 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_items, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_items) as RecyclerView
-        adapter = ItemAdapter(itemList, false)
+        adapter = ItemAdapter(itemList)
+        adapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
+            override fun setOnCLickListener(position: Int, view: View) {
+                handleRecyclerViewClick(position, view)
+            }
+        })
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = adapter
 
@@ -81,6 +90,32 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         })
 
         return view
+    }
+
+    fun handleRecyclerViewClick(position: Int, view: View) {
+
+        //exitTransition = MaterialElevationScale(false).apply {
+        //    duration = 5000
+        //}
+        //reenterTransition = MaterialElevationScale(true).apply {
+        //    duration = 5000
+        //}
+
+        var transitionName: String = view.transitionName.toString()
+        val newFragment: ItemFragment = ItemFragment.newInstance(itemList[position], position)
+        //newFragment.sharedElementEnterTransition = getTransition()
+        //newFragment.sharedElementReturnTransition = getTransition()
+
+        newFragment.setSharedElementEnterTransition(MaterialContainerTransform())
+
+        childFragmentManager
+            .beginTransaction()
+            //.setCustomAnimations(R.anim.slide_in, R.anim.fade_out, R.anim.fade_in, R.anim.slide_out)
+            .setReorderingAllowed(true)
+            .addSharedElement(view, transitionName)
+            .replace(R.id.fragment_items, newFragment)
+            .addToBackStack("")
+            .commit()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

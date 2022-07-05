@@ -9,89 +9,97 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.view.menu.MenuView
+import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.thw.inventory_app.ui.item.ItemFragment
-import com.thw.inventory_app.ui.notifications.ItemsFragment
 
 
-class ItemAdapter(private val mDataList: ArrayList<ItemModel>, private val do_animate: Boolean) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     lateinit var context: Context
-    private var mItemModel: ArrayList<ItemModel> = ArrayList()
+    private var mItemList: ArrayList<ItemModel> = ArrayList()
+
+    private lateinit var mListener: ItemAdapter.OnItemClickListener
+    lateinit var holder: ItemAdapter.ItemViewHolder
 
     init {
-        setFilter(mDataList)
+        setFilter(content)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         context = parent.context
         val layoutInflater = LayoutInflater.from(parent.context)
-        return ItemViewHolder(layoutInflater.inflate(R.layout.card_item, parent, false))
+        val view = layoutInflater.inflate(R.layout.card_item, parent, false)
+        return ItemViewHolder(view, mListener)
 
     }
 
     override fun getItemCount(): Int {
-        return mItemModel.size
+        return mItemList.size
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        (holder as ItemViewHolder).bind(mItemModel[position]);
-        setAnimation(holder.itemView);
+        this.holder = holder
+        holder.item_name.text = mItemList[position].name
+        //holder.item_tags.description = mItemList[position].description
+
+
+        if(mItemList[position].tags != ""){
+            for (tag in mItemList[position].tags.split(";")){
+                if (tag != ""){
+                    val chip = Chip(context)
+                    chip.text = tag
+                    holder.item_tags.addView(chip)
+                }
+            }
+        }
+
+        //holder.item_description.text = mItemList[position].description
+        val img = Utils.StringToBitMap(mItemList[position].image)
+        if (img != null){
+            holder.item_image.setImageBitmap(img)
+        }
+        holder.item_image.transitionName = "itemTransition" + position
+        Utils.setRecyclerViewCardAnimation(holder.itemView, context)
     }
 
-    inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
+    inner class ItemViewHolder(itemView: View, var mListener: ItemAdapter.OnItemClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
-        var item_name: TextView? = null
-        var item_image: ImageView? = null
-        var item_id: TextView? = null
-        var item_description: TextView? = null
-        var item_tags: TextView? = null
+        var item_name: TextView = itemView.findViewById<TextView>(R.id.item_name)
+        //var item_description: TextView = itemView.findViewById<TextView>(R.id.item_description)
+        var item_image: ImageView = itemView.findViewById<ImageView>(R.id.item_img)
+        val item_tags: ChipGroup = itemView.findViewById(R.id.item_tags)
 
         init {
             itemView.setOnClickListener(this)
-            item_name = itemView.findViewById<TextView>(R.id.item_name)
-            item_image = itemView.findViewById<ImageView>(R.id.item_img)
-            //item_id = itemView.findViewById<TextView>(R.id.box_id)
-            //item_description = itemView.findViewById<TextView>(R.id.box_location)
-            //item_tags = itemView.findViewById<TextView>(R.id.box_location)
         }
 
-
-        fun bind(model: ItemModel): Unit {
-            item_name?.text = model.name
-            val img = Utils.StringToBitMap(model.image)
-            if (img != null){
-                item_image?.setImageBitmap(img)
-            }
-        }
-
-        @SuppressLint("ResourceType")
         override fun onClick(view: View?) {
-            if (view != null) {
-                val myFragment: Fragment = ItemFragment.newInstance(mDataList[adapterPosition])
-                val context = view.getContext()
-                Utils.pushFragment(myFragment, context, "ItemAdapter")
+            if(mListener != null){
+                mListener.setOnCLickListener(adapterPosition, item_image)
             }
+            true
         }
     }
-
-    private fun setAnimation(viewToAnimate: View) {
-        if (do_animate) {
-            val animation: Animation =
-                AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left)
-            viewToAnimate.startAnimation(animation)
-        }
-    }
-
 
     fun setFilter(itemList: List<ItemModel>) {
-        mItemModel.clear()
-        mItemModel.addAll(itemList)
+        mItemList.clear()
+        mItemList.addAll(itemList)
         this.notifyDataSetChanged()
 
+    }
+
+
+    interface OnItemClickListener{
+        fun setOnCLickListener(position: Int, view: View)
+    }
+
+    fun setOnItemClickListener(mListener: OnItemClickListener) {
+        this.mListener = mListener
     }
 
 

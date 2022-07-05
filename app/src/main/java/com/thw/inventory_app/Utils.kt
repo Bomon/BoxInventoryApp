@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
@@ -37,11 +39,11 @@ class Utils {
         fun pushFragment(newFragment: Fragment, context: Context, backStackName: String) {
             val fragmentManager = (context as FragmentActivity).supportFragmentManager
             val transaction: FragmentTransaction = fragmentManager.beginTransaction()
-            transaction.setCustomAnimations(
-                R.anim.slide_in,
-                R.anim.fade_out,
-                R.anim.fade_in,
-                R.anim.slide_out)
+            //transaction.setCustomAnimations(
+            //    R.anim.slide_in,
+            //    R.anim.fade_out,
+            //    R.anim.fade_in,
+            //    R.anim.slide_out)
             transaction.replace(R.id.nav_host_fragment_activity_main, newFragment)
             //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             transaction.addToBackStack(backStackName)
@@ -54,6 +56,7 @@ class Utils {
             val location = box.child("location").value.toString()
             val id = box.child("id").value.toString()
             val name = box.child("name").value.toString()
+            val description = box.child("description").value.toString()
             val qrcode = box.child("qrcode").value.toString()
             val notes = box.child("notes").value.toString()
             val color = box.child("color").value.toString()
@@ -68,7 +71,7 @@ class Utils {
                 val itemStatus = c.child("status").value.toString()
                 contentList.add(ContentItem(c.key.toString(), itemAmount, itemId, itemInvNum, itemStatus))
             }
-            return BoxModel(id, name, qrcode, location, image, location_image, notes, color, status, contentList)
+            return BoxModel(id, name, description, qrcode, location, image, location_image, notes, color, status, contentList)
         }
 
         fun updateFirebaseEntities(){
@@ -98,6 +101,12 @@ class Utils {
                     }
                 }
             }
+        }
+
+        fun setRecyclerViewCardAnimation(viewToAnimate: View, context: Context) {
+            //val animation: Animation =
+            //    AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left)
+            //viewToAnimate.startAnimation(animation)
         }
     }
 

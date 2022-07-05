@@ -175,6 +175,10 @@ class ItemFragment : Fragment() {
 
         // Get the arguments from the caller fragment/activity
         item_model = arguments?.getSerializable("model") as ItemModel
+
+        var transitionName: String = "itemTransition" + (arguments?.getSerializable("position") as Int).toString()
+        item_image_field.transitionName = transitionName
+
         updateContent()
 
         //Init Items View
@@ -230,10 +234,11 @@ class ItemFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(itemModel: ItemModel) =
+        fun newInstance(itemModel: ItemModel, position: Int) =
             ItemFragment().apply {
                 val args = Bundle()
                 args.putSerializable("model", itemModel)
+                args.putSerializable("position", position)
                 val fragment = ItemFragment()
                 fragment.arguments = args
                 return fragment

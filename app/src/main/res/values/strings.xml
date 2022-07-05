@@ -24,4 +24,26 @@
     <string name="title">Title</string>
     <string name="secondary_text">Secondary Text</string>
     <string name="supporting_text">Supporting Text</string>
+    <string name="status">Status</string>
+
+    <string name="location">Standort</string>
+    <string name="content">Inhalt</string>
+    <string name="edit_box_id">ID / Nummer</string>
+    <string name="edit_box_name">Name</string>
+    <string name="edit_box_description">Beschreibung</string>
+    <string name="edit_box_status">Status / Tags</string>
+    <string name="edit_box_location">Standort</string>
+    <string name="edit_box_add">Hinzufügen</string>
+    <string name="edit_item_amount">Menge</string>
+    <string name="edit_box_status_helper">Zum Hinzufügen ; oder Enter drücken</string>
+
+    <string name="dialog_set">Übernehmen</string>
+    <string name="dialog_cancel">Abbrechen</string>
+
+    <string name="color_select_title">Farbe Wählen</string>
+    <string name="edit_item_color">Farbe</string>
+    <string name="edit_item_invnum">Inventarnummern</string>
+
+    <string name="box_card_transition_name">box_card_transition_name</string>
+    <string name="box_card_detail_transition_name">box_card_detail_transition_name</string>
 </resources>

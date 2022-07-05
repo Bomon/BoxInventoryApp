@@ -65,7 +65,7 @@ class QRScannerFragment : Fragment() {
         cardList = ArrayList()
         val view: View = inflater.inflate(R.layout.fragment_qrscanner, container, false)
         val myrv = view.findViewById<View>(R.id.RV_qr) as RecyclerView
-        adapter = BoxAdapter(cardList, true, R.layout.card_box_qr)
+        adapter = BoxAdapter(cardList)
         myrv.layoutManager = LinearLayoutManager(activity)
         myrv.adapter = adapter
 

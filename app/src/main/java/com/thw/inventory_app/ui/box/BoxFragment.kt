@@ -1,23 +1,33 @@
 package com.thw.inventory_app.ui.box
 
+import android.animation.AnimatorInflater
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.app.AlertDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
-import com.thw.inventory_app.*
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.transition.platform.MaterialContainerTransform
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.thw.inventory_app.BoxModel
 import com.thw.inventory_app.ContentItem
 import com.thw.inventory_app.R
+import com.thw.inventory_app.Utils
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -29,7 +39,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [BoxFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class BoxFragment : Fragment() {
+class BoxFragment : Fragment(){
     // TODO: Rename and change types of parameters
 
     //private val box_id=itemView.findViewById<TextView>(R.id.box_id)
@@ -42,8 +52,13 @@ class BoxFragment : Fragment() {
     lateinit var firebase_listener: ValueEventListener
     var itemList: ArrayList<BoxItemModel> = ArrayList<BoxItemModel>()
 
+    lateinit var box_id_field: TextView
     lateinit var box_name_field: TextView
-    lateinit var box_text_field: TextView
+    lateinit var box_description_field: TextView
+    lateinit var box_notes_field: TextView
+    lateinit var box_location_field: TextView
+    lateinit var box_status_field: ChipGroup
+
     lateinit var box_summary_image_field: ImageView
     lateinit var box_location_image_field: ImageView
 
@@ -97,6 +112,8 @@ class BoxFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        var isFront =true
         if (item.itemId == R.id.box_btn_edit) {
             if (view != null) {
                 val editFragment: Fragment = BoxEditFragment.newInstance(box_model, itemList, false)
@@ -119,11 +136,22 @@ class BoxFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        //arguments?.let {
-        //    box_model = it.getBundle("model")
-            //param1 = it.getString(ARG_PARAM1)
-            //param2 = it.getString(ARG_PARAM2)
-        //}
+        //val transform = MaterialContainerTransform()
+        //transform.scrimColor = Color.TRANSPARENT
+        //sharedElementEnterTransition = transform
+        //sharedElementReturnTransition = transform
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        //view.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+        //    override fun onPreDraw(): Boolean {
+        //        view.viewTreeObserver.removeOnPreDrawListener(this)
+        //        startPostponedEnterTransition()
+        //        return true
+        //    }
+        //})
     }
 
     private fun updateContent(){
@@ -132,10 +160,25 @@ class BoxFragment : Fragment() {
         val box_location = box_model.location
         val box_name = box_model.name
         val box_img = box_model.img
+        val box_description = box_model.description
+        val box_status = box_model.status
+        val box_notes = box_model.notes
         val box_location_img = box_model.location_img
 
+        //box_id_field.text = box_id
         box_name_field.text = box_name
-        box_text_field.text = box_location
+        box_description_field.text = box_description
+        //box_notes_field.text = box_notes
+        box_location_field.text = box_location
+
+        box_status_field.removeAllViews()
+        for (tag in box_status.split(";")){
+            if (tag != ""){
+                val chip = Chip(context)
+                chip.text = tag
+                box_status_field.addView(chip)
+            }
+        }
 
         if (box_img == "") {
             //val myLogo = (ResourcesCompat.getDrawable(this.resources, R.drawable.ic_baseline_photo_size_select_actual_24, null) as VectorDrawable).toBitmap()
@@ -166,15 +209,24 @@ class BoxFragment : Fragment() {
         val v =  inflater.inflate(R.layout.fragment_box, container, false)
 
         previous_action_bar_title = (activity as AppCompatActivity).supportActionBar?.title.toString()
+
         // Get the activity and widget
+        //box_id_field = v.findViewById(R.id.box_summary_id)
         box_name_field = v.findViewById(R.id.box_summary_name)
-        box_text_field = v.findViewById(R.id.box_location_name)
+        box_description_field = v.findViewById(R.id.box_summary_description)
+        //box_notes_field = v.findViewById(R.id.box_summary_notes)
+        box_location_field = v.findViewById(R.id.box_location_name)
+        box_status_field = v.findViewById(R.id.box_summary_status)
         box_summary_image_field = v.findViewById(R.id.box_summary_image)
         box_location_image_field = v.findViewById(R.id.box_location_image)
+        var box_container: View = v.findViewById(R.id.box_card)
 
         // Get the arguments from the caller fragment/activity
         box_model = arguments?.getSerializable("model") as BoxModel
         updateContent()
+
+        var transitionName: String = "boxTransition" + (arguments?.getSerializable("position") as Int).toString()
+        box_container.transitionName = transitionName
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.box_summary_content) as RecyclerView
@@ -201,8 +253,6 @@ class BoxFragment : Fragment() {
                         break
                     }
                 }
-
-
 
                 val items = dataSnapshot.child("items")
                 for (contentItem: ContentItem in box_model.content){
@@ -243,10 +293,11 @@ class BoxFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(boxModel: BoxModel) =
+        fun newInstance(boxModel: BoxModel, position: Int) =
             BoxFragment().apply {
                 val args = Bundle()
                 args.putSerializable("model", boxModel)
+                args.putSerializable("position", position)
                 val fragment = BoxFragment()
                 fragment.arguments = args
                 return fragment

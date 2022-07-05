@@ -2,23 +2,28 @@ package com.thw.inventory_app.ui.box
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.Fragment
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.children
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.thw.inventory_app.R
-import com.thw.inventory_app.Utils
+import dev.sasikanth.colorsheet.ColorSheet
+import it.sephiroth.android.library.numberpicker.NumberPicker
+
 
 data class ItemCardUpdate(val item_key: String, val item_id: String, val amount: String, val invnum: String, val status: String, val delete_index: Int)
 
@@ -53,53 +58,96 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
 
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
-        var item_edit_amount: EditText
-        var item_edit_invnum: EditText
-        var item_edit_status: EditText
+        var item_edit_amount: NumberPicker
+        //var item_edit_invnum: EditText
+        //var item_edit_status: EditText
         var item_name: TextView
-        var item_delete_button: Button
+        var item_color_button: MaterialButton
+        var item_delete_button: MaterialButton
 
         init {
             itemView.setOnClickListener(this)
-            item_edit_amount = itemView.findViewById<EditText>(R.id.box_item_edit_amount)
-            item_edit_invnum = itemView.findViewById<EditText>(R.id.box_item_edit_invnum)
-            item_edit_status = itemView.findViewById<EditText>(R.id.box_item_edit_status)
+            item_edit_amount = itemView.findViewById<NumberPicker>(R.id.box_item_edit_amount)
+            //item_edit_invnum = itemView.findViewById<EditText>(R.id.box_item_edit_invnum)
+            //item_edit_status = itemView.findViewById<EditText>(R.id.box_item_edit_status)
             item_name = itemView.findViewById<EditText>(R.id.box_item_name)
-            item_delete_button = itemView.findViewById<Button>(R.id.box_item_delete_btn)
+            item_delete_button = itemView.findViewById<MaterialButton>(R.id.box_item_delete_btn)
+            item_color_button = itemView.findViewById<MaterialButton>(R.id.box_item_color_btn)
             item_delete_button.setOnClickListener {
                 Log.e("Error", "Adapter pos: " + adapterPosition.toString())
                 handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, mItemModel[adapterPosition].item_invnum, mItemModel[adapterPosition].item_status, adapterPosition))
                 Log.e("Error", "Delete Card")
             }
 
-            item_edit_amount.doAfterTextChanged {  e ->
-                e?.let {
-                    mItemModel[adapterPosition].item_amount = it.toString()
-                    handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, it.toString(), mItemModel[adapterPosition].item_invnum, mItemModel[adapterPosition].item_status, -1))
+            for( v in item_edit_amount.children) {
+                if(v is EditText) {
+                    v.setOnEditorActionListener { _, _, _ ->
+                        v.clearFocus()
+                        val imm = v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(v.windowToken, 0)
+                        true
+                    }
                 }
             }
 
-            item_edit_invnum.doAfterTextChanged {  e ->
-                e?.let {
-                    mItemModel[adapterPosition].item_invnum = it.toString()
-                    handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, it.toString(), mItemModel[adapterPosition].item_status, -1))
-                }
+            val fragmentManager = (context as FragmentActivity).supportFragmentManager
+            val colors = context.resources.getIntArray(R.array.demo_colors)
+            item_color_button.setOnClickListener {
+                ColorSheet().colorPicker(
+                    colors = colors,
+                    listener = { color ->
+                        item_color_button.background.setTint(color)
+                        val red = (color shr 16 and 0xFF).toFloat()
+                        val green = (color shr 8 and 0xFF).toFloat()
+                        val blue = (color and 0xFF).toFloat()
+                        val alpha = (color shr 24 and 0xFF).toFloat()
+                        if ((red * 0.299 + green * 0.587 + blue * 0.114) > 186) {
+                            item_color_button.setTextColor(Color.BLACK)
+                            item_color_button.setIconTintResource(R.color.black)
+                        } else {
+                            item_color_button.setTextColor(Color.WHITE)
+                            item_color_button.setIconTintResource(R.color.white)
+                        }
+
+
+
+                    })
+                    .show(fragmentManager)
             }
 
-            item_edit_status.doAfterTextChanged {  e ->
-                e?.let {
-                    mItemModel[adapterPosition].item_invnum = it.toString()
-                    handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, mItemModel[adapterPosition].item_invnum, it.toString(), -1))
-                }
-            }
+
+            //item_edit_amount.setOnClickListener({
+            //    show()
+            //})
+
+            //item_edit_amount.doAfterTextChanged {  e ->
+            //    e?.let {
+           //         mItemModel[adapterPosition].item_amount = it.toString()
+            //        handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, it.toString(), mItemModel[adapterPosition].item_invnum, mItemModel[adapterPosition].item_status, -1))
+           //     }
+            //}
+
+            //item_edit_invnum.doAfterTextChanged {  e ->
+            //    e?.let {
+            //        mItemModel[adapterPosition].item_invnum = it.toString()
+            //        handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, it.toString(), mItemModel[adapterPosition].item_status, -1))
+            //    }
+            // }
+
+            //item_edit_status.doAfterTextChanged {  e ->
+            //    e?.let {
+            //        mItemModel[adapterPosition].item_invnum = it.toString()
+            //        handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, mItemModel[adapterPosition].item_invnum, it.toString(), -1))
+            //    }
+            //}
         }
-
 
         fun bind(model: BoxItemModel): Unit {
             item_name.text = model.item_name
-            item_edit_amount.setText(model.item_amount)
-            item_edit_invnum.setText(model.item_invnum)
-            item_edit_status.setText(model.item_status)
+            //item_edit_amount.setText(model.item_amount)
+            item_edit_amount.progress = model.item_amount.toInt()
+            //item_edit_invnum.setText(model.item_invnum)
+            //item_edit_status.setText(model.item_status)
         }
 
 

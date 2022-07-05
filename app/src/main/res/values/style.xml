@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ShapeAppearanceOverlay.App.CornerSize50Percent" parent="">
+        <item name="cornerSize">12dp</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.App.CornerSize25Percent" parent="">
+        <item name="cornerSize">6dp</item>
+    </style>
+    <style name="BoxStatusChip" parent="TextAppearance.MaterialComponents.Chip">
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="numberPickerTextStyle" parent="NumberPicker.EditTextStyle">
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>
