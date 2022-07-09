@@ -29,6 +29,8 @@
     <color name="thw_cyan">#00FFFF</color>
     <color name="thw_cyan_30">#B3FFFF</color>
 
+    <color name="default_item_color">#FFFF00</color>
+    <color name="default_box_color">#0000FF</color>
     <color name="seed">#00387b</color>
     <color name="md_theme_light_primary">#305DA8</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>

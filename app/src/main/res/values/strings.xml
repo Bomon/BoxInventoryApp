@@ -28,22 +28,28 @@
 
     <string name="location">Standort</string>
     <string name="content">Inhalt</string>
+    <string name="edit_box_markings">Markierungen</string>
     <string name="edit_box_id">ID / Nummer</string>
     <string name="edit_box_name">Name</string>
-    <string name="edit_box_description">Beschreibung</string>
-    <string name="edit_box_status">Status / Tags</string>
+    <string name="edit_box_description">Beschreibung / Notizen</string>
+    <string name="edit_box_status">Status / Tags hinzufügen</string>
     <string name="edit_box_location">Standort</string>
     <string name="edit_box_add">Hinzufügen</string>
     <string name="edit_item_amount">Menge</string>
+    <string name="edit_box_title">Box Daten</string>
     <string name="edit_box_status_helper">Zum Hinzufügen ; oder Enter drücken</string>
+    <string name="edit_box_qrcode">QR-Code</string>
+    <string name="edit_box_qrcode_helper">Achtung: Jede Änderung macht den bestehenden QR-Code der Box ungültig</string>
 
     <string name="dialog_set">Übernehmen</string>
+    <string name="dialog_add">Hinzufügen</string>
     <string name="dialog_cancel">Abbrechen</string>
+    <string name="dialog_invnum">Inventarnummer</string>
 
     <string name="color_select_title">Farbe Wählen</string>
+    <string name="edit_box_color">Farbmarkierung ändern</string>
     <string name="edit_item_color">Farbe</string>
-    <string name="edit_item_invnum">Inventarnummern</string>
-
+    <string name="edit_item_invnum">InvNr.</string>
     <string name="box_card_transition_name">box_card_transition_name</string>
     <string name="box_card_detail_transition_name">box_card_detail_transition_name</string>
 </resources>

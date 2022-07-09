@@ -74,7 +74,7 @@
 
                 <ImageView
                     android:id="@+id/item_edit_image"
-                    android:src="@drawable/ic_thw"
+                    android:src="@drawable/ic_placeholder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"

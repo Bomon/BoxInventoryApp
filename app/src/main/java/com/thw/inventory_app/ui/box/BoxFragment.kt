@@ -1,33 +1,39 @@
 package com.thw.inventory_app.ui.box
 
-import android.animation.AnimatorInflater
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
+import android.R.attr.bitmap
+import android.app.Activity
 import android.app.AlertDialog
-import android.graphics.Color
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.transition.platform.MaterialContainerTransform
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.stfalcon.imageviewer.StfalconImageViewer
 import com.thw.inventory_app.BoxModel
 import com.thw.inventory_app.ContentItem
 import com.thw.inventory_app.R
 import com.thw.inventory_app.Utils
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.net.URI
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -55,9 +61,9 @@ class BoxFragment : Fragment(){
     lateinit var box_id_field: TextView
     lateinit var box_name_field: TextView
     lateinit var box_description_field: TextView
-    lateinit var box_notes_field: TextView
     lateinit var box_location_field: TextView
     lateinit var box_status_field: ChipGroup
+    lateinit var box_color_field: View
 
     lateinit var box_summary_image_field: ImageView
     lateinit var box_location_image_field: ImageView
@@ -159,15 +165,21 @@ class BoxFragment : Fragment(){
         val box_content = box_model.content
         val box_location = box_model.location
         val box_name = box_model.name
-        val box_img = box_model.img
+        val box_img: String = box_model.image
         val box_description = box_model.description
         val box_status = box_model.status
-        val box_notes = box_model.notes
+        val box_color = box_model.color
         val box_location_img = box_model.location_img
 
         //box_id_field.text = box_id
         box_name_field.text = box_name
         box_description_field.text = box_description
+        box_color_field.background.setTint(box_color)
+
+        if(box_description == "")
+            box_description_field.visibility = View.GONE
+        if(box_status == "")
+            box_status_field.visibility = View.GONE
         //box_notes_field.text = box_notes
         box_location_field.text = box_location
 
@@ -181,19 +193,13 @@ class BoxFragment : Fragment(){
         }
 
         if (box_img == "") {
-            //val myLogo = (ResourcesCompat.getDrawable(this.resources, R.drawable.ic_baseline_photo_size_select_actual_24, null) as VectorDrawable).toBitmap()
-            //box_image_field.setImageDrawable(resources.getDrawable(R.drawable.))
-
-            //box_image_field.setImageBitmap(myLogo)
+            Glide.with(this).load(R.drawable.ic_placeholder).into(box_summary_image_field)
         } else {
             box_summary_image_field.setImageBitmap(Utils.StringToBitMap(box_img))
         }
 
         if (box_location_img == "") {
-            //val myLogo = (ResourcesCompat.getDrawable(this.resources, R.drawable.ic_baseline_photo_size_select_actual_24, null) as VectorDrawable).toBitmap()
-            //box_image_field.setImageDrawable(resources.getDrawable(R.drawable.))
-
-            //box_image_field.setImageBitmap(myLogo)
+            Glide.with(this).load(R.drawable.ic_placeholder).into(box_location_image_field)
         } else {
             box_location_image_field.setImageBitmap(Utils.StringToBitMap(box_location_img))
         }
@@ -219,6 +225,7 @@ class BoxFragment : Fragment(){
         box_status_field = v.findViewById(R.id.box_summary_status)
         box_summary_image_field = v.findViewById(R.id.box_summary_image)
         box_location_image_field = v.findViewById(R.id.box_location_image)
+        box_color_field = v.findViewById(R.id.box_summary_color)
         var box_container: View = v.findViewById(R.id.box_card)
 
         // Get the arguments from the caller fragment/activity
@@ -227,6 +234,29 @@ class BoxFragment : Fragment(){
 
         var transitionName: String = "boxTransition" + (arguments?.getSerializable("position") as Int).toString()
         box_container.transitionName = transitionName
+
+
+        //Init Image Fullscreen on click
+        box_summary_image_field.setOnClickListener {
+            val drawables: ArrayList<Drawable> = ArrayList()
+            drawables.add(box_summary_image_field.drawable)
+
+            StfalconImageViewer.Builder(
+                context, drawables
+            ) { imageView, image -> Glide.with(it.context).load(image).into(imageView) }
+                .withTransitionFrom(box_summary_image_field)
+                .show(true)
+        }
+        box_location_image_field.setOnClickListener {
+            val drawables: ArrayList<Drawable> = ArrayList()
+            drawables.add(box_location_image_field.drawable)
+
+            StfalconImageViewer.Builder(
+                context, drawables
+            ) { imageView, image -> Glide.with(it.context).load(image).into(imageView) }
+                .withTransitionFrom(box_location_image_field)
+                .show(true)
+        }
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.box_summary_content) as RecyclerView
@@ -263,7 +293,7 @@ class BoxFragment : Fragment(){
                         val tags = item.child("tags").value.toString()
                         val itemid = item.child("id").value.toString()
                         if (itemid == contentItem.id) {
-                            itemList.add(BoxItemModel(contentItem.key, contentItem.id, contentItem.amount, contentItem.invnum, name, description, tags, contentItem.status, image))
+                            itemList.add(BoxItemModel(contentItem.key, contentItem.id, contentItem.amount, contentItem.invnum, name, description, tags, contentItem.color, image))
                         }
                     }
                 }

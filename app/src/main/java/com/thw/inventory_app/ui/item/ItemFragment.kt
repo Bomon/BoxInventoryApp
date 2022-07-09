@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.thw.inventory_app.*
@@ -148,10 +149,7 @@ class ItemFragment : Fragment() {
         item_tags_field.text = item_tags
 
         if (item_image == "") {
-            //val myLogo = (ResourcesCompat.getDrawable(this.resources, R.drawable.ic_baseline_photo_size_select_actual_24, null) as VectorDrawable).toBitmap()
-            //box_image_field.setImageDrawable(resources.getDrawable(R.drawable.))
-
-            //box_image_field.setImageBitmap(myLogo)
+            Glide.with(this).load(R.drawable.ic_placeholder).into(item_image_field)
         } else {
             item_image_field.setImageBitmap(Utils.StringToBitMap(item_image))
         }

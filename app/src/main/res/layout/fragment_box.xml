@@ -24,7 +24,7 @@
                 android:id="@+id/box_summary_image"
                 android:layout_width="match_parent"
                 android:layout_height="194dp"
-                app:srcCompat="@drawable/ic_thw"
+                app:srcCompat="@drawable/ic_placeholder"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/content_description_media"
                 />
@@ -35,20 +35,36 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:layout_marginTop="8dp"
-                    android:id="@+id/box_summary_name"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/title"
-                    android:textAppearance="?attr/textAppearanceTitleLarge"
-                    />
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/box_summary_color"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/round_bg"
+                        android:backgroundTint="@color/thw_blue"/>
+
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:id="@+id/box_summary_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/title"
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
+                        />
+
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/box_summary_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="16dp"
                     android:text="@string/secondary_text"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textColor="?android:attr/textColorSecondary" />
@@ -68,6 +84,8 @@
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/divider"
+                app:dividerInsetStart="8dp"
+                app:dividerInsetEnd="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
@@ -114,7 +132,7 @@
                     app:layout_constraintStart_toEndOf="@+id/box_summary_location_label"
                     app:layout_constraintTop_toTopOf="parent"
                     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                    app:srcCompat="@drawable/ic_thw" />
+                    app:srcCompat="@drawable/ic_placeholder" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -122,6 +140,8 @@
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/divider2"
+                app:dividerInsetStart="8dp"
+                app:dividerInsetEnd="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 

@@ -32,6 +32,19 @@ class FirebaseConnector {
             FirebaseConnector.persistenceWasEnabled = true
         }
         mRef = mDatabase.reference
+
+        val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
+        boxesRef.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val boxes: DataSnapshot? = task.result
+                if (boxes != null) {
+                    for (box: DataSnapshot in boxes.children) {
+                        val id: String = box.child("id").value.toString()
+                        Log.e("Error", "Box: " + id)
+                    }
+                }
+            }
+        }
     }
 
     fun getDatabase(): FirebaseDatabase {

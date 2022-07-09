@@ -37,6 +37,8 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
         exitTransition = MaterialContainerTransform()
         reenterTransition = MaterialContainerTransform()
+        val fbc: FirebaseConnector = FirebaseConnector()
+        fbc.initConnection()
         //setExitTransition(MaterialElevationScale(false));
         //setReenterTransition(MaterialElevationScale(true));
         //exitTransition = Hold()
@@ -69,7 +71,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
             R.id.home_btn_add -> {
                 if (view != null) {
-                    val boxModel: BoxModel = BoxModel("", "", "", "", "", "", "", "", "", "", ArrayList<ContentItem>())
+                    val boxModel: BoxModel = BoxModel("", "", "", "", "", "", "", "", R.color.default_box_color, "", ArrayList<ContentItem>())
                     val editFragment: Fragment = BoxEditFragment.newInstance(boxModel, ArrayList<BoxItemModel>(), true)
                     Utils.pushFragment(editFragment, requireContext(), "boxEditFragment")
                 }
@@ -123,7 +125,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         })
 
 
-        childFragmentManager
+        parentFragmentManager
             .beginTransaction()
             //.setCustomAnimations(R.anim.slide_in, R.anim.fade_out, R.anim.fade_in, R.anim.slide_out)
             .setReorderingAllowed(true)

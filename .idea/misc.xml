@@ -7,7 +7,9 @@
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.1415" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/drawable/ic_baseline_build_circle_24.xml" value="0.1415" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.1415" />
+        <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.3875" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.2585" />
+        <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/drawable/ic_placeholder.xml" value="0.3865" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/drawable/ic_thw.xml" value="0.1415" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/drawable/image_edit_overlay.xml" value="0.33" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/drawable/round_bg.xml" value="0.1415" />
@@ -21,11 +23,12 @@
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/card_item_in_box.xml" value="0.5" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/card_item_in_box_edit.xml" value="0.375" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/content_box.xml" value="0.1" />
+        <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/dialog_add_invnum.xml" value="0.4601941747572815" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/dialog_filter.xml" value="0.375" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/dialog_number_picker.xml" value="0.38645833333333335" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/fragment_box.xml" value="0.33" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/fragment_box2.xml" value="0.286231884057971" />
-        <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/fragment_box_edit.xml" value="0.37349397590361444" />
+        <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/fragment_box_edit.xml" value="0.33" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/fragment_dashboard.xml" value="0.25" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/fragment_first.xml" value="0.286231884057971" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/layout/fragment_home.xml" value="0.33" />
@@ -45,6 +48,7 @@
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/menu/menu_item.xml" value="0.55" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/menu/menu_item_edit.xml" value="0.3109375" />
         <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/menu/menu_items.xml" value="0.4942708333333333" />
+        <entry key="..\:/AndroidApps/inventoryapp/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3875" />
       </map>
     </option>
   </component>

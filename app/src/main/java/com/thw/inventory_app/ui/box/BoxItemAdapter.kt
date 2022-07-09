@@ -46,6 +46,8 @@ class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, private val
     override fun onBindViewHolder(holder: BoxItemViewHolder, position: Int) {
         holder.item_amount.text = mItemList[position].item_amount
         holder.item_name.text = mItemList[position].item_name
+        Log.e("Error", "Set item color in box view " + mItemList[position].item_name + " to " + mItemList[position].item_color)
+        holder.item_color.background.setTint(mItemList[position].item_color)
 
         holder.item_invnums.removeAllViews()
         for (tag in mItemList[position].item_invnum.split(";")){
@@ -57,10 +59,6 @@ class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, private val
             }
         }
 
-        if (mItemList[position].item_status != "") {
-            holder.box_status.setBackgroundColor(context.getColor(R.color.md_theme_light_secondary))
-        }
-
         val img = Utils.StringToBitMap(mItemList[position].item_image)
         if (img != null){
             holder.item_image.setImageBitmap(img)
@@ -69,7 +67,7 @@ class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, private val
     }
 
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-        var box_status = itemView.findViewById<View>(R.id.item_status)
+        var item_color = itemView.findViewById<View>(R.id.item_color)
         var item_amount: TextView = itemView.findViewById<TextView>(R.id.item_amount)
         var item_name = itemView.findViewById<TextView>(R.id.item_name)
         var item_invnums = itemView.findViewById<ChipGroup>(R.id.item_invnums)

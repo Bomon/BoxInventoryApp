@@ -11,7 +11,7 @@ class BoxItemModel(
     var item_name: String,
     var item_description: String,
     var item_tags: String,
-    var item_status: String,
+    var item_color: Int,
     var item_image: String): Serializable  {
 
 }

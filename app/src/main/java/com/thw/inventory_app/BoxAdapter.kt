@@ -44,7 +44,8 @@ class BoxAdapter(var content: ArrayList<BoxModel>) : RecyclerView.Adapter<BoxAda
         holder.box_id.text = mBoxList[position].id
         holder.box_name.text = mBoxList[position].name
         holder.box_location.text = mBoxList[position].location
-        val img = Utils.StringToBitMap(mBoxList[position].img)
+        holder.box_color.background.setTint(mBoxList[position].color)
+        val img = Utils.StringToBitMap(mBoxList[position].image)
         if (img != null){
             holder.box_img.setImageBitmap(img)
         }
@@ -75,6 +76,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>) : RecyclerView.Adapter<BoxAda
         var box_img: ImageView = itemView.findViewById<ImageView>(R.id.box_img)
         var box_status_tags: ChipGroup = itemView.findViewById<ChipGroup>(R.id.box_status)
         var box_container: MaterialCardView = itemView.findViewById<MaterialCardView>(R.id.box_card_small)
+        var box_color: View = itemView.findViewById<View>(R.id.box_color)
 
         init {
             itemView.setOnClickListener(this)

@@ -8,9 +8,12 @@ import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.core.view.allViews
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import java.io.ByteArrayOutputStream
@@ -59,7 +62,13 @@ class Utils {
             val description = box.child("description").value.toString()
             val qrcode = box.child("qrcode").value.toString()
             val notes = box.child("notes").value.toString()
-            val color = box.child("color").value.toString()
+
+            var color: Int? = box.child("color").value.toString().toIntOrNull()
+            if (color == null) {
+                Log.e("Error", "Box color is null")
+                color = R.color.default_box_color
+            }
+
             val status = box.child("status").value.toString()
             val content = box.child("content")
 
@@ -68,10 +77,46 @@ class Utils {
                 val itemAmount = c.child("amount").value.toString()
                 val itemId = c.child("id").value.toString()
                 val itemInvNum = c.child("invnum").value.toString()
-                val itemStatus = c.child("status").value.toString()
-                contentList.add(ContentItem(c.key.toString(), itemAmount, itemId, itemInvNum, itemStatus))
+                var itemColor: Int? = c.child("color").value.toString().toIntOrNull()
+                if (itemColor == null) {
+                    itemColor = R.color.default_item_color
+                }
+                contentList.add(ContentItem(c.key.toString(), itemAmount, itemId, itemInvNum, itemColor))
             }
             return BoxModel(id, name, description, qrcode, location, image, location_image, notes, color, status, contentList)
+        }
+
+        fun getAllBoxIds(): ArrayList<String> {
+            var idList: ArrayList<String> = ArrayList<String>()
+            val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
+            boxesRef.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val boxes: DataSnapshot? = task.result
+                    if (boxes != null) {
+                        for (box: DataSnapshot in boxes.children) {
+                            idList.add(box.child("id").value.toString())
+                        }
+                    }
+                }
+            }
+            Log.e("Error", idList.joinToString(", "))
+            return idList
+        }
+
+        fun getAllBoxQRcodes(): ArrayList<String> {
+            var qrList: ArrayList<String> = ArrayList<String>()
+            val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
+            boxesRef.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val boxes: DataSnapshot? = task.result
+                    if (boxes != null) {
+                        for (box: DataSnapshot in boxes.children) {
+                            qrList.add(box.child("qrcode").value.toString())
+                        }
+                    }
+                }
+            }
+            return qrList
         }
 
         fun updateFirebaseEntities(){
@@ -93,14 +138,24 @@ class Utils {
                             }
                             for (contentItem: DataSnapshot in box.child("content").children){
                                 val contentItemKey = contentItem.key.toString()
-                                if (!contentItem.hasChild("status")) {
-                                    FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").child(contentItemKey).child("status").setValue("")
+                                if (!contentItem.hasChild("color")) {
+                                    FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").child(contentItemKey).child("color").setValue(R.color.default_item_color)
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+
+        fun chipListToString(chipGroup: ChipGroup): String{
+            var chipString = ""
+            for (chip in chipGroup.allViews) {
+                if (chip is Chip){
+                    chipString += ";" + chip.text.toString()
+                }
+            }
+            return chipString.removePrefix(";")
         }
 
         fun setRecyclerViewCardAnimation(viewToAnimate: View, context: Context) {

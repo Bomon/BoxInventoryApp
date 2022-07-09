@@ -41,7 +41,7 @@
             android:layout_marginBottom="10dp"
             android:contentDescription="@string/app_name"
             android:padding="5dp"
-            android:src="@drawable/ic_thw" />
+            android:src="@drawable/ic_placeholder" />
 
         <!--Text View to display Course Name-->
         <TextView

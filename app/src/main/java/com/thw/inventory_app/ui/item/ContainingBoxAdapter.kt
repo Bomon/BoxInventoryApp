@@ -63,7 +63,7 @@ class ContainingBoxAdapter(private val mDataList: ArrayList<BoxModel>, private v
             box_id?.text = model.id
             box_name?.text = model.name
             box_location?.text = model.location
-            val img = Utils.StringToBitMap(model.img)
+            val img = Utils.StringToBitMap(model.image)
             if (img != null){
                 box_image?.setImageBitmap(img)
             }

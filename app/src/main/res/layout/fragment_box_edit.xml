@@ -19,14 +19,38 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Media -->
-            <ImageView
-                android:id="@+id/box_edit_image"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
-                android:layout_height="194dp"
-                android:contentDescription="@string/content_description_media"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/ic_thw" />
+                android:layout_height="wrap_content"
+                tools:context=".ProfileSettingFragment" >
+
+            <!-- Media -->
+                <ImageView
+                    android:id="@+id/box_edit_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="194dp"
+                    android:contentDescription="@string/content_description_media"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/ic_placeholder"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/bod_edit_image_overlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="194dp"
+                    android:background="#80000000"
+                    android:padding="50dp"
+                    android:src="@drawable/ic_baseline_edit_24"
+                    app:layout_constraintTop_toTopOf="@+id/box_edit_image"
+                    app:layout_constraintEnd_toEndOf="@+id/box_edit_image"
+                    app:tint="#90FFFFFF" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -36,8 +60,18 @@
 
                 <!-- Title, secondary and supporting text -->
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_weight="1"
+                    android:text="@string/edit_box_title"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:textColor="?android:attr/textColorSecondary" />
+
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/box_edit_id_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/edit_box_id">
@@ -50,9 +84,10 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/box_edit_name_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="16dp"
                     android:hint="@string/edit_box_name">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -66,7 +101,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="16dp"
                     android:hint="@string/edit_box_description">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -82,9 +117,168 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/box_edit_qrcode_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/edit_box_qrcode"
+                    app:helperText="@string/edit_box_qrcode_helper">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/box_edit_qrcode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider"
+                app:dividerInsetStart="8dp"
+                app:dividerInsetEnd="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="0dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/box_edit_location_container"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:hint="@string/edit_box_location"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/box_edit_location_image_container"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/box_edit_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/box_edit_location_image_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:context=".ProfileSettingFragment">
+
+                    <!-- Media -->
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/box_edit_location_image"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:contentDescription="@string/content_description_media"
+                        android:scaleType="centerCrop"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                        app:srcCompat="@drawable/ic_placeholder" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/box_edit_location_image_overlay"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:background="#80000000"
+                        app:layout_constraintEnd_toEndOf="@+id/box_edit_location_image"
+                        app:layout_constraintTop_toTopOf="@+id/box_edit_location_image"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                        app:tint="#90FFFFFF" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/box_edit_location_image_overlay_icon"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:padding="15dp"
+                        android:src="@drawable/ic_baseline_edit_24"
+                        app:layout_constraintEnd_toEndOf="@+id/box_edit_location_image"
+                        app:layout_constraintTop_toTopOf="@+id/box_edit_location_image"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                        app:tint="#90FFFFFF" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider0"
+                app:dividerInsetStart="8dp"
+                app:dividerInsetEnd="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_weight="1"
+                    android:text="@string/edit_box_markings"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:paddingBottom="8dp"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/box_edit_color_btn"
+                        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/edit_box_color"
+                        app:icon="@drawable/ic_baseline_palette_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/box_edit_color_preview"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/box_edit_color_preview"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/round_bg"
+                        android:backgroundTint="@color/thw_blue"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     app:helperTextEnabled="true"
                     app:helperText="@string/edit_box_status_helper"
                     android:hint="@string/edit_box_status">
@@ -107,59 +301,11 @@
 
             </LinearLayout>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/divider"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingTop="0dp">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:hint="@string/edit_box_location"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/box_edit_location_image"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/box_edit_location"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/box_edit_location_image"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:contentDescription="@string/content_description_media"
-                    android:scaleType="centerCrop"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                    app:srcCompat="@drawable/ic_thw" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/divider2"
+                app:dividerInsetStart="8dp"
+                app:dividerInsetEnd="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -184,7 +330,7 @@
                         android:layout_marginTop="16dp"
                         android:layout_weight="1"
                         android:text="@string/content"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
                         android:textColor="?android:attr/textColorSecondary" />
 
 
