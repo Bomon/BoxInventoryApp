@@ -41,7 +41,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="32dp"
+                android:layout_marginBottom="64dp"
                 android:text="@string/sheet_export_loading"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -126,12 +126,13 @@
 
             <TextView
                 android:id="@+id/sheet_export_share_label"
-                android:layout_width="wrap_content"
+                android:layout_width="65dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="32dp"
+                android:textAlignment="center"
                 android:text="@string/sheet_export_share"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/sheet_export_save_label"
@@ -140,17 +141,19 @@
 
             <TextView
                 android:id="@+id/sheet_export_save_label"
-                android:layout_width="wrap_content"
+                android:layout_width="65dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="32dp"
+                android:textAlignment="center"
                 android:text="@string/sheet_export_save"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/sheet_export_share_label"
-                app:layout_constraintTop_toBottomOf="@+id/sheet_export_save_btn" />
+                app:layout_constraintTop_toBottomOf="@+id/sheet_export_save_btn"
+                app:layout_constraintVertical_bias="0.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>

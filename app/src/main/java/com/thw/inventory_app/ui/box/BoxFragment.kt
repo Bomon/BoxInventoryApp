@@ -228,6 +228,7 @@ class BoxFragment : Fragment(){
             if (tag != ""){
                 val chip = Chip(context)
                 chip.text = tag
+                chip.setTextAppearance(R.style.BoxStatusChip)
                 box_status_field.addView(chip)
             }
         }

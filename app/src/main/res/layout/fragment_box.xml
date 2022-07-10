@@ -42,9 +42,9 @@
 
                     <View
                         android:id="@+id/box_summary_color"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="11dp"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/round_bg"
                         android:backgroundTint="@color/thw_blue"/>
@@ -86,6 +86,7 @@
                 android:id="@+id/divider"
                 app:dividerInsetStart="8dp"
                 app:dividerInsetEnd="8dp"
+                android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 

@@ -407,7 +407,8 @@ class BoxEditFragment : FragmentCallback, Fragment() {
 
         val fragmentManager = (context as FragmentActivity).supportFragmentManager
         val colors = (context as FragmentActivity).resources.getIntArray(R.array.demo_colors)
-        box_edit_color_btn.setOnClickListener {
+
+        fun onColorClick(it: View){
             ColorSheet().colorPicker(
                 colors = colors,
                 listener = { color ->
@@ -415,6 +416,13 @@ class BoxEditFragment : FragmentCallback, Fragment() {
                     box_edit_color = color
                 })
                 .show(fragmentManager)
+        }
+
+        box_edit_color_btn.setOnClickListener {
+            onColorClick(it)
+        }
+        box_edit_color_preview.setOnClickListener {
+            onColorClick(it)
         }
 
         // Get the arguments from the caller fragment/activity

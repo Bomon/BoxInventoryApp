@@ -3,20 +3,23 @@ package com.thw.inventory_app
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.ArrayMap
 import android.util.Base64
 import android.util.Log
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import androidx.core.view.allViews
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import java.io.ByteArrayOutputStream
+import java.util.concurrent.ExecutionException
+
 
 class Utils {
 
@@ -119,6 +122,37 @@ class Utils {
             return qrList
         }
 
+        fun getAllItemNames(): ArrayMap<String, String> {
+            var itemsMap: ArrayMap<String, String> = ArrayMap<String, String>()
+            val itemsRef = FirebaseDatabase.getInstance().reference
+            val task: Task<DataSnapshot> = itemsRef.child("items").get()
+
+            itemsRef.get().addOnCompleteListener { task ->
+
+            }
+
+            try {
+                Tasks.await<DataSnapshot>(task)
+                if (task.isSuccessful) {
+                    val items: DataSnapshot? = task.result
+                    if (items != null) {
+                        for (item: DataSnapshot in items.children) {
+                            var itemName = item.child("name").value.toString()
+                            var itemId = item.child("id").value.toString()
+                            itemsMap[itemId] = itemName
+                        }
+                    }
+                }
+                var success = task.isSuccessful()
+            } catch (e: ExecutionException) {
+                e.printStackTrace()
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
+
+            return itemsMap
+        }
+
         fun updateFirebaseEntities(){
             val itemsRef = FirebaseDatabase.getInstance().reference.child("boxes")
             itemsRef.get().addOnCompleteListener { task ->
@@ -162,6 +196,32 @@ class Utils {
             //val animation: Animation =
             //    AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left)
             //viewToAnimate.startAnimation(animation)
+        }
+
+        fun getItemNameForId(id: String): String {
+            var itemName = "?"
+            var done = false
+            val itemsRef = FirebaseDatabase.getInstance().reference.child("items")
+            itemsRef.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val items: DataSnapshot? = task.result
+                    if (items != null) {
+                        for (item: DataSnapshot in items.children) {
+                            if (item.child("id").value.toString() == id){
+                                itemName = item.child("name").value.toString()
+                                Log.e("Error", "Found item: " + itemName)
+                                done = true
+                                break
+                            }
+                        }
+                    }
+                }
+                done = true
+            }
+            while (!done){
+
+            }
+            return itemName
         }
     }
 
