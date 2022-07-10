@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">inventory-app</string>
+    <string name="app_name">Heros Gitterbox</string>
     <string name="title_home">Boxen</string>
     <string name="title_qrscanner">QR</string>
     <string name="title_notifications">Ausrüstung</string>
@@ -45,6 +45,11 @@
     <string name="dialog_add">Hinzufügen</string>
     <string name="dialog_cancel">Abbrechen</string>
     <string name="dialog_invnum">Inventarnummer</string>
+
+    <string name="sheet_export_done">PDF ist bereit</string>
+    <string name="sheet_export_loading">PDF Erstellung läuft...</string>
+    <string name="sheet_export_save">Speichern</string>
+    <string name="sheet_export_share">Teilen</string>
 
     <string name="color_select_title">Farbe Wählen</string>
     <string name="edit_box_color">Farbmarkierung ändern</string>

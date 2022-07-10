@@ -1,23 +1,24 @@
 package com.thw.inventory_app.ui.box
 
-import android.R.attr.bitmap
-import android.app.Activity
+import android.Manifest
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.AlertDialog
-import android.graphics.Bitmap
+import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -26,13 +27,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.stfalcon.imageviewer.StfalconImageViewer
-import com.thw.inventory_app.BoxModel
-import com.thw.inventory_app.ContentItem
-import com.thw.inventory_app.R
-import com.thw.inventory_app.Utils
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.net.URI
+import com.thw.inventory_app.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -135,8 +130,53 @@ class BoxFragment : Fragment(){
         } else if (item.itemId == R.id.box_btn_delete) {
             showDeleteDialog()
             return true
+        } else if (item.itemId == R.id.box_btn_print) {
+            if (checkPermission()) {
+                var creator = BoxPdfCreator()
+                creator.createPdf(context, box_model, viewLifecycleOwner)
+            } else {
+                requestPermission();
+            }
+            return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+
+
+    private val requestPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // permission is granted
+            } else {
+                // handle permission denial
+                val activity = requireActivity()
+                activity. runOnUiThread {
+                    Toast.makeText(activity, "Datei Zugriff wird benötigt, um PDF Dokumente zu erzeugen und speichern",
+                        Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
+    private fun checkPermission(): Boolean {
+        // checking of permissions.
+        val permission1 =
+            ContextCompat.checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        val permission2 =
+            ContextCompat.checkSelfPermission(context!!, Manifest.permission.READ_EXTERNAL_STORAGE)
+        return permission1 == PackageManager.PERMISSION_GRANTED && permission2 == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermission() {
+        // requesting permissions if not provided.
+        val PERMISSION_REQUEST_CODE = 200
+        activity?.let {
+            ActivityCompat.requestPermissions(
+                it,
+                arrayOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE),
+                PERMISSION_REQUEST_CODE
+            )
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/box_btn_print"
+        android:icon="@drawable/ic_baseline_print_24"
+        android:title="Drucken"
+        app:showAsAction="always|collapseActionView"></item>
+    <item
         android:id="@+id/box_btn_edit"
         android:icon="@drawable/ic_baseline_edit_24"
         android:title="Bearbeiten"

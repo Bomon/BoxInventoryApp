@@ -12,7 +12,8 @@ dependencyResolutionManagement {
         mavenCentral()
         jcenter()
         maven { url "https://jitpack.io" }
+        maven { url "https://maven.andob.info/repository/open_source" }
     }
 }
-rootProject.name = "inventory-app"
+rootProject.name = "Heros Gitterbox"
 include ':app'
