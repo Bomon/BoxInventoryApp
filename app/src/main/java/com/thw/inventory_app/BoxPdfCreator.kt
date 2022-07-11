@@ -1,5 +1,6 @@
 package com.thw.inventory_app
 
+import android.animation.LayoutTransition
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
@@ -12,10 +13,13 @@ import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.FileProvider
 import androidx.lifecycle.LifecycleOwner
+import androidx.transition.TransitionManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
@@ -23,7 +27,6 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
-import com.google.zxing.qrcode.QRCodeWriter
 import com.lowagie.text.*
 import com.lowagie.text.pdf.PdfPCell
 import com.lowagie.text.pdf.PdfPTable
@@ -42,6 +45,7 @@ class BoxPdfCreator {
     lateinit var download_btn: MaterialButton
     lateinit var bottomSheetDialog: BottomSheetDialog
     lateinit var imageDoneView: ShapeableImageView
+    lateinit var sheetContainer: FrameLayout
 
     fun showExportSheet(context: Context) {
         bottomSheetDialog = BottomSheetDialog(context)
@@ -52,6 +56,7 @@ class BoxPdfCreator {
         share_btn = bottomSheetDialog.findViewById<MaterialButton>(R.id.sheet_export_share_btn)!!
         download_btn = bottomSheetDialog.findViewById<MaterialButton>(R.id.sheet_export_save_btn)!!
         imageDoneView = bottomSheetDialog.findViewById<ShapeableImageView>(R.id.loading_done)!!
+        sheetContainer = bottomSheetDialog.findViewById<FrameLayout>(R.id.standard_bottom_sheet)!!
 
         bottomSheetDialog.show()
     }
@@ -87,7 +92,13 @@ class BoxPdfCreator {
 
                     mHandler.post(Runnable {
                         Log.e("Error", "Handler Response")
+
+                        val transition = LayoutTransition()
+                        transition.setAnimateParentHierarchy(false)
+                        sheetContainer.setLayoutTransition(transition)
+
                         loadingView.visibility = View.GONE
+                        //TransitionManager.beginDelayedTransition(sheetContainer);
                         doneView.visibility = View.VISIBLE
                     })
                 }

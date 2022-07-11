@@ -3,6 +3,7 @@
 
     <array name="demo_colors">
         <item>@color/md_theme_light_primary</item>
+        <item>@color/default_box_color</item>
         <item>@color/md_theme_light_onPrimary</item>
         <item>@color/md_theme_light_primaryContainer</item>
         <item>@color/md_theme_light_onPrimaryContainer</item>

@@ -131,74 +131,7 @@ class BoxEditFragment : FragmentCallback, Fragment() {
     fun applyChanges(): Boolean {
         val fieldsOk: Boolean = checkFields()
         if (!fieldsOk) return false
-/*
-        Log.e("Error", "Items to add: " + items_to_add.toString())
-        Log.e("Error", "Items to delete: " + items_to_delete.toString())
-        for ((temp_key, data) in items_to_add) {
-            // add to boxes
-            val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
-            boxesRef.get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val boxes: DataSnapshot? = task.result
-                    if (boxes != null) {
-                        for (box: DataSnapshot in boxes.children) {
-                            val id = box.child("id").value.toString()
-                            if (id == box_model.id) {
-                                val boxKey: String = box.key.toString()
-                                var new_item = ContentItem(data.amount, data.item_id, data.invnum, data.status)
-                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").push().setValue(new_item)
-                                break
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
-        // remove items
-        for (item_card: ItemCardUpdate in items_to_delete){
-            // remove from boxes
-            val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
-            boxesRef.get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val boxes: DataSnapshot? = task.result
-                    if (boxes != null) {
-                        for (box: DataSnapshot in boxes.children) {
-                            val id = box.child("id").value.toString()
-                            if (id == box_model.id) {
-                                Log.e("Error", "Found box to delete in")
-                                val boxKey: String = box.key.toString()
-                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").child(item_card.item_key).removeValue()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        Log.e("Error", "values to update: " + items_to_update.toString())
-        // update remaining entries
-        items_to_update.forEach { entry ->
-            val update = entry.value
-            val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
-            boxesRef.get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val boxes: DataSnapshot? = task.result
-                    if (boxes != null) {
-                        for (box: DataSnapshot in boxes.children) {
-                            val id = box.child("id").value.toString()
-                            if (id == box_model.id) {
-                                val boxKey: String = box.key.toString()
-                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").child(update.item_key).child("amount").setValue(update.amount)
-                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").child(update.item_key).child("invnum").setValue(update.invnum)
-                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").child(update.item_key).child("status").setValue(update.status)
-                                break
-                            }
-                        }
-                    }
-                }
-            }
-        }
-*/
         val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {

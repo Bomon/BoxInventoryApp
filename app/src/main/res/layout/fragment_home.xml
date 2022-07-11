@@ -13,8 +13,6 @@
         android:id="@+id/RV_home"
         android:layout_width="match_parent"
         android:transitionGroup="true"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
         android:layout_height="match_parent" />
 
 </RelativeLayout>
