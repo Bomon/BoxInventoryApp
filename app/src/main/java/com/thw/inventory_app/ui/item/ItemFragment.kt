@@ -1,6 +1,7 @@
 package com.thw.inventory_app.ui.item
 
 import android.app.AlertDialog
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -9,15 +10,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.FirebaseAuth
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.firebase.database.*
+import com.stfalcon.imageviewer.StfalconImageViewer
 import com.thw.inventory_app.*
-import com.thw.inventory_app.ContentItem
 import com.thw.inventory_app.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -38,7 +38,7 @@ class ItemFragment : Fragment() {
 
     lateinit var item_name_field: TextView
     lateinit var item_description_field: TextView
-    lateinit var item_tags_field: TextView
+    lateinit var item_tags_field: ChipGroup
     lateinit var item_image_field: ImageView
 
     lateinit var previous_action_bar_title: String
@@ -144,14 +144,46 @@ class ItemFragment : Fragment() {
         val item_tags = item_model.tags
         val item_image = item_model.image
 
+        if (item_description == ""){
+            item_description_field.visibility = View.GONE
+        } else {
+            item_description_field.visibility = View.VISIBLE
+        }
+
+       // if (item_tags == ""){
+        //    item_tags_field.visibility = View.GONE
+       // }
+
         item_name_field.text = item_name
         item_description_field.text = item_description
-        item_tags_field.text = item_tags
+
+        item_tags_field.removeAllViews()
+        if(item_tags != ""){
+            for (tag in item_tags.split(";")){
+                if (tag != ""){
+                    val chip = Chip(context)
+                    chip.text = tag
+                    item_tags_field.addView(chip)
+                }
+            }
+        }
 
         if (item_image == "") {
             Glide.with(this).load(R.drawable.ic_placeholder).into(item_image_field)
         } else {
             item_image_field.setImageBitmap(Utils.StringToBitMap(item_image))
+        }
+
+
+        item_image_field.setOnClickListener {
+            val drawables: ArrayList<Drawable> = ArrayList()
+            drawables.add(item_image_field.drawable)
+
+            StfalconImageViewer.Builder(
+                context, drawables
+            ) { imageView, image -> Glide.with(it.context).load(image).into(imageView) }
+                .withTransitionFrom(item_image_field)
+                .show(true)
         }
 
         (activity as AppCompatActivity).supportActionBar?.title = item_name
@@ -181,7 +213,7 @@ class ItemFragment : Fragment() {
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.item_summary_containing_boxes) as RecyclerView
-        containing_box_adapter = ContainingBoxAdapter(boxList, false)
+        containing_box_adapter = ContainingBoxAdapter(boxList, item_model.id, false)
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = containing_box_adapter
 

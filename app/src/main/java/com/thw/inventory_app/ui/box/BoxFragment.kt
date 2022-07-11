@@ -218,8 +218,14 @@ class BoxFragment : Fragment(){
 
         if(box_description == "")
             box_description_field.visibility = View.GONE
+        else
+            box_description_field.visibility = View.VISIBLE
+
         if(box_status == "")
             box_status_field.visibility = View.GONE
+        else
+            box_status_field.visibility = View.VISIBLE
+
         //box_notes_field.text = box_notes
         box_location_field.text = box_location
 

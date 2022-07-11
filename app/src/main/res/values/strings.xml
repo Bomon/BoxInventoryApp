@@ -50,6 +50,13 @@
     <string name="sheet_export_loading">PDF Erstellung läuft...</string>
     <string name="sheet_export_save">Speichern</string>
     <string name="sheet_export_share">Teilen</string>
+    <string name="login_btn">Login</string>
+    <string name="password_hint">Passwort</string>
+    <string name="user_hint">Benutzername</string>
+    <string name="open">Öffnen</string>
+    <string name="close">Schließen</string>
+    <string name="containting_box">Beinhaltet in:</string>
+    <string name="invnums_label">Inventarnummern:</string>
 
     <string name="color_select_title">Farbe Wählen</string>
     <string name="edit_box_color">Farbmarkierung ändern</string>

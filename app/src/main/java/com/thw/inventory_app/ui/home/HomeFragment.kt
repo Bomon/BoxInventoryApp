@@ -37,8 +37,8 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
         exitTransition = MaterialContainerTransform()
         reenterTransition = MaterialContainerTransform()
-        val fbc: FirebaseConnector = FirebaseConnector()
-        fbc.initConnection()
+        //val fbc: FirebaseConnector = FirebaseConnector()
+        //fbc.initConnection()
         //setExitTransition(MaterialElevationScale(false));
         //setReenterTransition(MaterialElevationScale(true));
         //exitTransition = Hold()
@@ -166,6 +166,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                 for (box: DataSnapshot in boxes.children){
                     val boxModel = Utils.readBoxModelFromDataSnapshot(box)
                     boxList.add(boxModel)
+                    Log.e("Error", "Adding box: " + boxModel.name)
                 }
                 adapter.setFilter(boxList)
             }

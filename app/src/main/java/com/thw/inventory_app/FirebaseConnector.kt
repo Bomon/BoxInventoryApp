@@ -1,6 +1,9 @@
 package com.thw.inventory_app
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
+import androidx.core.content.ContextCompat.startActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -32,27 +35,6 @@ class FirebaseConnector {
             FirebaseConnector.persistenceWasEnabled = true
         }
         mRef = mDatabase.reference
-
-        val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
-        boxesRef.get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val boxes: DataSnapshot? = task.result
-                if (boxes != null) {
-                    for (box: DataSnapshot in boxes.children) {
-                        val id: String = box.child("id").value.toString()
-                        Log.e("Error", "Box: " + id)
-                    }
-                }
-            }
-        }
-    }
-
-    fun getDatabase(): FirebaseDatabase {
-        return mDatabase
-    }
-
-    fun getReference(): DatabaseReference {
-        return mRef
     }
 
     fun getAllLocations(): List<String> {

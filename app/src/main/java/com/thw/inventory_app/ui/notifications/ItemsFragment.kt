@@ -33,10 +33,10 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_items, menu)
-        val item = menu.findItem(R.id.items_btn_search)
-        val searchView: SearchView = MenuItemCompat.getActionView(item) as SearchView
+        val itemBtn = menu.findItem(R.id.items_btn_search)
+        val searchView: SearchView = MenuItemCompat.getActionView(itemBtn) as SearchView
         searchView.setOnQueryTextListener(this)
-        item.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+        itemBtn.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 // Do something when collapsed
                 adapter.setFilter(itemList)

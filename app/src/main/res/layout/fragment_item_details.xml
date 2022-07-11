@@ -1,80 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<com.google.android.material.card.MaterialCardView xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/box_card"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.notifications.ItemsFragment">
+    android:layout_margin="8dp"
+    android:clickable="true"
+    style="?attr/materialCardViewElevatedStyle"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ScrollView xmlns:tools="http://schemas.android.com/tools"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:background="@color/black"
-        tools:ignore="RtlHardcoded">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/item_summary_name"
-                style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="0dp"
-                android:text="This is the name" />
-
-            <TextView
-                android:id="@+id/item_summary_description"
-                style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="0dp"
-                android:text="This is the description" />
-
-            <TextView
-                android:id="@+id/item_summary_tags"
-                style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="0dp"
-                android:text="This is the tags" />
-
+            <!-- Media -->
             <ImageView
                 android:id="@+id/item_summary_image"
-                android:src="@drawable/ic_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="194dp"
+                app:srcCompat="@drawable/ic_placeholder"
+                android:contentDescription="@string/content_description_media"
+                />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.4"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="5dp"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <TextView
-                style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="0dp"
-                android:text="Enthalten in Boxen:" />
+                <TextView
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/item_summary_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/item_summary_containing_boxes"
+                <TextView
+                    android:id="@+id/item_summary_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/secondary_text"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/item_summary_tags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:chipSpacingHorizontal="6dp"
+                    app:chipSpacingVertical="-8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/box_color"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
+
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider"
+                app:dividerInsetStart="8dp"
+                app:dividerInsetEnd="8dp"
+                android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
-                android:layout_height="1000dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="0dp"
-                android:layout_marginRight="10dp" />
+                android:layout_height="wrap_content"/>
+
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider2"
+                app:dividerInsetStart="8dp"
+                app:dividerInsetEnd="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="0dp">
+
+                <TextView
+                    android:id="@+id/item_summary_content_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/containting_box"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textColor="?android:attr/textColorSecondary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/item_summary_containing_boxes"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="16dp"
+                        android:nestedScrollingEnabled="false" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </ScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

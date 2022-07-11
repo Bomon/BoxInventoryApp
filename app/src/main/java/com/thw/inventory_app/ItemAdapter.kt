@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.view.menu.MenuView
 import androidx.core.view.marginBottom
@@ -47,8 +48,9 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
         holder.item_name.text = mItemList[position].name
         //holder.item_tags.description = mItemList[position].description
 
-
+        holder.item_tags.removeAllViews()
         if(mItemList[position].tags != ""){
+            holder.item_tags_container.visibility = View.VISIBLE
             for (tag in mItemList[position].tags.split(";")){
                 if (tag != ""){
                     val chip = Chip(context)
@@ -56,12 +58,16 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
                     holder.item_tags.addView(chip)
                 }
             }
+        } else {
+            holder.item_tags_container.visibility = View.GONE
         }
 
         //holder.item_description.text = mItemList[position].description
-        val img = Utils.StringToBitMap(mItemList[position].image)
-        if (img != null){
-            holder.item_image.setImageBitmap(img)
+        if (mItemList[position].image != ""){
+            val img = Utils.StringToBitMap(mItemList[position].image)
+            if (img != null){
+                holder.item_image.setImageBitmap(img)
+            }
         }
         holder.item_image.transitionName = "itemTransition" + position
         Utils.setRecyclerViewCardAnimation(holder.itemView, context)
@@ -69,10 +75,11 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
 
     inner class ItemViewHolder(itemView: View, var mListener: ItemAdapter.OnItemClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
-        var item_name: TextView = itemView.findViewById<TextView>(R.id.item_name)
+        var item_name: TextView = itemView.findViewById<TextView>(R.id.card_item_name)
         //var item_description: TextView = itemView.findViewById<TextView>(R.id.item_description)
-        var item_image: ImageView = itemView.findViewById<ImageView>(R.id.item_img)
-        val item_tags: ChipGroup = itemView.findViewById(R.id.item_tags)
+        var item_image: ImageView = itemView.findViewById<ImageView>(R.id.card_item_img)
+        val item_tags: ChipGroup = itemView.findViewById<ChipGroup>(R.id.card_item_tags)
+        val item_tags_container: LinearLayout = itemView.findViewById<LinearLayout>(R.id.card_item_tags_container)
 
         init {
             itemView.setOnClickListener(this)
@@ -90,7 +97,6 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
         mItemList.clear()
         mItemList.addAll(itemList)
         this.notifyDataSetChanged()
-
     }
 
 
