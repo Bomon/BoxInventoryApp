@@ -9,17 +9,95 @@
         android:id="@+id/navigation_home"
         android:name="com.thw.inventory_app.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_boxFragment"
+            app:destination="@id/boxFragment" />
+        <action
+            android:id="@+id/action_navigation_home_to_boxEditFragment"
+            app:destination="@id/boxEditFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_qrscanner"
         android:name="com.thw.inventory_app.ui.qrscanner.QRScannerFragment"
         android:label="@string/title_qrscanner"
-        tools:layout="@layout/fragment_qrscanner" />
+        tools:layout="@layout/fragment_qrscanner" >
+        <action
+            android:id="@+id/action_navigation_qrscanner_to_boxFragment"
+            app:destination="@id/boxFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_items"
         android:name="com.thw.inventory_app.ui.notifications.ItemsFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_items" />
+        tools:layout="@layout/fragment_items" >
+        <action
+            android:id="@+id/action_navigation_items_to_itemFragment"
+            app:destination="@id/itemFragment" />
+        <action
+            android:id="@+id/action_navigation_items_to_itemEditFragment"
+            app:destination="@id/itemEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/boxFragment"
+        android:name="com.thw.inventory_app.ui.box.BoxFragment"
+        android:label="BoxFragment" >
+        <action
+            android:id="@+id/action_boxFragment_to_boxEditFragment"
+            app:destination="@id/boxEditFragment" />
+        <argument
+            android:name="boxModel"
+            app:argType="com.thw.inventory_app.BoxModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/boxEditFragment"
+        android:name="com.thw.inventory_app.ui.box.BoxEditFragment"
+        android:label="BoxEditFragment" >
+        <action
+            android:id="@+id/action_boxEditFragment_to_itemsAddFragment"
+            app:destination="@id/itemsAddFragment" />
+        <argument
+            android:name="boxModel"
+            app:argType="com.thw.inventory_app.BoxModel" />
+        <argument
+            android:name="items"
+            app:argType="com.thw.inventory_app.ui.box.BoxItemModel[]" />
+        <argument
+            android:name="isNewBox"
+            app:argType="boolean" />
+    </fragment>
+    <fragment
+        android:id="@+id/itemFragment"
+        android:name="com.thw.inventory_app.ui.item.ItemFragment"
+        android:label="ItemFragment" >
+        <action
+            android:id="@+id/action_itemFragment_to_itemEditFragment"
+            app:destination="@id/itemEditFragment" />
+        <action
+            android:id="@+id/action_itemFragment_to_boxFragment"
+            app:destination="@id/boxFragment" />
+        <argument
+            android:name="itemModel"
+            app:argType="com.thw.inventory_app.ItemModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/itemEditFragment"
+        android:name="com.thw.inventory_app.ui.item.ItemEditFragment"
+        android:label="ItemEditFragment" />
+        <argument
+            android:name="itemModel"
+            app:argType="com.thw.inventory_app.ItemModel" />
+        <argument
+            android:name="isNewBox"
+            app:argType="boolean" />
+    <fragment
+        android:id="@+id/itemsAddFragment"
+        android:name="com.thw.inventory_app.ui.box.ItemsAddFragment"
+        android:label="ItemsAddFragment" >
+        <action
+            android:id="@+id/action_itemsAddFragment_to_itemEditFragment"
+            app:destination="@id/itemEditFragment" />
+    </fragment>
 </navigation>

@@ -3,8 +3,6 @@ package com.thw.inventory_app.ui.box
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.drawable.VectorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
@@ -13,14 +11,14 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.EditorInfo
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.view.allViews
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -29,7 +27,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.database.DataSnapshot
@@ -46,7 +43,7 @@ private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 interface FragmentCallback {
-    fun onDataSent(yourData: String?)
+    fun passSelectedItem(yourData: String?)
 }
 
 /**
@@ -55,7 +52,7 @@ interface FragmentCallback {
  * create an instance of this fragment.
  */
 //class BoxEditFragment : FragmentCallback, Fragment(), BoxItemEditAdapter.Callbacks {
-class BoxEditFragment : FragmentCallback, Fragment() {
+class BoxEditFragment() : FragmentCallback, Fragment() {
 
     private lateinit var box_model: BoxModel
 
@@ -196,15 +193,11 @@ class BoxEditFragment : FragmentCallback, Fragment() {
                 createBox()
             }
             val status: Boolean = applyChanges()
-            if (status) parentFragmentManager.popBackStack()
-        }
 
-        //builder.setNegativeButton("Nein") { dialog, which ->
-        //    items_to_add.clear()
-        //    items_to_update.clear()
-        //    items_to_delete.clear()
-        //    parentFragmentManager.popBackStack()
-        //}
+            val navController: NavController = Navigation.findNavController(view!!)
+            navController.navigateUp()
+            //if (status) parentFragmentManager.popBackStack()
+        }
 
         builder.setNeutralButton("Abbrechen") { dialog, which ->
         }
@@ -217,10 +210,10 @@ class BoxEditFragment : FragmentCallback, Fragment() {
         //builder.setMessage("Das ist ein Untertitel")
 
         builder.setPositiveButton("Ja") { dialog, which ->
-            //items_to_add.clear()
-            //items_to_update.clear()
-            //items_to_delete.clear()
-            parentFragmentManager.popBackStack()
+
+            val navController: NavController = Navigation.findNavController(view!!)
+            navController.navigateUp()
+            //parentFragmentManager.popBackStack()
         }
 
         builder.setNegativeButton("Nein") { dialog, which ->
@@ -240,10 +233,46 @@ class BoxEditFragment : FragmentCallback, Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            val builder = MaterialAlertDialogBuilder(requireContext())
+            builder.setTitle("Änderungen Verwerfen?")
+            //builder.setMessage("Das ist ein Untertitel")
 
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-            showDismissDialog()
+            builder.setPositiveButton("Ja") { dialog, which ->
+                val navController: NavController = Navigation.findNavController(view!!)
+                navController.navigateUp()
+                //findNavController().popBackStack()
+            }
+
+            builder.setNegativeButton("Nein") { dialog, which ->
+            }
+            builder.show()
+            // Now actually go back()
         }
+        val callback: OnBackPressedCallback = object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                Log.e("Error", "Back was pressed")
+                val builder = MaterialAlertDialogBuilder(requireContext())
+                builder.setTitle("Änderungen Verwerfen?")
+                //builder.setMessage("Das ist ein Untertitel")
+
+                builder.setPositiveButton("Ja") { dialog, which ->
+                    setEnabled(false); //this is important line
+                    requireActivity().onBackPressed();
+                }
+
+                builder.setNegativeButton("Nein") { dialog, which ->
+                    setEnabled(true)
+                }
+                builder.show()
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+
+        //val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+        //    Log.e("Error", "Back was pressed")
+        //    showDismissDialog()
+        //}
 
 
         val builder = StrictMode.VmPolicy.Builder()
@@ -282,6 +311,14 @@ class BoxEditFragment : FragmentCallback, Fragment() {
         box_edit_status_chips.addView(chip)
         chip.setOnCloseIconClickListener {
             box_edit_status_chips.removeView(chip as View)
+        }
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val navController: NavController = Navigation.findNavController(view!!)
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>("item_id")?.observe(
+            viewLifecycleOwner) { result ->
+            Log.e("Error", "Received from prev: " + result )
+            passSelectedItem(result)
         }
     }
 
@@ -359,8 +396,9 @@ class BoxEditFragment : FragmentCallback, Fragment() {
         }
 
         // Get the arguments from the caller fragment/activity
-        box_model = arguments?.getSerializable("model") as BoxModel
-        itemList = arguments?.getSerializable("items") as ArrayList<BoxItemModel>
+        box_model = arguments?.getSerializable("boxModel") as BoxModel
+        var itemListArray: Array<BoxItemModel> = arguments?.getSerializable("items") as Array<BoxItemModel>
+        itemList = itemListArray.toCollection(ArrayList())
         is_new_box = arguments?.getSerializable("isNewBox") as Boolean
 
         box_edit_name_field.setText(box_model.name)
@@ -380,7 +418,7 @@ class BoxEditFragment : FragmentCallback, Fragment() {
 
 
         if (box_model.image == "") {
-            Glide.with(this).load(R.drawable.ic_placeholder).into(box_edit_image_field)
+            Glide.with(this).load(R.drawable.placeholder_with_bg).into(box_edit_image_field)
         } else {
             box_edit_image_field.setImageBitmap(Utils.StringToBitMap(box_model.image))
         }
@@ -403,16 +441,13 @@ class BoxEditFragment : FragmentCallback, Fragment() {
                 if (view != null) {
                     val itemAddFragment: ItemsAddFragment = ItemsAddFragment.newInstance(box_model.id)
                     itemAddFragment.setFragmentCallback(this_frag_callback)
-                    val context = v?.getContext()
 
-
-                    Utils.pushFragment(itemAddFragment, requireContext(), "itemAddFragment")
-                    //val transaction: FragmentTransaction =
-                    //    (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                    //transaction.replace(R.id.nav_host_fragment_activity_main, itemAddFragment)
-                    //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    //transaction.addToBackStack("test")
-                    //transaction.commit()
+                    val navController: NavController = Navigation.findNavController(view!!)
+                    val bundle = Bundle()
+                    val itemModel: ItemModel = ItemModel("", "", "", "", "")
+                    bundle.putSerializable("itemModel", itemModel)
+                    bundle.putSerializable("isNewBox", true)
+                    navController.navigate(R.id.action_boxEditFragment_to_itemsAddFragment, bundle)
                 }
             }
         })
@@ -456,7 +491,7 @@ class BoxEditFragment : FragmentCallback, Fragment() {
             }
     }
 
-    override fun onDataSent(item_id: String?) {
+    override fun passSelectedItem(item_id: String?) {
 
         var temp_key = DateTimeFormatter.ISO_INSTANT.format(Instant.now()).toString()
         val itemsRef = FirebaseDatabase.getInstance().reference.child("items")
@@ -485,23 +520,4 @@ class BoxEditFragment : FragmentCallback, Fragment() {
         }
         //addItem(item_id.toString())
     }
-
-    /*override fun handleItemCardUpdate(data: ItemCardUpdate) {
-        if (data.delete_index != -1) {
-            itemList.removeAt(data.delete_index)
-            box_item_edit_adapter.removeFromItemList(itemList, data.delete_index)
-            if (data.item_key in new_keys) {
-                items_to_add.remove(data.item_key)
-            } else {
-                items_to_delete.add(data)
-            }
-            items_to_update.remove(data.item_key)
-        } else {
-            if (data.item_key in new_keys){
-                items_to_add[data.item_key] = data
-            } else {
-                items_to_update[data.item_key] = data
-            }
-        }
-    }*/
 }

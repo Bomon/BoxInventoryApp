@@ -9,6 +9,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -19,10 +21,14 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
@@ -53,6 +59,7 @@ class ItemEditFragment : Fragment() {
     private lateinit var item_edit_name_field: EditText
     private lateinit var item_edit_description_field: EditText
     private lateinit var item_edit_tags_field: EditText
+    private lateinit var item_edit_tags_chips: ChipGroup
 
     private var is_new_item: Boolean = false
 
@@ -114,13 +121,17 @@ class ItemEditFragment : Fragment() {
                 createItem()
             }
             applyChanges()
-            parentFragmentManager.popBackStack()
+            val navController: NavController = Navigation.findNavController(view!!)
+            navController.navigateUp()
+            //parentFragmentManager.popBackStack()
         }
 
         builder.setNegativeButton("Nein") { dialog, which ->
             Toast.makeText(requireContext(),
                 "no", Toast.LENGTH_SHORT).show()
-            parentFragmentManager.popBackStack()
+            val navController: NavController = Navigation.findNavController(view!!)
+            navController.navigateUp()
+            //parentFragmentManager.popBackStack()
         }
 
         builder.setNeutralButton("Abbrechen") { dialog, which ->
@@ -138,7 +149,9 @@ class ItemEditFragment : Fragment() {
         builder.setPositiveButton("Ja") { dialog, which ->
             Toast.makeText(requireContext(),
                 "yes", Toast.LENGTH_SHORT).show()
-            parentFragmentManager.popBackStack()
+            val navController: NavController = Navigation.findNavController(view!!)
+            navController.navigateUp()
+            //parentFragmentManager.popBackStack()
         }
 
         builder.setNegativeButton("Nein") { dialog, which ->
@@ -207,21 +220,52 @@ class ItemEditFragment : Fragment() {
         item_edit_description_field = v.findViewById(R.id.item_edit_description)
         item_edit_tags_field = v.findViewById(R.id.item_edit_tags)
         item_edit_image_field = v.findViewById(R.id.item_edit_image)
+        item_edit_tags_chips = v.findViewById(R.id.item_edit_tags_chips)
 
         // Get the arguments from the caller fragment/activity
-        item_model = arguments?.getSerializable("model") as ItemModel
+        item_model = arguments?.getSerializable("itemModel") as ItemModel
         is_new_item = arguments?.getSerializable("isNewBox") as Boolean
 
         item_edit_name_field.setText(item_model.name)
         item_edit_description_field.setText(item_model.description)
-        item_edit_tags_field.setText(item_model.tags)
         if (item_model.image == "") {
-            Glide.with(this).load(R.drawable.ic_placeholder).into(item_edit_image_field)
+            Glide.with(this).load(R.drawable.placeholder_with_bg).into(item_edit_image_field)
         } else {
             item_edit_image_field.setImageBitmap(Utils.StringToBitMap(item_model.image))
         }
 
+        for (chip in item_model.tags.split(";")){
+            if (chip != ""){
+                addChipToGroup(chip)
+            }
+        }
+
         val thisFragment = this
+
+        val confirmationChars = listOf(";", "\n")
+        item_edit_tags_field.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val text = s.toString()
+                if (text.isNotEmpty() && (text.last().toString() in confirmationChars))
+                    item_edit_tags_field.setText("")
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!s.isNullOrEmpty()) {
+                    if (s.length > 1 && s.last().toString() in confirmationChars) {
+                        var text = s.toString()
+                        for (cf in confirmationChars) {
+                            text = text.replace(cf, "")
+                        }
+                        addChipToGroup(text)
+                        item_edit_tags_field.setText("")
+                    }
+                }
+            }
+        })
 
         item_edit_image_field.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
@@ -233,6 +277,18 @@ class ItemEditFragment : Fragment() {
         })
 
         return v
+    }
+
+    private fun addChipToGroup(chipText: String) {
+        val chip = Chip(context)
+        chip.text = chipText
+        chip.isCloseIconVisible = true
+        chip.isClickable = true
+        chip.isCheckable = false
+        item_edit_tags_chips.addView(chip)
+        chip.setOnCloseIconClickListener {
+            item_edit_tags_chips.removeView(chip as View)
+        }
     }
 
     override fun onDestroyView() {

@@ -11,12 +11,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.get
 import androidx.core.view.marginBottom
 import androidx.core.view.marginTop
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
-class BoxAdapter(var content: ArrayList<BoxModel>) : RecyclerView.Adapter<BoxAdapter.BoxViewHolder>() {
+class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = false) : RecyclerView.Adapter<BoxAdapter.BoxViewHolder>() {
 
     lateinit var context: Context
     private var mBoxList: ArrayList<BoxModel> = ArrayList()
@@ -32,7 +33,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>) : RecyclerView.Adapter<BoxAda
         context = parent.context
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.card_box, parent, false)
-        return BoxViewHolder(view, mListener)
+        return BoxViewHolder(view, mListener, compactView)
     }
 
     override fun getItemCount(): Int {
@@ -63,12 +64,9 @@ class BoxAdapter(var content: ArrayList<BoxModel>) : RecyclerView.Adapter<BoxAda
                 }
             }
         }
-
-        holder.box_container.transitionName = "boxTransition" + position
-        Utils.setRecyclerViewCardAnimation(holder.itemView, context)
     }
 
-    inner class BoxViewHolder(itemView: View, var mListener: OnBoxClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
+    inner class BoxViewHolder(itemView: View, var mListener: OnBoxClickListener, var compactView: Boolean) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
         var box_id: TextView = itemView.findViewById<TextView>(R.id.box_id)
         var box_name: TextView = itemView.findViewById<TextView>(R.id.box_name)
@@ -80,11 +78,16 @@ class BoxAdapter(var content: ArrayList<BoxModel>) : RecyclerView.Adapter<BoxAda
 
         init {
             itemView.setOnClickListener(this)
+
+            if (compactView == true) {
+                box_status_tags.visibility = View.GONE
+            }
         }
 
         override fun onClick(view: View?) {
+            Log.e("Error", "Nav click")
             if(mListener != null){
-                mListener.setOnCLickListener(adapterPosition, box_container)
+                mListener.onBoxClicked(mBoxList[adapterPosition], box_container)
             }
             true
         }
@@ -98,7 +101,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>) : RecyclerView.Adapter<BoxAda
 
 
     interface OnBoxClickListener{
-        fun setOnCLickListener(position: Int, view: View)
+        fun onBoxClicked(box: BoxModel, view: View)
     }
 
     fun setOnBoxClickListener(mListener: OnBoxClickListener) {

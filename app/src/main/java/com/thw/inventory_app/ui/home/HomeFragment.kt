@@ -1,6 +1,5 @@
 package com.thw.inventory_app.ui.home
 
-import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
 import android.transition.*
@@ -10,13 +9,11 @@ import androidx.annotation.Nullable
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
-import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.MaterialContainerTransform
-import com.google.android.material.transition.MaterialSharedAxis
-import com.google.android.material.transition.platform.MaterialFadeThrough
 import com.google.firebase.database.*
 import com.thw.inventory_app.*
 import com.thw.inventory_app.R
@@ -31,18 +28,6 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     lateinit var adapter: BoxAdapter
     lateinit var rv: RecyclerView
     lateinit var firebase_listener: ValueEventListener
-
-    override fun onCreate(@Nullable savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        exitTransition = MaterialContainerTransform()
-        reenterTransition = MaterialContainerTransform()
-        //val fbc: FirebaseConnector = FirebaseConnector()
-        //fbc.initConnection()
-        //setExitTransition(MaterialElevationScale(false));
-        //setReenterTransition(MaterialElevationScale(true));
-        //exitTransition = Hold()
-    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_home, menu)
@@ -71,9 +56,13 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
             R.id.home_btn_add -> {
                 if (view != null) {
+                    val bundle = Bundle()
                     val boxModel: BoxModel = BoxModel("", "", "", "", "", "", "", "", R.color.default_box_color, "", ArrayList<ContentItem>())
-                    val editFragment: Fragment = BoxEditFragment.newInstance(boxModel, ArrayList<BoxItemModel>(), true)
-                    Utils.pushFragment(editFragment, requireContext(), "boxEditFragment")
+                    bundle.putSerializable("boxModel", boxModel)
+                    bundle.putSerializable("items", ArrayList<BoxItemModel>().toTypedArray())
+                    bundle.putSerializable("isNewBox", true)
+                    val navController: NavController = Navigation.findNavController(view!!)
+                    navController.navigate(R.id.action_navigation_home_to_boxEditFragment, bundle)
                 }
                 true
             }
@@ -90,11 +79,13 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_home, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_home) as RecyclerView
-
         adapter = BoxAdapter(boxList)
         adapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
-            override fun setOnCLickListener(position: Int, view: View) {
-                handleRecyclerViewClick(position, view)
+            override fun onBoxClicked(box: BoxModel, view: View) {
+                val navController: NavController = Navigation.findNavController(view)
+                val bundle = Bundle()
+                bundle.putSerializable("boxModel", box)
+                navController.navigate(R.id.action_navigation_home_to_boxFragment, bundle)
             }
         })
         recyclerview.layoutManager = LinearLayoutManager(activity)
@@ -105,56 +96,10 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         return view
     }
 
-    fun handleRecyclerViewClick(position: Int, view: View) {
-
-        //exitTransition = MaterialElevationScale(false).apply {
-        //    duration = 5000
-        //}
-        //reenterTransition = MaterialElevationScale(true).apply {
-        //    duration = 5000
-        //}
-
-        var transitionName: String = view.transitionName.toString()
-        val newFragment: BoxFragment = BoxFragment.newInstance(boxList[position], position)
-        //newFragment.sharedElementEnterTransition = getTransition()
-        //newFragment.sharedElementReturnTransition = getTransition()
-
-        newFragment.setSharedElementEnterTransition(MaterialContainerTransform().apply {
-            drawingViewId = R.id.fragment_home
-            scrimColor = Color.TRANSPARENT
-        })
-
-
-        parentFragmentManager
-            .beginTransaction()
-            //.setCustomAnimations(R.anim.slide_in, R.anim.fade_out, R.anim.fade_in, R.anim.slide_out)
-            .setReorderingAllowed(true)
-            .addSharedElement(view, transitionName)
-            .replace(R.id.fragment_home, newFragment)
-            .addToBackStack("")
-            .commit()
-    }
-
-    private fun getTransition(): Transition? {
-        val set = TransitionSet()
-        set.setOrdering(TransitionSet.ORDERING_TOGETHER)
-        set.addTransition(ChangeBounds())
-        set.addTransition(ChangeImageTransform())
-        set.addTransition(ChangeTransform())
-        return set
-    }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        //required to animate correctly when returned from detail
-        //postponeEnterTransition()
-        //(requireView().parent as ViewGroup).viewTreeObserver
-        //    .addOnPreDrawListener {
-        //        startPostponedEnterTransition()
-        //        true
-        //    }
     }
 
     fun initFirebase() {

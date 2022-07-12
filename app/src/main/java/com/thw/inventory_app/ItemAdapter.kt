@@ -1,22 +1,15 @@
 package com.thw.inventory_app
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.view.menu.MenuView
-import androidx.core.view.marginBottom
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.thw.inventory_app.ui.item.ItemFragment
 
 
 class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
@@ -29,6 +22,15 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
 
     init {
         setFilter(content)
+        setHasStableIds(true)
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -45,7 +47,7 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         this.holder = holder
-        holder.item_name.text = mItemList[position].name
+        holder.item_name.text = mItemList[holder.adapterPosition].name
         //holder.item_tags.description = mItemList[position].description
 
         holder.item_tags.removeAllViews()
@@ -87,7 +89,7 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
 
         override fun onClick(view: View?) {
             if(mListener != null){
-                mListener.setOnCLickListener(adapterPosition, item_image)
+                mListener.onItemClicked(mItemList[adapterPosition], item_image)
             }
             true
         }
@@ -101,7 +103,7 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
 
 
     interface OnItemClickListener{
-        fun setOnCLickListener(position: Int, view: View)
+        fun onItemClicked(item: ItemModel, view: View)
     }
 
     fun setOnItemClickListener(mListener: OnItemClickListener) {

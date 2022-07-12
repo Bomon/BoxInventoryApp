@@ -55,8 +55,17 @@
     <string name="user_hint">Benutzername</string>
     <string name="open">Öffnen</string>
     <string name="close">Schließen</string>
-    <string name="containting_box">Beinhaltet in:</string>
+    <string name="containting_box">Enthalten in:</string>
+    <string name="containting_box_empty">In keiner Box enthalten</string>
     <string name="invnums_label">Inventarnummern:</string>
+
+
+    <string name="item_edit_tags_title">Tags</string>
+    <string name="item_edit_tags">Zum Hinzufügen ; oder Enter drücken</string>
+    <string name="item_edit_description">Beschreibung / Notizen</string>
+    <string name="item_edit_name">Bezeichnung</string>
+    <string name="item_edit_title">Allgemeine Daten</string>
+    <string name="item_edit_image">Foto</string>
 
     <string name="color_select_title">Farbe Wählen</string>
     <string name="edit_box_color">Farbmarkierung ändern</string>

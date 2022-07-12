@@ -9,6 +9,7 @@
     tools:context=".ui.notifications.ItemsFragment">
 
     <ScrollView
+        android:id="@+id/box_edit_card_scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"

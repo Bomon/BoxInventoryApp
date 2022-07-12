@@ -17,6 +17,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -102,7 +106,10 @@ class BoxFragment : Fragment(){
             Toast.makeText(requireContext(),
                 "yes", Toast.LENGTH_SHORT).show()
             deleteBox()
-            parentFragmentManager.popBackStack()
+            val navController: NavController = Navigation.findNavController(view!!)
+            navController.navigateUp()
+            //navController.back
+            //parentFragmentManager.popBackStack()
         }
 
         builder.setNegativeButton("Nein") { dialog, which ->
@@ -117,14 +124,12 @@ class BoxFragment : Fragment(){
         var isFront =true
         if (item.itemId == R.id.box_btn_edit) {
             if (view != null) {
-                val editFragment: Fragment = BoxEditFragment.newInstance(box_model, itemList, false)
-                Utils.pushFragment(editFragment, requireContext(), "boxEditFragment")
-                //val transaction: FragmentTransaction =
-                //    (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                //transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
-                //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                //transaction.addToBackStack("edit")
-                //transaction.commit()
+                val bundle = Bundle()
+                bundle.putSerializable("boxModel", box_model)
+                bundle.putSerializable("items", itemList.toTypedArray())
+                bundle.putSerializable("isNewBox", false)
+                val navController: NavController = Navigation.findNavController(view!!)
+                navController.navigate(R.id.action_boxFragment_to_boxEditFragment, bundle)
             }
             return true
         } else if (item.itemId == R.id.box_btn_delete) {
@@ -141,22 +146,6 @@ class BoxFragment : Fragment(){
         }
         return super.onOptionsItemSelected(item)
     }
-
-
-
-    private val requestPermission =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                // permission is granted
-            } else {
-                // handle permission denial
-                val activity = requireActivity()
-                activity. runOnUiThread {
-                    Toast.makeText(activity, "Datei Zugriff wird benötigt, um PDF Dokumente zu erzeugen und speichern",
-                        Toast.LENGTH_LONG).show()
-                }
-            }
-        }
 
     private fun checkPermission(): Boolean {
         // checking of permissions.
@@ -240,13 +229,14 @@ class BoxFragment : Fragment(){
         }
 
         if (box_img == "") {
-            Glide.with(this).load(R.drawable.ic_placeholder).into(box_summary_image_field)
+            Glide.with(this).load(R.drawable.placeholder_with_bg).into(box_summary_image_field)
         } else {
+            box_summary_image_field.scaleType=ImageView.ScaleType.CENTER_CROP
             box_summary_image_field.setImageBitmap(Utils.StringToBitMap(box_img))
         }
 
         if (box_location_img == "") {
-            Glide.with(this).load(R.drawable.ic_placeholder).into(box_location_image_field)
+            Glide.with(this).load(R.drawable.placeholder_with_bg).into(box_location_image_field)
         } else {
             box_location_image_field.setImageBitmap(Utils.StringToBitMap(box_location_img))
         }
@@ -276,12 +266,8 @@ class BoxFragment : Fragment(){
         var box_container: View = v.findViewById(R.id.box_card)
 
         // Get the arguments from the caller fragment/activity
-        box_model = arguments?.getSerializable("model") as BoxModel
+        box_model = arguments?.getSerializable("boxModel") as BoxModel
         updateContent()
-
-        var transitionName: String = "boxTransition" + (arguments?.getSerializable("position") as Int).toString()
-        box_container.transitionName = transitionName
-
 
         //Init Image Fullscreen on click
         box_summary_image_field.setOnClickListener {
@@ -373,7 +359,7 @@ class BoxFragment : Fragment(){
         fun newInstance(boxModel: BoxModel, position: Int) =
             BoxFragment().apply {
                 val args = Bundle()
-                args.putSerializable("model", boxModel)
+                args.putSerializable("boxModel", boxModel)
                 args.putSerializable("position", position)
                 val fragment = BoxFragment()
                 fragment.arguments = args

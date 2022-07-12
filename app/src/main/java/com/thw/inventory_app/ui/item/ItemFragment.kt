@@ -10,6 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -19,6 +21,7 @@ import com.google.firebase.database.*
 import com.stfalcon.imageviewer.StfalconImageViewer
 import com.thw.inventory_app.*
 import com.thw.inventory_app.R
+import org.w3c.dom.Text
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -40,6 +43,7 @@ class ItemFragment : Fragment() {
     lateinit var item_description_field: TextView
     lateinit var item_tags_field: ChipGroup
     lateinit var item_image_field: ImageView
+    lateinit var item_containing_boxes_empty_label: TextView
 
     lateinit var previous_action_bar_title: String
 
@@ -101,8 +105,11 @@ class ItemFragment : Fragment() {
         builder.setPositiveButton("Ja") { dialog, which ->
             Toast.makeText(requireContext(),
                 "yes", Toast.LENGTH_SHORT).show()
-           deleteItem()
-            parentFragmentManager.popBackStack()
+            deleteItem()
+
+            val navController: NavController = Navigation.findNavController(view!!)
+            navController.navigateUp()
+            //parentFragmentManager.popBackStack()
         }
 
         builder.setNegativeButton("Nein") { dialog, which ->
@@ -115,8 +122,14 @@ class ItemFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.item_btn_edit) {
             if (view != null) {
-                val editFragment: Fragment = ItemEditFragment.newInstance(item_model, false)
-                Utils.pushFragment(editFragment, requireContext(), "itemEditFragment")
+                val bundle = Bundle()
+                bundle.putSerializable("itemModel", item_model)
+                bundle.putSerializable("isNewBox", false)
+                val navController: NavController = Navigation.findNavController(view!!)
+                navController.navigate(R.id.action_itemFragment_to_itemEditFragment, bundle)
+
+                //val editFragment: Fragment = ItemEditFragment.newInstance(item_model, false)
+                //Utils.pushFragment(editFragment, requireContext(), "itemEditFragment")
                 //val transaction: FragmentTransaction =
                 //    (context as FragmentActivity).supportFragmentManager.beginTransaction()
                 //transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
@@ -169,8 +182,9 @@ class ItemFragment : Fragment() {
         }
 
         if (item_image == "") {
-            Glide.with(this).load(R.drawable.ic_placeholder).into(item_image_field)
+            Glide.with(this).load(R.drawable.placeholder_with_bg).into(item_image_field)
         } else {
+            item_image_field.scaleType=ImageView.ScaleType.CENTER_CROP
             item_image_field.setImageBitmap(Utils.StringToBitMap(item_image))
         }
 
@@ -202,12 +216,13 @@ class ItemFragment : Fragment() {
         item_tags_field = v.findViewById(R.id.item_summary_tags)
         item_description_field = v.findViewById(R.id.item_summary_description)
         item_image_field = v.findViewById(R.id.item_summary_image)
+        item_containing_boxes_empty_label = v.findViewById(R.id.item_summary_content_empty_label)
 
         // Get the arguments from the caller fragment/activity
-        item_model = arguments?.getSerializable("model") as ItemModel
+        item_model = arguments?.getSerializable("itemModel") as ItemModel
 
-        var transitionName: String = "itemTransition" + (arguments?.getSerializable("position") as Int).toString()
-        item_image_field.transitionName = transitionName
+        //var transitionName: String = "itemTransition" + (arguments?.getSerializable("position") as Int).toString()
+        //item_image_field.transitionName = transitionName
 
         updateContent()
 
@@ -239,6 +254,11 @@ class ItemFragment : Fragment() {
                 }
                 updateContent()
                 containing_box_adapter.setFilter(boxList)
+                if (boxList.size == 0){
+                    item_containing_boxes_empty_label.visibility = View.VISIBLE
+                } else {
+                    item_containing_boxes_empty_label.visibility = View.GONE
+                }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}

@@ -14,6 +14,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.budiyev.android.codescanner.*
@@ -27,8 +29,10 @@ class QRScannerFragment : Fragment() {
 
     //private var _binding: FragmentQrscannerBinding? = null
     private lateinit var codeScanner: CodeScanner
-    var cardList: ArrayList<BoxModel> = ArrayList<BoxModel>()
+    var boxList: ArrayList<BoxModel> = ArrayList<BoxModel>()
     lateinit var adapter: BoxAdapter
+    lateinit var rv: RecyclerView
+
     private var qr_content: String = ""
     private var toast: Toast? = null
     lateinit var firebase_listener: ValueEventListener
@@ -47,11 +51,6 @@ class QRScannerFragment : Fragment() {
             }
         }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
@@ -62,12 +61,20 @@ class QRScannerFragment : Fragment() {
             requestPermission.launch(Manifest.permission.CAMERA)
         }
 
-        cardList = ArrayList()
         val view: View = inflater.inflate(R.layout.fragment_qrscanner, container, false)
-        val myrv = view.findViewById<View>(R.id.RV_qr) as RecyclerView
-        adapter = BoxAdapter(cardList)
-        myrv.layoutManager = LinearLayoutManager(activity)
-        myrv.adapter = adapter
+        val recyclerview = view.findViewById<View>(R.id.RV_qr) as RecyclerView
+        adapter = BoxAdapter(boxList, false)
+        adapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
+            override fun onBoxClicked(box: BoxModel, view: View) {
+                val navController: NavController = Navigation.findNavController(view)
+                val bundle = Bundle()
+                bundle.putSerializable("boxModel", box)
+                navController.navigate(R.id.action_navigation_qrscanner_to_boxFragment, bundle)
+            }
+        })
+
+        recyclerview.layoutManager = LinearLayoutManager(activity)
+        recyclerview.adapter = adapter
 
         return view
     }
@@ -96,17 +103,19 @@ class QRScannerFragment : Fragment() {
                         for (box: DataSnapshot in boxes.children){
                             val qrcode = box.child("qrcode").value.toString()
                             if (qrcode.lowercase() == it.text.lowercase()){
-                                cardList.clear()
+                                boxList.clear()
                                 val boxModel = Utils.readBoxModelFromDataSnapshot(box)
-                                cardList.add(boxModel)
+                                boxList.add(boxModel)
                                 qr_content = it.text
                                 toast?.cancel()
-                                adapter.setFilter(cardList)
+                                adapter.setFilter(boxList)
                                 return
                             }
                         }
                         // if we end up here: code is invalid
                         showToast("QR-Code ungültig", Toast.LENGTH_SHORT)
+                        boxList.clear()
+                        adapter.setFilter(boxList)
                     }
 
                     override fun onCancelled(databaseError: DatabaseError) {
@@ -114,28 +123,20 @@ class QRScannerFragment : Fragment() {
                 }
 
                 FirebaseDatabase.getInstance().reference.addValueEventListener(firebase_listener)
-
-
-
-                //qr_content = it.text
-                //cardList.clear()
-                //cardList.add(BoxModel("ID1", "Box 1", it.text, "R.drawable.ic_home_black_24dp"))
-
-                //Handler(Looper.getMainLooper()).post(Runnable { card_adapter.notifyDataSetChanged() })
             }
 
         }
-        //codeScanner.errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
-            //activity. runOnUiThread {
-            //    Toast.makeText(activity, "Kamera konnte nicht gestartet werden: ${it.message}",
-            //        Toast.LENGTH_LONG).show()
-            //}
-        //}
+
+        codeScanner.errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
+            activity. runOnUiThread {
+                Toast.makeText(activity, "Kamera konnte nicht gestartet werden: ${it.message}",
+                    Toast.LENGTH_LONG).show()
+            }
+        }
+
         scannerView.setOnClickListener {
             codeScanner.startPreview()
         }
-
-
     }
 
     override fun onResume() {

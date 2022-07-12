@@ -8,6 +8,8 @@ import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -63,8 +65,11 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         val recyclerview = view.findViewById<View>(R.id.RV_items) as RecyclerView
         adapter = ItemAdapter(itemList)
         adapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
-            override fun setOnCLickListener(position: Int, view: View) {
-                handleRecyclerViewClick(position, view)
+            override fun onItemClicked(item: ItemModel, view: View) {
+                val navController: NavController = Navigation.findNavController(view)
+                val bundle = Bundle()
+                bundle.putSerializable("itemModel", item)
+                navController.navigate(R.id.action_navigation_items_to_itemFragment, bundle)
             }
         })
         recyclerview.layoutManager = LinearLayoutManager(activity)
@@ -76,46 +81,17 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         items_add_button.setOnClickListener(object: View.OnClickListener {
             override fun onClick(v: View?) {
                 if (view != null) {
+                    val bundle = Bundle()
                     val itemModel: ItemModel = ItemModel("", "", "", "", "")
-                    val editFragment: Fragment = ItemEditFragment.newInstance(itemModel, true)
-                    Utils.pushFragment(editFragment, requireContext(), "editFragment")
-                    //val transaction: FragmentTransaction =
-                    //    (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                    //transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
-                    //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    //transaction.addToBackStack("add")
-                    //transaction.commit()
+                    bundle.putSerializable("itemModel", itemModel)
+                    bundle.putSerializable("isNewBox", true)
+                    val navController: NavController = Navigation.findNavController(view!!)
+                    navController.navigate(R.id.action_navigation_items_to_itemEditFragment, bundle)
                 }
             }
         })
 
         return view
-    }
-
-    fun handleRecyclerViewClick(position: Int, view: View) {
-
-        //exitTransition = MaterialElevationScale(false).apply {
-        //    duration = 5000
-        //}
-        //reenterTransition = MaterialElevationScale(true).apply {
-        //    duration = 5000
-        //}
-
-        var transitionName: String = view.transitionName.toString()
-        val newFragment: ItemFragment = ItemFragment.newInstance(itemList[position], position)
-        //newFragment.sharedElementEnterTransition = getTransition()
-        //newFragment.sharedElementReturnTransition = getTransition()
-
-        newFragment.setSharedElementEnterTransition(MaterialContainerTransform())
-
-        childFragmentManager
-            .beginTransaction()
-            //.setCustomAnimations(R.anim.slide_in, R.anim.fade_out, R.anim.fade_in, R.anim.slide_out)
-            .setReorderingAllowed(true)
-            .addSharedElement(view, transitionName)
-            .replace(R.id.fragment_items, newFragment)
-            .addToBackStack("")
-            .commit()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -24,7 +24,7 @@
                 android:id="@+id/item_summary_image"
                 android:layout_width="match_parent"
                 android:layout_height="194dp"
-                app:srcCompat="@drawable/ic_placeholder"
+                app:srcCompat="@drawable/placeholder_with_bg"
                 android:contentDescription="@string/content_description_media"
                 />
 
@@ -96,6 +96,19 @@
                     android:layout_marginBottom="16dp"
                     android:text="@string/containting_box"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textColor="?android:attr/textColorSecondary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/item_summary_content_empty_label"
+                    android:layout_width="match_parent"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/containting_box_empty"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textColor="?android:attr/textColorSecondary"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

@@ -8,6 +8,8 @@ import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -15,12 +17,10 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.thw.inventory_app.ItemModel
-import com.thw.inventory_app.R
-import com.thw.inventory_app.Utils
+import com.thw.inventory_app.*
 import com.thw.inventory_app.ui.item.ItemEditFragment
 
-class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener, ItemAddAdapter.Callbacks {
+class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
 
     var itemList: ArrayList<ItemModel> = ArrayList<ItemModel>()
     lateinit var adapter: ItemAddAdapter
@@ -30,6 +30,7 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener, ItemAddAdap
     private var fragmentCallback: FragmentCallback? = null
 
     fun setFragmentCallback(callback: FragmentCallback) {
+        Log.e("Error", "FragmentCallback set")
         fragmentCallback = callback
     }
 
@@ -64,7 +65,20 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener, ItemAddAdap
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_items, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_items) as RecyclerView
-        adapter = ItemAddAdapter(itemList, arguments?.getSerializable("box_id") as String, false, this)
+        adapter = ItemAddAdapter(itemList)
+        adapter.setOnItemClickListener(object: ItemAddAdapter.OnItemClickListener{
+            override fun onItemClicked(item: ItemModel, view: View) {
+                var item_id = item.id
+                adapter.setFilter(itemList)
+
+                val navController: NavController = Navigation.findNavController(view!!)
+                //navController.navigateUp()
+                //fragmentCallback!!.passSelectedItem(item_id)
+                navController.previousBackStackEntry?.savedStateHandle?.set("item_id", item_id)
+                navController.popBackStack()
+            }
+        })
+
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = adapter
 
@@ -74,15 +88,12 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener, ItemAddAdap
         items_add_button.setOnClickListener(object: View.OnClickListener {
             override fun onClick(v: View?) {
                 if (view != null) {
+                    val bundle = Bundle()
                     val itemModel: ItemModel = ItemModel("", "", "", "", "")
-                    val editFragment: Fragment = ItemEditFragment.newInstance(itemModel, true)
-                    Utils.pushFragment(editFragment, requireContext(), "itemEditFragment")
-                    //val transaction: FragmentTransaction =
-                    //    (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                    //transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
-                    //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    //transaction.addToBackStack("edit")
-                    //transaction.commit()
+                    bundle.putSerializable("itemModel", itemModel)
+                    bundle.putSerializable("isNewBox", true)
+                    val navController: NavController = Navigation.findNavController(view!!)
+                    navController.navigate(R.id.action_itemsAddFragment_to_itemEditFragment, bundle)
                 }
             }
         })
@@ -147,13 +158,6 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener, ItemAddAdap
             }
         }
         return filteredModelList
-    }
-
-    override fun handleItemSelection(data: ItemSelection) {
-        if (fragmentCallback != null) {
-            fragmentCallback!!.onDataSent(data.item_id)
-            adapter.setFilter(itemList)
-        }
     }
 
     override fun onDestroyView() {

@@ -2,6 +2,7 @@ package com.thw.inventory_app.ui.item
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,8 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -129,11 +132,15 @@ class ContainingBoxAdapter(
         @SuppressLint("ResourceType")
         override fun onClick(view: View?) {
             if (view != null) {
+                val navController: NavController = Navigation.findNavController(view)
+                val bundle = Bundle()
+                bundle.putSerializable("boxModel", mDataList[adapterPosition])
+                navController.navigate(R.id.action_itemFragment_to_boxFragment, bundle)
                 //val action = MainFragmentDirections.actionMainFragmentToReportsFragment()
                 //navController.navigate(action)
-                val myFragment: Fragment = BoxFragment.newInstance(mDataList[adapterPosition], adapterPosition)
-                val context = view.getContext()
-                Utils.pushFragment(myFragment, context, "ItemView")
+                //val myFragment: Fragment = BoxFragment.newInstance(mDataList[adapterPosition], adapterPosition)
+                //val context = view.getContext()
+                //Utils.pushFragment(myFragment, context, "ItemView")
             }
         }
     }
