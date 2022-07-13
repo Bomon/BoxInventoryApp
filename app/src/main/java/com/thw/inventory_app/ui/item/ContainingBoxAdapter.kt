@@ -52,7 +52,7 @@ class ContainingBoxAdapter(
 
     override fun onBindViewHolder(holder: BoxItemViewHolder, position: Int) {
         (holder as BoxItemViewHolder).bind(mBoxModel[position]);
-        setAnimation(holder.itemView);
+        //setAnimation(holder.itemView);
     }
 
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{

@@ -71,7 +71,7 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
                 holder.item_image.setImageBitmap(img)
             }
         }
-        holder.item_image.transitionName = "itemTransition" + position
+        //holder.item_image.transitionName = "itemTransition" + position
         Utils.setRecyclerViewCardAnimation(holder.itemView, context)
     }
 

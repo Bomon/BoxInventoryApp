@@ -67,7 +67,7 @@ class BoxFragment : Fragment(){
     lateinit var box_summary_image_field: ImageView
     lateinit var box_location_image_field: ImageView
 
-    lateinit var previous_action_bar_title: String
+    //lateinit var previous_action_bar_title: String
 
     //override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
     //    inflater.inflate(androidx.core.R.menu.example_menu2, menu)
@@ -177,18 +177,6 @@ class BoxFragment : Fragment(){
         //sharedElementReturnTransition = transform
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        //view.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-        //    override fun onPreDraw(): Boolean {
-        //        view.viewTreeObserver.removeOnPreDrawListener(this)
-        //        startPostponedEnterTransition()
-        //        return true
-        //    }
-        //})
-    }
-
     private fun updateContent(){
         val box_id = box_model.id
         val box_content = box_model.content
@@ -251,7 +239,7 @@ class BoxFragment : Fragment(){
         // Inflate the layout for this fragment
         val v =  inflater.inflate(R.layout.fragment_box, container, false)
 
-        previous_action_bar_title = (activity as AppCompatActivity).supportActionBar?.title.toString()
+        //previous_action_bar_title = (activity as AppCompatActivity).supportActionBar?.title.toString()
 
         // Get the activity and widget
         //box_id_field = v.findViewById(R.id.box_summary_id)
@@ -297,6 +285,8 @@ class BoxFragment : Fragment(){
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = box_item_adapter
 
+        (activity as AppCompatActivity).supportActionBar?.title = box_model.id
+
         initFirebase()
 
         return v
@@ -341,7 +331,7 @@ class BoxFragment : Fragment(){
     override fun onDestroyView() {
         Log.w("box","destroy")
         super.onDestroyView()
-        (activity as AppCompatActivity).supportActionBar?.title = previous_action_bar_title
+        //(activity as AppCompatActivity).supportActionBar?.title = previous_action_bar_title
         FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
         //_binding = null
     }

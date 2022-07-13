@@ -45,7 +45,7 @@ class ItemFragment : Fragment() {
     lateinit var item_image_field: ImageView
     lateinit var item_containing_boxes_empty_label: TextView
 
-    lateinit var previous_action_bar_title: String
+    //lateinit var previous_action_bar_title: String
 
     //override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
     //    inflater.inflate(androidx.core.R.menu.example_menu2, menu)
@@ -210,7 +210,7 @@ class ItemFragment : Fragment() {
         // Inflate the layout for this fragment
         val v =  inflater.inflate(R.layout.fragment_item_details, container, false)
 
-        previous_action_bar_title = (activity as AppCompatActivity).supportActionBar?.title.toString()
+        //previous_action_bar_title = (activity as AppCompatActivity).supportActionBar?.title.toString()
         // Get the activity and widget
         item_name_field = v.findViewById(R.id.item_summary_name)
         item_tags_field = v.findViewById(R.id.item_summary_tags)
@@ -269,7 +269,7 @@ class ItemFragment : Fragment() {
     override fun onDestroyView() {
         Log.w("box","destroy")
         super.onDestroyView()
-        (activity as AppCompatActivity).supportActionBar?.title = previous_action_bar_title
+        //(activity as AppCompatActivity).supportActionBar?.title = previous_action_bar_title
         FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
         //_binding = null
     }

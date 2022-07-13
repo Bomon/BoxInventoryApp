@@ -3,6 +3,7 @@ package com.thw.inventory_app.ui.notifications
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
@@ -58,6 +59,8 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        //(activity as AppCompatActivity).getSupportActionBar()?.show()
+        //activity?.getActionBar()?.show()
 
         //setHasOptionsMenu(true);
         // Inflate the layout for this fragment

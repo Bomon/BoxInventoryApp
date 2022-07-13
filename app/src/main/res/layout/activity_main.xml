@@ -6,8 +6,13 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
     tools:context=".MainActivity">
+
+    <ImageView
+        android:scaleType="centerCrop"
+        android:src="@drawable/background_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <fragment
         android:id="@+id/nav_host_fragment_activity_main"

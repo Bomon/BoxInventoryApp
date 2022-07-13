@@ -16,6 +16,7 @@ import android.view.*
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
@@ -238,6 +239,14 @@ class ItemEditFragment : Fragment() {
             if (chip != ""){
                 addChipToGroup(chip)
             }
+        }
+
+
+        if (is_new_item){
+            (activity as AppCompatActivity).supportActionBar?.title = "Gegenstand erstellen"
+
+        } else {
+            (activity as AppCompatActivity).supportActionBar?.title = "Gegenstand bearbeiten"
         }
 
         val thisFragment = this

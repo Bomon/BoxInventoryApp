@@ -42,8 +42,7 @@
     </fragment>
     <fragment
         android:id="@+id/boxFragment"
-        android:name="com.thw.inventory_app.ui.box.BoxFragment"
-        android:label="BoxFragment" >
+        android:name="com.thw.inventory_app.ui.box.BoxFragment" >
         <action
             android:id="@+id/action_boxFragment_to_boxEditFragment"
             app:destination="@id/boxEditFragment" />
@@ -53,8 +52,7 @@
     </fragment>
     <fragment
         android:id="@+id/boxEditFragment"
-        android:name="com.thw.inventory_app.ui.box.BoxEditFragment"
-        android:label="BoxEditFragment" >
+        android:name="com.thw.inventory_app.ui.box.BoxEditFragment">
         <action
             android:id="@+id/action_boxEditFragment_to_itemsAddFragment"
             app:destination="@id/itemsAddFragment" />
@@ -70,8 +68,7 @@
     </fragment>
     <fragment
         android:id="@+id/itemFragment"
-        android:name="com.thw.inventory_app.ui.item.ItemFragment"
-        android:label="ItemFragment" >
+        android:name="com.thw.inventory_app.ui.item.ItemFragment">
         <action
             android:id="@+id/action_itemFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
@@ -84,8 +81,7 @@
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
-        android:name="com.thw.inventory_app.ui.item.ItemEditFragment"
-        android:label="ItemEditFragment" />
+        android:name="com.thw.inventory_app.ui.item.ItemEditFragment"/>
         <argument
             android:name="itemModel"
             app:argType="com.thw.inventory_app.ItemModel" />
@@ -94,8 +90,7 @@
             app:argType="boolean" />
     <fragment
         android:id="@+id/itemsAddFragment"
-        android:name="com.thw.inventory_app.ui.box.ItemsAddFragment"
-        android:label="ItemsAddFragment" >
+        android:name="com.thw.inventory_app.ui.box.ItemsAddFragment">
         <action
             android:id="@+id/action_itemsAddFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />

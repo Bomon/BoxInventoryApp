@@ -3,6 +3,7 @@ package com.thw.inventory_app.ui.box
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
@@ -97,6 +98,8 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
                 }
             }
         })
+
+        (activity as AppCompatActivity).supportActionBar?.title = "Gegenstand hinzufügen"
 
         return view
     }

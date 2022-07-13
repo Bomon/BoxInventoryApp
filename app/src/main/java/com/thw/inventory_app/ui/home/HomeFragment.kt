@@ -1,24 +1,21 @@
 package com.thw.inventory_app.ui.home
 
-import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import android.transition.*
 import android.util.Log
 import android.view.*
-import androidx.annotation.Nullable
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.transition.MaterialContainerTransform
 import com.google.firebase.database.*
 import com.thw.inventory_app.*
 import com.thw.inventory_app.R
-import com.thw.inventory_app.ui.box.BoxEditFragment
-import com.thw.inventory_app.ui.box.BoxFragment
 import com.thw.inventory_app.ui.box.BoxItemModel
 
 
@@ -28,6 +25,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     lateinit var adapter: BoxAdapter
     lateinit var rv: RecyclerView
     lateinit var firebase_listener: ValueEventListener
+    var isBackPressedOnce: Boolean = false
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_home, menu)
@@ -75,6 +73,8 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        //(activity as AppCompatActivity).getSupportActionBar()?.show()
+        //activity?.getActionBar()?.show()
 
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_home, container, false)
@@ -155,6 +155,5 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         super.onDestroyView()
         FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
     }
-
 
 }

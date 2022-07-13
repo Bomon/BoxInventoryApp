@@ -14,6 +14,7 @@ import android.view.*
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
@@ -415,7 +416,12 @@ class BoxEditFragment() : FragmentCallback, Fragment() {
             }
         }
 
+        if (is_new_box){
+            (activity as AppCompatActivity).supportActionBar?.title = "Box erstellen"
 
+        } else {
+            (activity as AppCompatActivity).supportActionBar?.title = "Box bearbeiten"
+        }
 
         if (box_model.image == "") {
             Glide.with(this).load(R.drawable.placeholder_with_bg).into(box_edit_image_field)

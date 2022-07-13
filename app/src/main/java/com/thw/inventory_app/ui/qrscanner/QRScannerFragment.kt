@@ -54,6 +54,9 @@ class QRScannerFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
+        //(activity as AppCompatActivity).getSupportActionBar()?.hide()
+        //activity?.getActionBar()?.hide()
+
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.CAMERA
