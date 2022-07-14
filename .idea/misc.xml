@@ -30,6 +30,9 @@
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_item.xml" value="0.5824493731918997" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_item_in_box.xml" value="0.5" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_item_in_box_edit.xml" value="0.42864583333333334" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/dialog_add_invnum.xml" value="0.21693840579710144" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/dialog_filter.xml" value="0.21693840579710144" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/dialog_number_picker.xml" value="0.21693840579710144" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/fragment_box.xml" value="0.362962962962963" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/fragment_box_edit.xml" value="0.6323377960865088" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/fragment_home.xml" value="0.10277777777777777" />

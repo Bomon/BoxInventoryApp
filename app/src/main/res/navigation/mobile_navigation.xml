@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.thw.inventory_app.ui.home.HomeFragment"
+        android:name="com.pixlbee.heros.fragments.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -20,7 +20,7 @@
 
     <fragment
         android:id="@+id/navigation_qrscanner"
-        android:name="com.thw.inventory_app.ui.qrscanner.QRScannerFragment"
+        android:name="com.pixlbee.heros.fragments.QRScannerFragment"
         android:label="@string/title_qrscanner"
         tools:layout="@layout/fragment_qrscanner" >
         <action
@@ -30,7 +30,7 @@
 
     <fragment
         android:id="@+id/navigation_items"
-        android:name="com.thw.inventory_app.ui.notifications.ItemsFragment"
+        android:name="com.pixlbee.heros.fragments.ItemsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_items" >
         <action
@@ -42,26 +42,26 @@
     </fragment>
     <fragment
         android:id="@+id/boxFragment"
-        android:name="com.thw.inventory_app.ui.box.BoxFragment" >
+        android:name="com.pixlbee.heros.fragments.BoxFragment" >
         <action
             android:id="@+id/action_boxFragment_to_boxEditFragment"
             app:destination="@id/boxEditFragment" />
         <argument
             android:name="boxModel"
-            app:argType="com.thw.inventory_app.BoxModel" />
+            app:argType="com.pixlbee.heros.models.BoxModel" />
     </fragment>
     <fragment
         android:id="@+id/boxEditFragment"
-        android:name="com.thw.inventory_app.ui.box.BoxEditFragment">
+        android:name="com.pixlbee.heros.fragments.BoxEditFragment">
         <action
             android:id="@+id/action_boxEditFragment_to_itemsAddFragment"
             app:destination="@id/itemsAddFragment" />
         <argument
             android:name="boxModel"
-            app:argType="com.thw.inventory_app.BoxModel" />
+            app:argType="com.pixlbee.heros.models.BoxModel" />
         <argument
             android:name="items"
-            app:argType="com.thw.inventory_app.ui.box.BoxItemModel[]" />
+            app:argType="com.pixlbee.heros.models.BoxItemModel[]" />
         <argument
             android:name="isNewBox"
             app:argType="boolean"
@@ -69,7 +69,7 @@
     </fragment>
     <fragment
         android:id="@+id/itemFragment"
-        android:name="com.thw.inventory_app.ui.item.ItemFragment">
+        android:name="com.pixlbee.heros.fragments.ItemFragment">
         <action
             android:id="@+id/action_itemFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
@@ -78,14 +78,14 @@
             app:destination="@id/boxFragment" />
         <argument
             android:name="itemModel"
-            app:argType="com.thw.inventory_app.ItemModel" />
+            app:argType="com.pixlbee.heros.models.ItemModel" />
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
-        android:name="com.thw.inventory_app.ui.item.ItemEditFragment">
+        android:name="com.pixlbee.heros.fragments.ItemEditFragment">
         <argument
             android:name="itemModel"
-            app:argType="com.thw.inventory_app.ItemModel" />
+            app:argType="com.pixlbee.heros.models.ItemModel" />
         <argument
             android:name="isNewItem"
             app:argType="boolean"
@@ -97,7 +97,7 @@
     </fragment>
     <fragment
         android:id="@+id/itemsAddFragment"
-        android:name="com.thw.inventory_app.ui.box.ItemsAddFragment">
+        android:name="com.pixlbee.heros.fragments.ItemsAddFragment">
         <action
             android:id="@+id/action_itemsAddFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
