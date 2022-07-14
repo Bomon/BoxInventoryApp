@@ -8,6 +8,12 @@
     android:transitionGroup="true"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:scaleType="centerCrop"
+        android:src="@drawable/background_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RV_home"
         android:layout_width="match_parent"

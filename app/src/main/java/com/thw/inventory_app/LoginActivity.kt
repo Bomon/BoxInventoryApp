@@ -4,13 +4,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
-import android.view.Window
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -25,6 +21,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var emailEtContainer: TextInputLayout
     private lateinit var passwordEtContainer: TextInputLayout
     private lateinit var loginBtn: Button
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,35 +52,33 @@ class LoginActivity : AppCompatActivity() {
 
             if(TextUtils.isEmpty(email)) {
                 emailEtContainer.isErrorEnabled = true
-                emailEtContainer.error = "Feld darf nicht leer sein"
+                emailEtContainer.error = resources.getString(R.string.error_field_empty)
             } else {
                 emailEtContainer.isErrorEnabled = false
             }
             if(TextUtils.isEmpty(password)) {
                 passwordEtContainer.isErrorEnabled = true
-                passwordEtContainer.error = "Feld darf nicht leer sein"
+                passwordEtContainer.error =resources.getString(R.string.error_field_empty)
             }else {
                 passwordEtContainer.isErrorEnabled = false
             }
 
             if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
                 email = email + "@thw.thw"
-                Log.e("Error", "Trying login")
                 auth = Firebase.auth
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
-                            Log.e("Error", "Login success")
-                            Toast.makeText(this, "Successfully Logged In", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, resources.getString(R.string.login_successful), Toast.LENGTH_LONG).show()
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
                             finish()
                         } else {
                             emailEtContainer.isErrorEnabled = true
-                            emailEtContainer.error = "Benutzernamen überprüfen"
+                            emailEtContainer.error = resources.getString(R.string.error_check_username)
                             passwordEtContainer.isErrorEnabled = true
-                            passwordEtContainer.error = "Passwort überprüfen"
-                            Toast.makeText(this, "Login Fehlgeschlagen", Toast.LENGTH_LONG).show()
+                            passwordEtContainer.error = resources.getString(R.string.error_check_password)
+                            Toast.makeText(this, resources.getString(R.string.error_login_failed), Toast.LENGTH_LONG).show()
                         }
                     }
             }

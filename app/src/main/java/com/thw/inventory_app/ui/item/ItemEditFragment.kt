@@ -4,69 +4,62 @@ import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.drawable.VectorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.widget.*
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.thw.inventory_app.*
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-interface FragmentCallback {
-    fun onDataSent(yourData: String?)
-}
-
-/**
- * A simple [Fragment] subclass.
- * Use the [BoxFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ItemEditFragment : Fragment() {
 
     private lateinit var item_model: ItemModel
 
     private lateinit var item_edit_image_field: ImageView
     private lateinit var item_edit_name_field: EditText
+    private lateinit var item_edit_name_label: TextInputLayout
     private lateinit var item_edit_description_field: EditText
     private lateinit var item_edit_tags_field: EditText
     private lateinit var item_edit_tags_chips: ChipGroup
 
     private var is_new_item: Boolean = false
+    private var is_box_edit_mode: Boolean = false
 
     private lateinit var image_bitmap: Bitmap
 
-    fun applyChanges() {
+
+    fun checkFields(): Boolean {
+        var status = true
+        if (item_edit_name_field.text.toString() == "") {
+            item_edit_name_label.isErrorEnabled = true
+            item_edit_name_label.error = resources.getString(R.string.error_field_empty)
+            status = false
+        }
+
+        return status
+    }
+
+
+    fun applyChanges(): Boolean {
+        val fieldsOk: Boolean = checkFields()
+        if (!fieldsOk) return false
 
         val itemsRef = FirebaseDatabase.getInstance().reference.child("items")
         itemsRef.get().addOnCompleteListener { task ->
@@ -76,7 +69,6 @@ class ItemEditFragment : Fragment() {
                     for (item: DataSnapshot in items.children) {
                         val id = item.child("id").value.toString()
                         if (id == item_model.id) {
-                            Log.e("Error", "Found box to delete in")
                             val itemKey: String = item.key.toString()
                             FirebaseDatabase.getInstance().reference.child("items").child(itemKey).child("description").setValue(item_edit_description_field.text.toString())
                             FirebaseDatabase.getInstance().reference.child("items").child(itemKey).child("name").setValue(item_edit_name_field.text.toString())
@@ -89,10 +81,14 @@ class ItemEditFragment : Fragment() {
                 }
             }
         }
-
+        return true
     }
 
-    fun createItem(){
+
+    fun createItem(): Boolean {
+        val fieldsOk: Boolean = checkFields()
+        if (!fieldsOk) return false
+
         var item_date_key = DateTimeFormatter.ISO_INSTANT.format(Instant.now()).toString()
         item_model.id = item_date_key
         item_model.name = item_edit_name_field.text.toString()
@@ -103,61 +99,68 @@ class ItemEditFragment : Fragment() {
             item_model.image = Utils.getEncoded64ImageStringFromBitmap(image_bitmap)
         }
         FirebaseDatabase.getInstance().reference.child("items").push().setValue(item_model)
+        return true
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_item_edit, menu)
     }
 
+
     fun showSaveDialog() {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Änderungen Speichern?")
-        builder.setMessage("We have a message")
+        builder.setTitle(resources.getString(R.string.dialog_save_title))
+        builder.setMessage(resources.getString(R.string.dialog_save_text))
 
-        builder.setPositiveButton("Ja") { dialog, which ->
-            Toast.makeText(requireContext(),
-                "yes", Toast.LENGTH_SHORT).show()
-            if (is_new_item){
-                createItem()
-            }
-            applyChanges()
+        builder.setPositiveButton(resources.getString(R.string.dialog_yes)) { dialog, which ->
             val navController: NavController = Navigation.findNavController(view!!)
-            navController.navigateUp()
-            //parentFragmentManager.popBackStack()
+            if (is_new_item){
+                val status: Boolean = createItem()
+                if (status) {
+                    if (is_box_edit_mode) {
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            "item_id",
+                            item_model.id
+                        )
+                        navController.popBackStack()
+                    } else {
+                        navController.navigateUp()
+                    }
+                }
+            } else {
+                val status: Boolean = applyChanges()
+                if (status) {
+                    navController.navigateUp()
+                }
+            }
         }
 
-        builder.setNegativeButton("Nein") { dialog, which ->
+        builder.setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, which ->
             Toast.makeText(requireContext(),
                 "no", Toast.LENGTH_SHORT).show()
             val navController: NavController = Navigation.findNavController(view!!)
             navController.navigateUp()
-            //parentFragmentManager.popBackStack()
         }
 
-        builder.setNeutralButton("Abbrechen") { dialog, which ->
-            Toast.makeText(requireContext(),
-                "cancel", Toast.LENGTH_SHORT).show()
+        builder.setNeutralButton(resources.getString(R.string.dialog_cancel)) { dialog, which ->
         }
         builder.show()
     }
 
+
     fun showDismissDialog() {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Änderungen Verwerfen?")
-        builder.setMessage("We have a message")
+        builder.setTitle(resources.getString(R.string.dialog_dismiss_title))
+        builder.setMessage(resources.getString(R.string.dialog_dismiss_text))
 
-        builder.setPositiveButton("Ja") { dialog, which ->
-            Toast.makeText(requireContext(),
-                "yes", Toast.LENGTH_SHORT).show()
+        builder.setPositiveButton(resources.getString(R.string.dialog_yes)) { dialog, which ->
             val navController: NavController = Navigation.findNavController(view!!)
             navController.navigateUp()
-            //parentFragmentManager.popBackStack()
         }
 
-        builder.setNegativeButton("Nein") { dialog, which ->
-            Toast.makeText(requireContext(),
-                "no", Toast.LENGTH_SHORT).show()
+        builder.setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, which ->
         }
         builder.show()
     }
@@ -171,13 +174,19 @@ class ItemEditFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
             showDismissDialog()
         }
+
+        // Get the arguments from the caller fragment/activity
+        item_model = arguments?.getSerializable("itemModel") as ItemModel
+        is_new_item = arguments?.getSerializable("isNewItem") as Boolean
+        is_box_edit_mode = arguments?.getSerializable("isBoxEditMode") as Boolean
 
 
         val builder = StrictMode.VmPolicy.Builder()
@@ -185,13 +194,9 @@ class ItemEditFragment : Fragment() {
         builder.detectFileUriExposure()
     }
 
+
+    // For image picker
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.e("Error", "onActivityResult")
-        //super.onActivityResult(requestCode, resultCode, data)
-        //if (resultCode == RESULT_OK && requestCode == pickImage) {
-        //    imageUri = data?.data
-        //    box_image_field.setImageURI(imageUri)
-        //}
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode === RESULT_OK) {
@@ -207,25 +212,21 @@ class ItemEditFragment : Fragment() {
         }
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        //return inflater.inflate(R.layout.fragment_box, container, false)
 
         val v =  inflater.inflate(R.layout.fragment_item_edit, container, false)
 
         // Get the activity and widget
         item_edit_name_field = v.findViewById(R.id.item_edit_name)
+        item_edit_name_label = v.findViewById(R.id.item_edit_name_label)
         item_edit_description_field = v.findViewById(R.id.item_edit_description)
         item_edit_tags_field = v.findViewById(R.id.item_edit_tags)
         item_edit_image_field = v.findViewById(R.id.item_edit_image)
         item_edit_tags_chips = v.findViewById(R.id.item_edit_tags_chips)
-
-        // Get the arguments from the caller fragment/activity
-        item_model = arguments?.getSerializable("itemModel") as ItemModel
-        is_new_item = arguments?.getSerializable("isNewBox") as Boolean
 
         item_edit_name_field.setText(item_model.name)
         item_edit_description_field.setText(item_model.description)
@@ -241,12 +242,11 @@ class ItemEditFragment : Fragment() {
             }
         }
 
-
         if (is_new_item){
-            (activity as AppCompatActivity).supportActionBar?.title = "Gegenstand erstellen"
+            (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.fragment_item_edit_title_new)
 
         } else {
-            (activity as AppCompatActivity).supportActionBar?.title = "Gegenstand bearbeiten"
+            (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.fragment_item_edit_title)
         }
 
         val thisFragment = this
@@ -288,6 +288,7 @@ class ItemEditFragment : Fragment() {
         return v
     }
 
+
     private fun addChipToGroup(chipText: String) {
         val chip = Chip(context)
         chip.text = chipText
@@ -300,30 +301,10 @@ class ItemEditFragment : Fragment() {
         }
     }
 
+
     override fun onDestroyView() {
-        Log.w("box","destroy")
         super.onDestroyView()
-        //_binding = null
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param boxModel Parameter 1.
-         * @return A new instance of fragment BoxFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(itemModel: ItemModel, isNewBox: Boolean) =
-            ItemEditFragment().apply {
-                val args = Bundle()
-                args.putSerializable("model", itemModel)
-                args.putSerializable("isNewBox", isNewBox)
-                val fragment = ItemEditFragment()
-                fragment.arguments = args
-                return fragment
-            }
-    }
+
 }

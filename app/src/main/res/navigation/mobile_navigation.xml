@@ -64,7 +64,8 @@
             app:argType="com.thw.inventory_app.ui.box.BoxItemModel[]" />
         <argument
             android:name="isNewBox"
-            app:argType="boolean" />
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/itemFragment"
@@ -81,13 +82,19 @@
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
-        android:name="com.thw.inventory_app.ui.item.ItemEditFragment"/>
+        android:name="com.thw.inventory_app.ui.item.ItemEditFragment">
         <argument
             android:name="itemModel"
             app:argType="com.thw.inventory_app.ItemModel" />
         <argument
-            android:name="isNewBox"
-            app:argType="boolean" />
+            android:name="isNewItem"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="isBoxEditMode"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
     <fragment
         android:id="@+id/itemsAddFragment"
         android:name="com.thw.inventory_app.ui.box.ItemsAddFragment">

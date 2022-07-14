@@ -6,13 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
@@ -21,39 +16,40 @@ import com.google.android.material.chip.ChipGroup
 import com.thw.inventory_app.BoxModel
 import com.thw.inventory_app.R
 import com.thw.inventory_app.Utils
-import com.thw.inventory_app.ui.box.BoxFragment
 
 
 class ContainingBoxAdapter(
     private val mDataList: ArrayList<BoxModel>,
     item_id: String,
-    private val do_animate: Boolean
 ) : RecyclerView.Adapter<ContainingBoxAdapter.BoxItemViewHolder>() {
 
     lateinit var context: Context
     lateinit var item_id: String
     private var mBoxModel: ArrayList<BoxModel> = ArrayList()
 
+
     init {
         setFilter(mDataList)
         this.item_id = item_id
     }
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BoxItemViewHolder {
         context = parent.context
         val layoutInflater = LayoutInflater.from(parent.context)
         return BoxItemViewHolder(layoutInflater.inflate(R.layout.card_box_with_inv, parent, false))
-
     }
+
 
     override fun getItemCount(): Int {
         return mBoxModel.size
     }
 
+
     override fun onBindViewHolder(holder: BoxItemViewHolder, position: Int) {
         (holder as BoxItemViewHolder).bind(mBoxModel[position]);
-        //setAnimation(holder.itemView);
     }
+
 
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
@@ -136,20 +132,7 @@ class ContainingBoxAdapter(
                 val bundle = Bundle()
                 bundle.putSerializable("boxModel", mDataList[adapterPosition])
                 navController.navigate(R.id.action_itemFragment_to_boxFragment, bundle)
-                //val action = MainFragmentDirections.actionMainFragmentToReportsFragment()
-                //navController.navigate(action)
-                //val myFragment: Fragment = BoxFragment.newInstance(mDataList[adapterPosition], adapterPosition)
-                //val context = view.getContext()
-                //Utils.pushFragment(myFragment, context, "ItemView")
             }
-        }
-    }
-
-    private fun setAnimation(viewToAnimate: View) {
-        if (do_animate) {
-            val animation: Animation =
-                AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left)
-            viewToAnimate.startAnimation(animation)
         }
     }
 

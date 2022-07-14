@@ -1,31 +1,26 @@
 package com.thw.inventory_app
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.widget.ListView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.elevation.SurfaceColors
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.ktx.Firebase
 import com.thw.inventory_app.databinding.ActivityMainBinding
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var listView: ListView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +55,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         return true
     }
@@ -79,22 +75,12 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
-    /*override fun onBackPressed() {
-        val fragments: List<Fragment> = supportFragmentManager.fragments
-        if (fragments.size > 1) {
-            val currentFragment: Fragment? =
-                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
-            if (currentFragment != null) {
-                supportFragmentManager.beginTransaction().remove(currentFragment).commit()
-                supportFragmentManager.popBackStack()
-            }
-        } else {
-            super.onBackPressed()
-        }
-    }*/
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.clear()
     }
+
+
 }

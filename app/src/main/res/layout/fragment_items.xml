@@ -8,12 +8,16 @@
     android:layout_height="match_parent"
     tools:context=".ui.notifications.ItemsFragment">
 
+    <ImageView
+        android:scaleType="centerCrop"
+        android:src="@drawable/background_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RV_items"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp" />
+        android:layout_height="match_parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/items_add_button"

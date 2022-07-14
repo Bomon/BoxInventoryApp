@@ -2,13 +2,13 @@ package com.thw.inventory_app.ui.home
 
 import android.os.Bundle
 import android.os.Handler
-import android.transition.*
-import android.util.Log
+import android.os.Looper
 import android.view.*
+import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +25,9 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     lateinit var adapter: BoxAdapter
     lateinit var rv: RecyclerView
     lateinit var firebase_listener: ValueEventListener
-    var isBackPressedOnce: Boolean = false
+    private var doubleBackToExitPressedOnce: Boolean = false
+    lateinit var exitToast: Toast
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_home, menu)
@@ -45,6 +47,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         })
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
@@ -68,15 +71,30 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         }
     }
 
+
+    override fun onCreate(savedInstanceState: Bundle?){
+        super.onCreate(savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            if (doubleBackToExitPressedOnce) {
+                exitToast.cancel()
+                activity?.finish()
+            }
+            if (::exitToast.isInitialized){
+                exitToast.cancel()
+            }
+            doubleBackToExitPressedOnce = true
+            Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+            exitToast = Toast.makeText(context, getText(R.string.press_back_again_to_exit), Toast.LENGTH_LONG)
+            exitToast.show()
+        }
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        //(activity as AppCompatActivity).getSupportActionBar()?.show()
-        //activity?.getActionBar()?.show()
-
-        // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_home, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_home) as RecyclerView
         adapter = BoxAdapter(boxList)
@@ -102,16 +120,15 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         setHasOptionsMenu(true)
     }
 
+
     fun initFirebase() {
         firebase_listener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
-                Log.e("Error", "Data Change")
                 boxList.clear()
                 val boxes = dataSnapshot.child("boxes")
                 for (box: DataSnapshot in boxes.children){
                     val boxModel = Utils.readBoxModelFromDataSnapshot(box)
                     boxList.add(boxModel)
-                    Log.e("Error", "Adding box: " + boxModel.name)
                 }
                 adapter.setFilter(boxList)
             }
@@ -119,6 +136,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         }
         FirebaseDatabase.getInstance().reference.addValueEventListener(firebase_listener)
     }
+
 
     override fun onQueryTextChange(newText: String): Boolean {
         val filteredModelList: List<BoxModel> = filter(boxList, newText)
@@ -129,9 +147,11 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         return true
     }
 
+
     override fun onQueryTextSubmit(query: String?): Boolean {
         return false
     }
+
 
     private fun filter(models: List<BoxModel>, query: String): List<BoxModel> {
         var query = query
@@ -150,10 +170,18 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
+    override fun onPause() {
+        if (::exitToast.isInitialized){
+            exitToast.cancel()
+        }
+        super.onPause()
+    }
+
+
     override fun onDestroyView() {
-        Log.w("home","destroy")
         super.onDestroyView()
         FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
     }
 
+    
 }

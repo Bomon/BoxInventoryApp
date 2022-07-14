@@ -16,23 +16,23 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.FileProvider
 import androidx.lifecycle.LifecycleOwner
-import androidx.transition.TransitionManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
-import com.google.zxing.WriterException
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.lowagie.text.*
 import com.lowagie.text.pdf.PdfPCell
 import com.lowagie.text.pdf.PdfPTable
 import com.lowagie.text.pdf.PdfWriter
 import com.lowagie.text.pdf.draw.VerticalPositionMark
+import kotlinx.coroutines.*
 import java.io.*
+import java.lang.Runnable
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -202,213 +202,233 @@ class BoxPdfCreator {
         }
     }
 
-    fun buildPDFcontent(context: Context, document: Document, box_model: BoxModel){
-        document.setMargins(10f, 10f, 16f, 10f);
-        // Create Header
-
-        val headerPlaceholder = Phrase("", FontFactory.getFont(FontFactory.HELVETICA, 1f))
-        //addEmptyLine(headerPlaceholder, 1)
-        val headerParagraph = Paragraph()
-        val headerTable = PdfPTable(4)
-        headerTable.widthPercentage = 95f
-        val widths = floatArrayOf(8f, 72f, 10f, 10f)
-        headerTable.setWidths(widths)
-
-        val eagle: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_adler)
+    fun prepareImage(bmp: Bitmap?): Image? {
+        Log.e("Error", "Starting prepare")
         val stream = ByteArrayOutputStream()
-        if (eagle != null) {
-            Log.e("ERROR", "Adding image")
-            eagle.compress(Bitmap.CompressFormat.PNG, 80, stream)
+        if (bmp != null) {
+            bmp.compress(Bitmap.CompressFormat.PNG, 80, stream)
             val image: Image = Image.getInstance(stream.toByteArray())
             stream.close()
-            image.scaleAbsolute(50f, 50f)
-            val cell = PdfPCell(image)
-            cell.border = Rectangle.NO_BORDER
-            headerTable.addCell(cell)
+            return image
         }
+        return null
+    }
 
-        val textTable = PdfPTable(1)
-        val cell2 = PdfPCell(Phrase("Bundesanstalt Technisches Hilfswerk",
-            FontFactory.getFont(FontFactory.TIMES_BOLD, 16f)))
-        cell2.border = Rectangle.NO_BORDER
-        textTable.addCell(cell2)
+    fun buildPDFcontent(context: Context, document: Document, box_model: BoxModel){
 
-        val cell3 = PdfPCell(Phrase("Ortsverband Obernburg, FGr Öl (C)",
-            FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16f)))
-        cell3.border = Rectangle.NO_BORDER
-        textTable.addCell(cell3)
-
-        val cell1 = PdfPCell(textTable)
-        cell1.border = Rectangle.NO_BORDER
-        headerTable.addCell(cell1)
-
+        Log.e("Error", "Prepare Images")
+        val eagle: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_adler)
+        //val imageEagle = prepareImage(eagle)
         val oel: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_oel)
-        stream.reset()
-        if (oel != null) {
-            Log.e("ERROR", "Adding image")
-            oel.compress(Bitmap.CompressFormat.PNG, 80, stream)
-            val image: Image = Image.getInstance(stream.toByteArray())
-            stream.close()
-            image.scaleAbsolute(50f, 50f)
-            val cell = PdfPCell(image)
-            cell.border = Rectangle.NO_BORDER
-            headerTable.addCell(cell)
-        }
-
+        //val imageOel = prepareImage(oel)
         val thw: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_thw)
-        stream.reset()
-        if (thw != null) {
-            Log.e("ERROR", "Adding image")
-            thw.compress(Bitmap.CompressFormat.PNG, 80, stream)
-            val image: Image = Image.getInstance(stream.toByteArray())
-            stream.close()
-            image.scaleAbsolute(50f, 50f)
-            val cell = PdfPCell(image)
-            cell.border = Rectangle.NO_BORDER
-            headerTable.addCell(cell)
-        }
+        //val imageThw = prepareImage(thw)
+        var qrcode: Bitmap? = encodeAsBitmap(box_model.qrcode, BarcodeFormat.QR_CODE, 512, 512);
+        //val qrcodeImg = prepareImage(bmp)
+        val qr_logo: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.qrcode_center_round)
+        //val qrcodeLogoImg = prepareImage(qr_logo)
 
-        headerParagraph.add(headerPlaceholder)
-        headerParagraph.add(headerTable)
+        runBlocking {
+            val job = GlobalScope.launch {
+                val logo_job = async { prepareImage(qr_logo) }
+                val qrcode_job = async { prepareImage(qrcode) }
+                val thw_job = async { prepareImage(thw) }
+                val oel_job = async { prepareImage(oel) }
+                val eagle_job = async { prepareImage(eagle) }
 
-        val header = HeaderFooter(headerParagraph, false)
-        header.setAlignment(Element.ALIGN_CENTER)
-        document.setHeader(header)
+                val (qrcodeLogoImg, qrcodeImg, imageThw, imageOel, imageEagle) = awaitAll(logo_job, qrcode_job, thw_job, oel_job, eagle_job)
 
-        //footer
-        val glue = Chunk(VerticalPositionMark())
-        val timeStamp: String = SimpleDateFormat("dd.MM.yyyy").format(Date())
-        val p = Paragraph(Phrase("           " + timeStamp,
-            FontFactory.getFont(FontFactory.HELVETICA, 7f)))
-        p.add(Chunk(glue))
-        p.add(Phrase("Im Weidig 22 - 63785 Obernburg - Tel: (0 60 22) 64 95 10",
-            FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8f)))
-        p.add(Chunk(glue))
-        p.add(Phrase(box_model.id + " - " + box_model.name + "           ",
-            FontFactory.getFont(FontFactory.HELVETICA, 7f)))
-        p.spacingAfter = 10f
+                Log.e("Error", "Build Document")
+
+                document.setMargins(10f, 10f, 16f, 10f);
+                // Create Header
+                val headerPlaceholder = Phrase("", FontFactory.getFont(FontFactory.HELVETICA, 1f))
+                //addEmptyLine(headerPlaceholder, 1)
+                val headerParagraph = Paragraph()
+                val headerTable = PdfPTable(4)
+                headerTable.widthPercentage = 95f
+                val widths = floatArrayOf(8f, 72f, 10f, 10f)
+                headerTable.setWidths(widths)
+                if (imageEagle != null) {
+                    imageEagle.scaleAbsolute(50f, 50f)
+                    val cell = PdfPCell(imageEagle)
+                    cell.border = Rectangle.NO_BORDER
+                    headerTable.addCell(cell)
+                }
+
+                val textTable = PdfPTable(1)
+                val cell2 = PdfPCell(Phrase("Bundesanstalt Technisches Hilfswerk",
+                    FontFactory.getFont(FontFactory.TIMES_BOLD, 16f)))
+                cell2.border = Rectangle.NO_BORDER
+                textTable.addCell(cell2)
+
+                val cell3 = PdfPCell(Phrase("Ortsverband Obernburg, FGr Öl (C)",
+                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16f)))
+                cell3.border = Rectangle.NO_BORDER
+                textTable.addCell(cell3)
+
+                val cell1 = PdfPCell(textTable)
+                cell1.border = Rectangle.NO_BORDER
+                headerTable.addCell(cell1)
+
+                if (imageOel != null) {
+                    imageOel.scaleAbsolute(50f, 50f)
+                    val cell = PdfPCell(imageOel)
+                    cell.border = Rectangle.NO_BORDER
+                    headerTable.addCell(cell)
+                }
+
+                if (imageThw != null) {
+                    imageThw.scaleAbsolute(50f, 50f)
+                    val cell = PdfPCell(imageThw)
+                    cell.border = Rectangle.NO_BORDER
+                    headerTable.addCell(cell)
+                }
+
+                headerParagraph.add(headerPlaceholder)
+                headerParagraph.add(headerTable)
+
+                val header = HeaderFooter(headerParagraph, false)
+                header.setAlignment(Element.ALIGN_CENTER)
+                document.setHeader(header)
+
+                //footer
+                val glue = Chunk(VerticalPositionMark())
+                val timeStamp: String = SimpleDateFormat("dd.MM.yyyy").format(Date())
+                val p = Paragraph(Phrase("           " + timeStamp,
+                    FontFactory.getFont(FontFactory.HELVETICA, 7f)))
+                p.add(Chunk(glue))
+                p.add(Phrase("Im Weidig 22 - 63785 Obernburg - Tel: (0 60 22) 64 95 10",
+                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8f)))
+                p.add(Chunk(glue))
+                p.add(Phrase(box_model.id + " - " + box_model.name + "           ",
+                    FontFactory.getFont(FontFactory.HELVETICA, 7f)))
+                p.spacingAfter = 10f
 
 
-        val footerPlaceholder = Paragraph()
-        addEmptyLine(footerPlaceholder, 1)
-        p.add(footerPlaceholder)
+                val footerPlaceholder = Paragraph()
+                addEmptyLine(footerPlaceholder, 1)
+                p.add(footerPlaceholder)
 
-        val footer = HeaderFooter(p, false)
-        document.setFooter(footer)
+                val footer = HeaderFooter(p, false)
+                document.setFooter(footer)
 
 
-        // Open document for actual content
-        document.open()
+                // Open document for actual content
+                document.open()
 
-        // Add title
-        var titleContainer = Paragraph()
+                // Add title
+                var titleContainer = Paragraph()
 
-        val title = Paragraph()
-        title.add(Phrase("Box ",
-            FontFactory.getFont(FontFactory.HELVETICA, 36f)))
-        title.add(Phrase(box_model.id,
-            FontFactory.getFont(FontFactory.HELVETICA_BOLD, 36f)))
-        title.add(Phrase(" - ",
-            FontFactory.getFont(FontFactory.HELVETICA, 36f)))
-        title.add(Phrase(box_model.name,
-            FontFactory.getFont(FontFactory.HELVETICA, 36f)))
+                val title = Paragraph()
+                title.add(Phrase("Box ",
+                    FontFactory.getFont(FontFactory.HELVETICA, 36f)))
+                title.add(Phrase(box_model.id,
+                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 36f)))
+                title.add(Phrase(" - ",
+                    FontFactory.getFont(FontFactory.HELVETICA, 36f)))
+                title.add(Phrase(box_model.name,
+                    FontFactory.getFont(FontFactory.HELVETICA, 36f)))
 
-        createTextInTable(titleContainer, title, 70f, Rectangle.ALIGN_LEFT, 0f, 0f)
-        document.add(titleContainer)
+                createTextInTable(titleContainer, title, 70f, Rectangle.ALIGN_LEFT, 0f, 0f)
+                document.add(titleContainer)
 
-        // Create content table
-        val contentTable = PdfPTable(4)
-        val contentTableWidths = floatArrayOf(0.5f, 1.5f, 10.5f, 4.5f)
-        contentTable.setWidths(contentTableWidths)
-        contentTable.widthPercentage = 70f
-        contentTable.horizontalAlignment = Rectangle.ALIGN_LEFT
-        contentTable.setSpacingBefore(30f)
+                // Create content table
+                val contentTable = PdfPTable(4)
+                val contentTableWidths = floatArrayOf(0.5f, 1.5f, 10.5f, 4.5f)
+                contentTable.setWidths(contentTableWidths)
+                contentTable.widthPercentage = 70f
+                contentTable.horizontalAlignment = Rectangle.ALIGN_LEFT
+                contentTable.setSpacingBefore(30f)
 
-        val cellTitle0 = PdfPCell(Phrase(""))
-        cellTitle0.border = Rectangle.NO_BORDER
-        cellTitle0.horizontalAlignment = Rectangle.ALIGN_LEFT
-        contentTable.addCell(cellTitle0)
+                val cellTitle0 = PdfPCell(Phrase(""))
+                cellTitle0.border = Rectangle.NO_BORDER
+                cellTitle0.horizontalAlignment = Rectangle.ALIGN_LEFT
+                contentTable.addCell(cellTitle0)
 
-        val cellTitle1 = PdfPCell(Phrase("Anz.",
-            FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18f)))
-        cellTitle1.border = Rectangle.NO_BORDER
-        cellTitle1.horizontalAlignment = Rectangle.ALIGN_LEFT
-        cellTitle1.paddingBottom = 4f
-        contentTable.addCell(cellTitle1)
+                val cellTitle1 = PdfPCell(Phrase("Anz.",
+                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18f)))
+                cellTitle1.border = Rectangle.NO_BORDER
+                cellTitle1.horizontalAlignment = Rectangle.ALIGN_LEFT
+                cellTitle1.paddingBottom = 4f
+                contentTable.addCell(cellTitle1)
 
-        val cellTitle2 = PdfPCell(Phrase("Gegenstand",
-            FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18f)))
-        cellTitle2.border = Rectangle.NO_BORDER
-        cellTitle2.horizontalAlignment = Rectangle.ALIGN_LEFT
-        cellTitle2.paddingBottom = 4f
-        contentTable.addCell(cellTitle2)
+                val cellTitle2 = PdfPCell(Phrase("Gegenstand",
+                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18f)))
+                cellTitle2.border = Rectangle.NO_BORDER
+                cellTitle2.horizontalAlignment = Rectangle.ALIGN_LEFT
+                cellTitle2.paddingBottom = 4f
+                contentTable.addCell(cellTitle2)
 
-        val cellTitle3 = PdfPCell(Phrase("InvNr.",
-            FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18f)))
-        cellTitle3.border = Rectangle.NO_BORDER
-        cellTitle3.horizontalAlignment = Rectangle.ALIGN_LEFT
-        cellTitle3.paddingBottom = 4f
-        contentTable.addCell(cellTitle3)
+                val cellTitle3 = PdfPCell(Phrase("InvNr.",
+                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18f)))
+                cellTitle3.border = Rectangle.NO_BORDER
+                cellTitle3.horizontalAlignment = Rectangle.ALIGN_LEFT
+                cellTitle3.paddingBottom = 4f
+                contentTable.addCell(cellTitle3)
 
-        val itemNames = Utils.getAllItemNames()
+                val itemNames = Utils.getAllItemNames()
 
-        for (contentItem in box_model.content) {
-            val cellTitle0 = PdfPCell(Phrase(""))
-            cellTitle0.border = Rectangle.NO_BORDER
-            cellTitle0.horizontalAlignment = Rectangle.ALIGN_LEFT
-            contentTable.addCell(cellTitle0)
+                for (contentItem in box_model.content) {
+                    val cellTitle0 = PdfPCell(Phrase(""))
+                    cellTitle0.border = Rectangle.NO_BORDER
+                    cellTitle0.horizontalAlignment = Rectangle.ALIGN_LEFT
+                    contentTable.addCell(cellTitle0)
 
-            val cellContent1 = PdfPCell(Phrase(contentItem.amount,
-                FontFactory.getFont(FontFactory.HELVETICA, 14f)))
-            cellContent1.paddingLeft = 4f
-            cellContent1.paddingRight = 4f
-            cellContent1.paddingBottom = 4f
-            contentTable.addCell(cellContent1)
+                    val cellContent1 = PdfPCell(Phrase(contentItem.amount,
+                        FontFactory.getFont(FontFactory.HELVETICA, 14f)))
+                    cellContent1.paddingLeft = 4f
+                    cellContent1.paddingRight = 4f
+                    cellContent1.paddingBottom = 4f
+                    contentTable.addCell(cellContent1)
 
-            val cellContent2 = PdfPCell(Phrase(itemNames[contentItem.id],
-                FontFactory.getFont(FontFactory.HELVETICA, 14f)))
-            cellContent2.paddingLeft = 4f
-            cellContent2.paddingRight = 4f
-            cellContent2.paddingBottom = 4f
-            contentTable.addCell(cellContent2)
+                    val cellContent2 = PdfPCell(Phrase(itemNames[contentItem.id],
+                        FontFactory.getFont(FontFactory.HELVETICA, 14f)))
+                    cellContent2.paddingLeft = 4f
+                    cellContent2.paddingRight = 4f
+                    cellContent2.paddingBottom = 4f
+                    contentTable.addCell(cellContent2)
 
-            val cellContent3 = PdfPCell(Phrase(contentItem.invnum.split(";").joinToString("\n"),
-                FontFactory.getFont(FontFactory.HELVETICA, 14f)))
-            cellContent3.paddingLeft = 4f
-            cellContent3.paddingRight = 4f
-            cellContent3.paddingBottom = 4f
-            contentTable.addCell(cellContent3)
+                    val cellContent3 = PdfPCell(Phrase(contentItem.invnum.split(";").joinToString("\n"),
+                        FontFactory.getFont(FontFactory.HELVETICA, 14f)))
+                    cellContent3.paddingLeft = 4f
+                    cellContent3.paddingRight = 4f
+                    cellContent3.paddingBottom = 4f
+                    contentTable.addCell(cellContent3)
 
-        }
+                }
 
-        var contentContainer = Paragraph()
-        contentContainer.add(contentTable)
-        document.add(contentTable)
+                var contentContainer = Paragraph()
+                contentContainer.add(contentTable)
+                document.add(contentTable)
 
-        // Create QRCode
-        try {
-            var bmp: Bitmap? = encodeAsBitmap(box_model.qrcode, BarcodeFormat.QR_CODE, 512, 512);
-            stream.reset()
-            if (bmp != null) {
-                bmp.compress(Bitmap.CompressFormat.PNG, 80, stream)
-                val image: Image = Image.getInstance(stream.toByteArray())
-                stream.close()
-                image.scaleAbsolute(175f, 175f)
-                image.setAbsolutePosition(620f, 330f)
-                document.add(image)
+                // Create QRCode
+                if (qrcodeImg != null) {
+                    qrcodeImg.scaleAbsolute(175f, 175f)
+                    qrcodeImg.setAbsolutePosition(620f, 330f)
+                    document.add(qrcodeImg)
+                }
+
+                // Put logo in QRCode
+                if (qrcodeLogoImg != null) {
+                    qrcodeLogoImg.scaleAbsolute(37.6f, 37.6f)
+                    qrcodeLogoImg.setAbsolutePosition(688.7f, 398.7f)
+                    document.add(qrcodeLogoImg)
+                }
+
+                // Display Box Img
+                if (box_model.image != "") {
+                    val boxImage: Image = Image.getInstance(Base64.decode(box_model.image, Base64.DEFAULT))
+                    boxImage.scaleAbsolute(220f, 165f)
+                    boxImage.setAbsolutePosition(605f, 150f)
+                    document.add(boxImage)
+                }
+                Log.e("Error", "Build Document - DONE")
+
             }
-
-        } catch (e: WriterException) {
-            e.printStackTrace()
+            job.join()
         }
 
-        // Display Box Img
-        if (box_model.image != "") {
-            val boxImage: Image = Image.getInstance(Base64.decode(box_model.image, Base64.DEFAULT))
-            boxImage.scaleAbsolute(220f, 165f)
-            boxImage.setAbsolutePosition(605f, 150f)
-            document.add(boxImage)
-        }
 
     }
 
@@ -424,14 +444,16 @@ class BoxPdfCreator {
         desiredWidth: Int,
         desiredHeight: Int
     ): Bitmap? {
-        var hints: Hashtable<EncodeHintType?, Any?>? = null
-        val encoding: String? = guessAppropriateEncoding(contents)
+        var qr_code_contents = "https://play.google.com/store/apps/details?id=com.pixlbee.heros&box=" + contents
+
+        var hints: HashMap<EncodeHintType, Any> = HashMap<EncodeHintType, Any>()
+        hints[EncodeHintType.ERROR_CORRECTION] = ErrorCorrectionLevel.M
+        val encoding: String? = guessAppropriateEncoding(qr_code_contents)
         if (encoding != null) {
-            hints = Hashtable(2)
             hints[EncodeHintType.CHARACTER_SET] = encoding
         }
         val writer = MultiFormatWriter()
-        val result = writer.encode(contents, format, desiredWidth, desiredHeight, hints)
+        val result = writer.encode(qr_code_contents, format, desiredWidth, desiredHeight, hints)
         val width = result.width
         val height = result.height
         val pixels = IntArray(width * height)

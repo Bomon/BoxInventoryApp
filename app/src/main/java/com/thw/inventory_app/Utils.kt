@@ -1,17 +1,10 @@
 package com.thw.inventory_app
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.ArrayMap
 import android.util.Base64
-import android.util.Log
-import android.view.View
 import androidx.core.view.allViews
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
-import androidx.test.core.app.launchActivity
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.android.material.chip.Chip
@@ -35,6 +28,7 @@ class Utils {
             }
         }
 
+
         fun getEncoded64ImageStringFromBitmap(bitmap: Bitmap): String {
             val stream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream)
@@ -43,19 +37,6 @@ class Utils {
             return Base64.encodeToString(byteFormat, Base64.NO_WRAP)
         }
 
-        fun pushFragment(newFragment: Fragment, context: Context, backStackName: String) {
-            val fragmentManager = (context as FragmentActivity).supportFragmentManager
-            val transaction: FragmentTransaction = fragmentManager.beginTransaction()
-            //transaction.setCustomAnimations(
-            //    R.anim.slide_in,
-            //    R.anim.fade_out,
-            //    R.anim.fade_in,
-            //    R.anim.slide_out)
-            transaction.replace(R.id.nav_host_fragment_activity_main, newFragment)
-            //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-            transaction.addToBackStack(backStackName)
-            transaction.commit()
-        }
 
         fun readBoxModelFromDataSnapshot(box: DataSnapshot): BoxModel {
             val image = box.child("image").value.toString()
@@ -69,7 +50,6 @@ class Utils {
 
             var color: Int? = box.child("color").value.toString().toIntOrNull()
             if (color == null) {
-                Log.e("Error", "Box color is null")
                 color = R.color.default_box_color
             }
 
@@ -90,6 +70,7 @@ class Utils {
             return BoxModel(id, name, description, qrcode, location, image, location_image, notes, color, status, contentList)
         }
 
+
         fun getAllBoxIds(): ArrayList<String> {
             var idList: ArrayList<String> = ArrayList<String>()
             val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
@@ -103,9 +84,9 @@ class Utils {
                     }
                 }
             }
-            Log.e("Error", idList.joinToString(", "))
             return idList
         }
+
 
         fun getAllBoxQRcodes(): ArrayList<String> {
             var qrList: ArrayList<String> = ArrayList<String>()
@@ -122,6 +103,7 @@ class Utils {
             }
             return qrList
         }
+
 
         fun getAllItemNames(): ArrayMap<String, String> {
             var itemsMap: ArrayMap<String, String> = ArrayMap<String, String>()
@@ -154,6 +136,7 @@ class Utils {
             return itemsMap
         }
 
+
         fun updateFirebaseEntities(){
             val itemsRef = FirebaseDatabase.getInstance().reference.child("boxes")
             itemsRef.get().addOnCompleteListener { task ->
@@ -183,6 +166,7 @@ class Utils {
             }
         }
 
+
         fun chipListToString(chipGroup: ChipGroup): String{
             var chipString = ""
             for (chip in chipGroup.allViews) {
@@ -193,11 +177,6 @@ class Utils {
             return chipString.removePrefix(";")
         }
 
-        fun setRecyclerViewCardAnimation(viewToAnimate: View, context: Context) {
-            //val animation: Animation =
-            //    AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left)
-            //viewToAnimate.startAnimation(animation)
-        }
 
         fun getItemNameForId(id: String): String {
             var itemName = "?"
@@ -210,7 +189,6 @@ class Utils {
                         for (item: DataSnapshot in items.children) {
                             if (item.child("id").value.toString() == id){
                                 itemName = item.child("name").value.toString()
-                                Log.e("Error", "Found item: " + itemName)
                                 done = true
                                 break
                             }

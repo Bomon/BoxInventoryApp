@@ -1,6 +1,5 @@
 package com.thw.inventory_app
 
-import android.widget.ListView
 import java.io.Serializable
 
 class ItemModel(

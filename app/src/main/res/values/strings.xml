@@ -39,15 +39,17 @@
     <string name="edit_box_title">Box Daten</string>
     <string name="edit_box_status_helper">Zum Hinzufügen ; oder Enter drücken</string>
     <string name="edit_box_qrcode">QR-Code</string>
-    <string name="edit_box_qrcode_helper">Achtung: Jede Änderung macht den bestehenden QR-Code der Box ungültig</string>
+    <string name="edit_box_qrcode_helper">Achtung: Jede Änderung macht ausgedruckte QR-Codes ungültig</string>
 
     <string name="dialog_set">Übernehmen</string>
     <string name="dialog_add">Hinzufügen</string>
     <string name="dialog_cancel">Abbrechen</string>
     <string name="dialog_invnum">Inventarnummer</string>
+    <string name="dialog_yes">Ja</string>
+    <string name="dialog_no">Nein</string>
 
     <string name="sheet_export_done">PDF ist bereit</string>
-    <string name="sheet_export_loading">PDF Erstellung läuft...</string>
+    <string name="sheet_export_loading">PDF wird erstellt...</string>
     <string name="sheet_export_save">Speichern</string>
     <string name="sheet_export_share">Teilen</string>
     <string name="login_btn">Login</string>
@@ -66,6 +68,7 @@
     <string name="item_edit_name">Bezeichnung</string>
     <string name="item_edit_title">Allgemeine Daten</string>
     <string name="item_edit_image">Foto</string>
+    <string name="press_back_again_to_exit">Zum Verlassen nochmal ZURÜCK klicken</string>
 
     <string name="color_select_title">Farbe Wählen</string>
     <string name="edit_box_color">Farbmarkierung ändern</string>
@@ -73,4 +76,30 @@
     <string name="edit_item_invnum">InvNr.</string>
     <string name="box_card_transition_name">box_card_transition_name</string>
     <string name="box_card_detail_transition_name">box_card_detail_transition_name</string>
+    <string name="dialog_dismiss_title">Änderungen Verwerfen?</string>
+    <string name="dialog_dismiss_text">Alle nicht gespeicherten Änderungen gehen verloren.</string>
+    <string name="dialog_save_title">Änderungen Speichern?</string>
+    <string name="dialog_save_text">Alte Daten werden überschrieben.</string>
+    <string name="error_field_empty">Feld darf nicht leer sein</string>
+    <string name="error_box_already_exists_id">Es existiert bereits eine Box mit dieser ID</string>
+    <string name="error_box_already_exists_qrcode">Es existiert bereits eine Box mit dieser ID</string>
+    <string name="fragment_box_edit_title">Box bearbeiten</string>
+    <string name="fragment_box_edit_title_new">Box erstellen</string>
+    <string name="dialog_delete_box_title">Box Löschen?</string>
+    <string name="dialog_delete_box_text">Soll die Box wirklich gelöscht werden?</string>
+    <string name="dialog_add_invnr_title">Inventarnummer Hinzufügen</string>
+    <string name="error_dialog_invnr_empty">Inventarnummer darf nicht leer sein</string>
+    <string name="error_dialog_invnr_invalid">Inventarnummer darf kein ; enthalten</string>
+    <string name="items_add_fragment_title">Gegenstand hinzufügen</string>
+    <string name="fragment_item_edit_title">Gegenstand erstellen</string>
+    <string name="fragment_item_edit_title_new">Gegenstand bearbeiten</string>
+    <string name="dialog_delete_item_title">Gegenstand Löschen?</string>
+    <string name="dialog_delete_item_text">Achtung: Beim Löschen wird der Geegenstand automatisch aus allen Boxen entfernt</string>
+    <string name="permission_camera_request">Kamera Zugriff wird benötigt, um den QR- Scanner zu nutzen</string>
+    <string name="error_qrcode_invalid">QR-Code ungültig</string>
+    <string name="error_start_camera">Kamera konnte nicht gestartet werden</string>
+    <string name="login_successful">Login erfolgreich</string>
+    <string name="error_check_username">Benutzernamen überprüfen</string>
+    <string name="error_check_password">Passwort überprüfen</string>
+    <string name="error_login_failed">Login Fehlgeschlagen</string>
 </resources>

@@ -1,21 +1,12 @@
 package com.thw.inventory_app.ui.box
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.FirebaseDatabase
 import com.thw.inventory_app.*
 
 class ItemAddAdapter(private val mDataList: ArrayList<ItemModel>) : RecyclerView.Adapter<ItemAddAdapter.ItemViewHolder>() {
@@ -24,9 +15,11 @@ class ItemAddAdapter(private val mDataList: ArrayList<ItemModel>) : RecyclerView
     private var mItemModel: ArrayList<ItemModel> = ArrayList()
     private lateinit var mListener: ItemAddAdapter.OnItemClickListener
 
+
     init {
         setFilter(mDataList)
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         context = parent.context
@@ -35,9 +28,11 @@ class ItemAddAdapter(private val mDataList: ArrayList<ItemModel>) : RecyclerView
         return ItemViewHolder(view)
     }
 
+
     override fun getItemCount(): Int {
         return mItemModel.size
     }
+
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
 
@@ -47,6 +42,7 @@ class ItemAddAdapter(private val mDataList: ArrayList<ItemModel>) : RecyclerView
             holder.item_image.setImageBitmap(img)
         }
     }
+
 
     inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
@@ -73,12 +69,15 @@ class ItemAddAdapter(private val mDataList: ArrayList<ItemModel>) : RecyclerView
 
     }
 
+
     interface OnItemClickListener{
         fun onItemClicked(item: ItemModel, view: View)
     }
 
+
     fun setOnItemClickListener(mListener: OnItemClickListener) {
         this.mListener = mListener
     }
+
 
 }

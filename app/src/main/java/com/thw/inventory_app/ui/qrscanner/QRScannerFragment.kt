@@ -3,15 +3,11 @@ package com.thw.inventory_app.ui.qrscanner
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -19,7 +15,6 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.budiyev.android.codescanner.*
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.thw.inventory_app.*
 import com.thw.inventory_app.R
@@ -37,6 +32,7 @@ class QRScannerFragment : Fragment() {
     private var toast: Toast? = null
     lateinit var firebase_listener: ValueEventListener
 
+
     private val requestPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
@@ -45,17 +41,15 @@ class QRScannerFragment : Fragment() {
                 // handle permission denial
                 val activity = requireActivity()
                 activity. runOnUiThread {
-                    Toast.makeText(activity, "Kamera Zugriff wird benötigt, um QR Code Scanner zu nutzen",
+                    Toast.makeText(activity, resources.getString(R.string.permission_camera_request),
                         Toast.LENGTH_LONG).show()
                 }
             }
         }
 
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-
-        //(activity as AppCompatActivity).getSupportActionBar()?.hide()
-        //activity?.getActionBar()?.hide()
 
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -82,6 +76,7 @@ class QRScannerFragment : Fragment() {
         return view
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val scannerView = view.findViewById<CodeScannerView>(R.id.scanner_view)
         val activity = requireActivity()
@@ -105,7 +100,16 @@ class QRScannerFragment : Fragment() {
                         val boxes = dataSnapshot.child("boxes")
                         for (box: DataSnapshot in boxes.children){
                             val qrcode = box.child("qrcode").value.toString()
-                            if (qrcode.lowercase() == it.text.lowercase()){
+                            val urlSplit = it.text.split("&")
+                            var scannedCode = ""
+                            if (urlSplit.size == 1){
+                                // Assume this is a legacy QRcode (without URL)
+                                scannedCode = urlSplit[0]
+                            }
+                            else {
+                                scannedCode = urlSplit[1].replace("box=", "")
+                            }
+                            if (qrcode.lowercase() == scannedCode.lowercase()){
                                 boxList.clear()
                                 val boxModel = Utils.readBoxModelFromDataSnapshot(box)
                                 boxList.add(boxModel)
@@ -116,7 +120,7 @@ class QRScannerFragment : Fragment() {
                             }
                         }
                         // if we end up here: code is invalid
-                        showToast("QR-Code ungültig", Toast.LENGTH_SHORT)
+                        showToast(resources.getString(R.string.error_qrcode_invalid), Toast.LENGTH_SHORT)
                         boxList.clear()
                         adapter.setFilter(boxList)
                     }
@@ -132,7 +136,7 @@ class QRScannerFragment : Fragment() {
 
         codeScanner.errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
             activity. runOnUiThread {
-                Toast.makeText(activity, "Kamera konnte nicht gestartet werden: ${it.message}",
+                Toast.makeText(activity, resources.getString(R.string.error_start_camera) + {it.message},
                     Toast.LENGTH_LONG).show()
             }
         }
@@ -142,35 +146,34 @@ class QRScannerFragment : Fragment() {
         }
     }
 
+
     override fun onResume() {
-        Log.w("me","resume")
         super.onResume()
         codeScanner.startPreview()
     }
+
 
     fun pause() {
         codeScanner.releaseResources()
     }
 
+
     override fun onPause() {
-        Log.w("me","pause")
         codeScanner.releaseResources()
         super.onPause()
     }
 
+
     override fun onStop() {
-        Log.w("me","stop")
         super.onStop()
-        //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
     }
 
+
     override fun onDestroyView() {
-        Log.w("qr","destroy")
         super.onDestroyView()
         if (::firebase_listener.isInitialized) {
             FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
         }
-        //_binding = null
     }
 
 
@@ -181,10 +184,6 @@ class QRScannerFragment : Fragment() {
             toast!!.setText(text)
         }
         toast!!.show()
-    }
-
-    fun showToast(resId: Int, duration: Int) {
-        showToast(resources.getText(resId), duration)
     }
 
 

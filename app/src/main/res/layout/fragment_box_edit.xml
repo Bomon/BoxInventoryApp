@@ -270,7 +270,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginBottom="8dp"
                         android:background="@drawable/round_bg"
-                        android:backgroundTint="@color/thw_blue"
+                        android:backgroundTint="@color/default_box_color"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

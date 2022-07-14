@@ -20,30 +20,35 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
     private lateinit var mListener: ItemAdapter.OnItemClickListener
     lateinit var holder: ItemAdapter.ItemViewHolder
 
+
     init {
         setFilter(content)
         setHasStableIds(true)
     }
 
+
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
 
+
     override fun getItemViewType(position: Int): Int {
         return position
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         context = parent.context
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.card_item, parent, false)
         return ItemViewHolder(view, mListener)
-
     }
+
 
     override fun getItemCount(): Int {
         return mItemList.size
     }
+
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         this.holder = holder
@@ -71,9 +76,8 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
                 holder.item_image.setImageBitmap(img)
             }
         }
-        //holder.item_image.transitionName = "itemTransition" + position
-        Utils.setRecyclerViewCardAnimation(holder.itemView, context)
     }
+
 
     inner class ItemViewHolder(itemView: View, var mListener: ItemAdapter.OnItemClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
@@ -95,6 +99,7 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
         }
     }
 
+
     fun setFilter(itemList: List<ItemModel>) {
         mItemList.clear()
         mItemList.addAll(itemList)
@@ -105,6 +110,7 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
     interface OnItemClickListener{
         fun onItemClicked(item: ItemModel, view: View)
     }
+
 
     fun setOnItemClickListener(mListener: OnItemClickListener) {
         this.mListener = mListener

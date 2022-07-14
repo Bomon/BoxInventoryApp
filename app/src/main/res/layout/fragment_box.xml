@@ -7,10 +7,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
     <ImageView
         android:scaleType="centerCrop"
         android:src="@drawable/background_image"
         android:layout_width="match_parent"
+        android:alpha="0.6"
         android:layout_height="match_parent"/>
 
     <ScrollView
@@ -52,7 +54,7 @@
                         android:layout_marginTop="11dp"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/round_bg"
-                        android:backgroundTint="@color/thw_blue"/>
+                        android:backgroundTint="@color/default_box_color"/>
 
                     <TextView
                         android:layout_marginTop="8dp"

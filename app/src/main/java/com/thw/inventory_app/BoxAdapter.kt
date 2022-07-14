@@ -1,21 +1,16 @@
 package com.thw.inventory_app
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.view.ViewCompat
-import androidx.core.view.get
-import androidx.core.view.marginBottom
-import androidx.core.view.marginTop
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+
 
 class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = false) : RecyclerView.Adapter<BoxAdapter.BoxViewHolder>() {
 
@@ -25,9 +20,11 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
     private lateinit var mListener: OnBoxClickListener
     lateinit var holder: BoxViewHolder
 
+
     init {
         setFilter(content)
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BoxViewHolder {
         context = parent.context
@@ -36,9 +33,11 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
         return BoxViewHolder(view, mListener, compactView)
     }
 
+
     override fun getItemCount(): Int {
         return mBoxList.size
     }
+
 
     override fun onBindViewHolder(holder: BoxViewHolder, position: Int) {
         this.holder = holder
@@ -66,6 +65,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
         }
     }
 
+
     inner class BoxViewHolder(itemView: View, var mListener: OnBoxClickListener, var compactView: Boolean) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
         var box_id: TextView = itemView.findViewById<TextView>(R.id.box_id)
@@ -85,13 +85,13 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
         }
 
         override fun onClick(view: View?) {
-            Log.e("Error", "Nav click")
             if(mListener != null){
                 mListener.onBoxClicked(mBoxList[adapterPosition], box_container)
             }
             true
         }
     }
+
 
     fun setFilter(itemList: List<BoxModel>) {
         mBoxList.clear()
@@ -103,6 +103,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
     interface OnBoxClickListener{
         fun onBoxClicked(box: BoxModel, view: View)
     }
+
 
     fun setOnBoxClickListener(mListener: OnBoxClickListener) {
         this.mListener = mListener

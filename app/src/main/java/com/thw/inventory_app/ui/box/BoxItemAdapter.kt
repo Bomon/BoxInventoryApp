@@ -1,36 +1,28 @@
 package com.thw.inventory_app.ui.box
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.thw.inventory_app.ItemModel
 import com.thw.inventory_app.R
 import com.thw.inventory_app.Utils
-import com.thw.inventory_app.ui.item.ItemFragment
 
 
-class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, private val do_animate: Boolean) : RecyclerView.Adapter<BoxItemAdapter.BoxItemViewHolder>() {
+class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adapter<BoxItemAdapter.BoxItemViewHolder>() {
 
     lateinit var context: Context
     private var mItemList: ArrayList<BoxItemModel> = ArrayList()
 
+
     init {
         setFilter(mDataList)
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BoxItemViewHolder {
         context = parent.context
@@ -39,14 +31,15 @@ class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, private val
 
     }
 
+
     override fun getItemCount(): Int {
         return mItemList.size
     }
 
+
     override fun onBindViewHolder(holder: BoxItemViewHolder, position: Int) {
         holder.item_amount.text = mItemList[position].item_amount
         holder.item_name.text = mItemList[position].item_name
-        Log.e("Error", "Set item color in box view " + mItemList[position].item_name + " to " + mItemList[position].item_color)
         holder.item_color.background.setTint(mItemList[position].item_color)
 
         holder.item_invnums.removeAllViews()
@@ -63,8 +56,8 @@ class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, private val
         if (img != null){
             holder.item_image.setImageBitmap(img)
         }
-        Utils.setRecyclerViewCardAnimation(holder.itemView, context);
     }
+
 
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         var item_color = itemView.findViewById<View>(R.id.item_color)

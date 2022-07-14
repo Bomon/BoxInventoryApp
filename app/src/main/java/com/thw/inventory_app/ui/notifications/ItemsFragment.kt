@@ -3,28 +3,17 @@ package com.thw.inventory_app.ui.notifications
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.transition.platform.MaterialContainerTransform
-import com.google.android.material.transition.platform.MaterialElevationScale
 import com.google.firebase.database.*
 import com.thw.inventory_app.*
 import com.thw.inventory_app.R
-import com.thw.inventory_app.ui.box.BoxEditFragment
-import com.thw.inventory_app.ui.box.BoxFragment
-import com.thw.inventory_app.ui.box.BoxItemModel
-import com.thw.inventory_app.ui.box.ItemsAddFragment
-import com.thw.inventory_app.ui.item.ItemEditFragment
-import com.thw.inventory_app.ui.item.ItemFragment
 
 class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
@@ -87,7 +76,7 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                     val bundle = Bundle()
                     val itemModel: ItemModel = ItemModel("", "", "", "", "")
                     bundle.putSerializable("itemModel", itemModel)
-                    bundle.putSerializable("isNewBox", true)
+                    bundle.putSerializable("isNewItem", true)
                     val navController: NavController = Navigation.findNavController(view!!)
                     navController.navigate(R.id.action_navigation_items_to_itemEditFragment, bundle)
                 }

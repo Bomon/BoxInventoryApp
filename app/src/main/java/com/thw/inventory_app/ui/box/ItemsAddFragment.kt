@@ -1,14 +1,11 @@
 package com.thw.inventory_app.ui.box
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +16,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.thw.inventory_app.*
-import com.thw.inventory_app.ui.item.ItemEditFragment
 
 class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
 
@@ -28,12 +24,6 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
     lateinit var recyclerview: RecyclerView
     lateinit var firebase_listener: ValueEventListener
 
-    private var fragmentCallback: FragmentCallback? = null
-
-    fun setFragmentCallback(callback: FragmentCallback) {
-        Log.e("Error", "FragmentCallback set")
-        fragmentCallback = callback
-    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
@@ -62,8 +52,6 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
         savedInstanceState: Bundle?
     ): View {
 
-        //setHasOptionsMenu(true);
-        // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_items, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_items) as RecyclerView
         adapter = ItemAddAdapter(itemList)
@@ -73,8 +61,7 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
                 adapter.setFilter(itemList)
 
                 val navController: NavController = Navigation.findNavController(view!!)
-                //navController.navigateUp()
-                //fragmentCallback!!.passSelectedItem(item_id)
+                // push the selected item back to BoxEditFragment
                 navController.previousBackStackEntry?.savedStateHandle?.set("item_id", item_id)
                 navController.popBackStack()
             }
@@ -92,27 +79,38 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
                     val bundle = Bundle()
                     val itemModel: ItemModel = ItemModel("", "", "", "", "")
                     bundle.putSerializable("itemModel", itemModel)
-                    bundle.putSerializable("isNewBox", true)
+                    bundle.putSerializable("isNewItem", true)
+                    bundle.putSerializable("isBoxEditMode", true)
                     val navController: NavController = Navigation.findNavController(view!!)
                     navController.navigate(R.id.action_itemsAddFragment_to_itemEditFragment, bundle)
                 }
             }
         })
 
-        (activity as AppCompatActivity).supportActionBar?.title = "Gegenstand hinzufügen"
+        (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.items_add_fragment_title)
 
         return view
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+
+        val navController: NavController = Navigation.findNavController(view!!)
+        // receive new item from ItemEditFragment
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>("item_id")?.observe(
+            viewLifecycleOwner) { result ->
+            // Push this back to the BoxEditFragment
+            navController.previousBackStackEntry?.savedStateHandle?.set("item_id", result)
+            navController.popBackStack()
+        }
     }
+
 
     fun initFirebase(){
         firebase_listener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
-                Log.e("Error", "Data Change")
                 itemList.clear()
                 val boxes = dataSnapshot.child("items")
                 for (box: DataSnapshot in boxes.children){
@@ -131,6 +129,7 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
         FirebaseDatabase.getInstance().reference.addValueEventListener(firebase_listener)
     }
 
+
     override fun onQueryTextChange(newText: String): Boolean {
         val filteredModelList: List<ItemModel> = filter(itemList, newText)
         adapter.setFilter(filteredModelList)
@@ -141,9 +140,11 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
         return true
     }
 
+
     override fun onQueryTextSubmit(query: String?): Boolean {
         return false
     }
+
 
     private fun filter(models: List<ItemModel>, query: String): List<ItemModel> {
         var query = query
@@ -163,29 +164,10 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
         return filteredModelList
     }
 
+
     override fun onDestroyView() {
-        Log.w("home","destroy")
         super.onDestroyView()
         FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @return A new instance of fragment BoxFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(boxId: String) =
-            ItemsAddFragment().apply {
-                val args = Bundle()
-                args.putSerializable("box_id", boxId)
-                val fragment = ItemsAddFragment()
-                fragment.arguments = args
-                return fragment
-            }
     }
 
 }

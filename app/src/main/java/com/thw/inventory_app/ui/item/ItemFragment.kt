@@ -3,7 +3,6 @@ package com.thw.inventory_app.ui.item
 import android.app.AlertDialog
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.ImageView
@@ -21,18 +20,8 @@ import com.google.firebase.database.*
 import com.stfalcon.imageviewer.StfalconImageViewer
 import com.thw.inventory_app.*
 import com.thw.inventory_app.R
-import org.w3c.dom.Text
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [BoxFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ItemFragment : Fragment() {
     private lateinit var item_model: ItemModel
     lateinit var containing_box_adapter: ContainingBoxAdapter
@@ -45,16 +34,12 @@ class ItemFragment : Fragment() {
     lateinit var item_image_field: ImageView
     lateinit var item_containing_boxes_empty_label: TextView
 
-    //lateinit var previous_action_bar_title: String
-
-    //override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-    //    inflater.inflate(androidx.core.R.menu.example_menu2, menu)
-    //}
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_item, menu)
     }
+
 
     fun deleteItem() {
         // remove from boxes
@@ -97,45 +82,37 @@ class ItemFragment : Fragment() {
         }
     }
 
+
     fun showDeleteDialog() {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Gegenstand Löschen?")
-        builder.setMessage("Achtung: Beim Löschen wird der Geegenstand automatisch aus allen Boxen entfernt")
+        builder.setTitle(resources.getString(R.string.dialog_delete_item_title))
+        builder.setMessage(resources.getString(R.string.dialog_delete_item_text))
 
-        builder.setPositiveButton("Ja") { dialog, which ->
+        builder.setPositiveButton(R.string.dialog_yes) { dialog, which ->
             Toast.makeText(requireContext(),
                 "yes", Toast.LENGTH_SHORT).show()
             deleteItem()
 
             val navController: NavController = Navigation.findNavController(view!!)
             navController.navigateUp()
-            //parentFragmentManager.popBackStack()
         }
 
-        builder.setNegativeButton("Nein") { dialog, which ->
+        builder.setNegativeButton(R.string.dialog_no) { dialog, which ->
             Toast.makeText(requireContext(),
                 "no", Toast.LENGTH_SHORT).show()
         }
         builder.show()
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.item_btn_edit) {
             if (view != null) {
                 val bundle = Bundle()
                 bundle.putSerializable("itemModel", item_model)
-                bundle.putSerializable("isNewBox", false)
+                bundle.putSerializable("isNewItem", false)
                 val navController: NavController = Navigation.findNavController(view!!)
                 navController.navigate(R.id.action_itemFragment_to_itemEditFragment, bundle)
-
-                //val editFragment: Fragment = ItemEditFragment.newInstance(item_model, false)
-                //Utils.pushFragment(editFragment, requireContext(), "itemEditFragment")
-                //val transaction: FragmentTransaction =
-                //    (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                //transaction.replace(R.id.nav_host_fragment_activity_main, editFragment)
-                //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                //transaction.addToBackStack("edit")
-                //transaction.commit()
             }
             return true
         } else if (item.itemId == R.id.item_btn_delete) {
@@ -145,10 +122,15 @@ class ItemFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+
+        // Get the arguments from the caller fragment/activity
+        item_model = arguments?.getSerializable("itemModel") as ItemModel
     }
+
 
     private fun updateContent(){
         val item_id = item_model.id
@@ -162,10 +144,6 @@ class ItemFragment : Fragment() {
         } else {
             item_description_field.visibility = View.VISIBLE
         }
-
-       // if (item_tags == ""){
-        //    item_tags_field.visibility = View.GONE
-       // }
 
         item_name_field.text = item_name
         item_description_field.text = item_description
@@ -203,14 +181,14 @@ class ItemFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.title = item_name
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
+
         val v =  inflater.inflate(R.layout.fragment_item_details, container, false)
 
-        //previous_action_bar_title = (activity as AppCompatActivity).supportActionBar?.title.toString()
         // Get the activity and widget
         item_name_field = v.findViewById(R.id.item_summary_name)
         item_tags_field = v.findViewById(R.id.item_summary_tags)
@@ -218,17 +196,11 @@ class ItemFragment : Fragment() {
         item_image_field = v.findViewById(R.id.item_summary_image)
         item_containing_boxes_empty_label = v.findViewById(R.id.item_summary_content_empty_label)
 
-        // Get the arguments from the caller fragment/activity
-        item_model = arguments?.getSerializable("itemModel") as ItemModel
-
-        //var transitionName: String = "itemTransition" + (arguments?.getSerializable("position") as Int).toString()
-        //item_image_field.transitionName = transitionName
-
         updateContent()
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.item_summary_containing_boxes) as RecyclerView
-        containing_box_adapter = ContainingBoxAdapter(boxList, item_model.id, false)
+        containing_box_adapter = ContainingBoxAdapter(boxList, item_model.id)
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = containing_box_adapter
 
@@ -237,10 +209,10 @@ class ItemFragment : Fragment() {
         return v
     }
 
+
     fun initFirebase(){
         firebase_listener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
-                Log.e("Error", "Data Change")
                 boxList.clear()
 
                 val boxes = dataSnapshot.child("boxes")
@@ -267,35 +239,9 @@ class ItemFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        Log.w("box","destroy")
         super.onDestroyView()
-        //(activity as AppCompatActivity).supportActionBar?.title = previous_action_bar_title
         FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
-        //_binding = null
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param boxModel Parameter 1.
-         * @return A new instance of fragment BoxFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(itemModel: ItemModel, position: Int) =
-            ItemFragment().apply {
-                val args = Bundle()
-                args.putSerializable("model", itemModel)
-                args.putSerializable("position", position)
-                val fragment = ItemFragment()
-                fragment.arguments = args
-                return fragment
-                //arguments = Bundle().apply {
-                //    putString(ARG_PARAM1, param1)
-                //    putString(ARG_PARAM2, param2)
-                //}
-            }
-    }
+
 }

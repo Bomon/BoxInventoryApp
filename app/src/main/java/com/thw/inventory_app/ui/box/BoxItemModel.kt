@@ -1,6 +1,5 @@
 package com.thw.inventory_app.ui.box
 
-import android.widget.ListView
 import java.io.Serializable
 
 class BoxItemModel(

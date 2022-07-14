@@ -1,12 +1,9 @@
 package com.thw.inventory_app.ui.box
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
-import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,48 +13,35 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.children
-import androidx.core.view.marginLeft
-import androidx.core.view.marginRight
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.thw.inventory_app.R
 import com.thw.inventory_app.Utils
 import dev.sasikanth.colorsheet.ColorSheet
 import it.sephiroth.android.library.numberpicker.NumberPicker
 import it.sephiroth.android.library.numberpicker.NumberPicker.OnNumberPickerChangeListener
 
-
-//data class ItemCardUpdate(val item_key: String, val item_id: String, val amount: String, val invnum: String, val status: String, val delete_index: Int)
-
-//class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private val do_animate: Boolean, private val handler: BoxItemEditAdapter.Callbacks) : RecyclerView.Adapter<BoxItemEditAdapter.BoxItemViewHolder>() {
-class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private val do_animate: Boolean) : RecyclerView.Adapter<BoxItemEditAdapter.BoxItemViewHolder>() {
+class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adapter<BoxItemEditAdapter.BoxItemViewHolder>() {
 
     lateinit var context: Context
     private var mItemModel: ArrayList<BoxItemModel> = ArrayList()
+
 
     fun getCurrentStatus(): ArrayList<BoxItemModel>{
         return mItemModel
     }
 
+
     init {
         setFilter(mDataList)
     }
 
-    //interface Callbacks {
-    //    fun handleItemCardUpdate(data: ItemCardUpdate)
-    //}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BoxItemViewHolder {
         context = parent.context
@@ -66,14 +50,16 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
 
     }
 
+
     override fun getItemCount(): Int {
         return mItemModel.size
     }
 
+
     override fun onBindViewHolder(holder: BoxItemViewHolder, position: Int) {
         holder.bind(mItemModel[position])
-        setAnimation(holder.itemView)
     }
+
 
     fun setColorButtonColor(color: Int, button: MaterialButton){
 
@@ -91,7 +77,8 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
         }
     }
 
-    inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
+
+    inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
         var item_edit_amount: NumberPicker
         var item_edit_invnum: ChipGroup
@@ -103,7 +90,6 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
 
 
         init {
-            itemView.setOnClickListener(this)
             item_edit_amount = itemView.findViewById<NumberPicker>(R.id.box_item_edit_amount)
             item_edit_invnum = itemView.findViewById<ChipGroup>(R.id.box_item_invnums)
             //item_edit_status = itemView.findViewById<EditText>(R.id.box_item_edit_status)
@@ -116,10 +102,6 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
                 mItemModel.removeAt(adapterPosition)
                 notifyItemRemoved(adapterPosition)
                 notifyItemRangeChanged(adapterPosition, mItemModel.size)
-
-                //Log.e("Error", "Adapter pos: " + adapterPosition.toString())
-                //handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, mItemModel[adapterPosition].item_invnum, mItemModel[adapterPosition].item_status, adapterPosition))
-                //Log.e("Error", "Delete Card")
             }
 
             for( v in item_edit_amount.children) {
@@ -133,7 +115,7 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
                 }
             }
             val fragmentManager = (context as FragmentActivity).supportFragmentManager
-            val colors = context.resources.getIntArray(R.array.demo_colors)
+            val colors = context.resources.getIntArray(R.array.picker_colors)
             item_color_button.setOnClickListener {
                 ColorSheet().colorPicker(
                     colors = colors,
@@ -146,7 +128,7 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
 
             item_invnum_button.setOnClickListener {
                 val builder: MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
-                builder.setTitle("Inventarnummer Hinzufügen")
+                builder.setTitle(context.resources.getString(R.string.dialog_add_invnr_title))
 
                 val viewInflated: View = LayoutInflater.from(context)
                     .inflate(R.layout.dialog_add_invnum, itemView as ViewGroup?, false)
@@ -164,7 +146,6 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
                     b.setOnClickListener {
                         val inputText = input.text.toString()
                         if (inputText != "" && !(";" in inputText)) {
-                            Log.e("Error", "Dialog is ok")
                             val chip = Chip(context)
                             chip.text = input.text.toString()
                             chip.isCloseIconVisible = true
@@ -178,10 +159,10 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
                         } else {
                             if (inputText == ""){
                                 container.isErrorEnabled = true
-                                container.error = "Inventarnummer darf nicht leer sein"
+                                container.error = context.resources.getString(R.string.error_dialog_invnr_empty)
                             } else {
                                 container.isErrorEnabled = true
-                                container.error = "Inventarnummer darf kein ; enthalten"
+                                container.error = context.resources.getString(R.string.error_dialog_invnr_invalid)
                             }
                         }
                     }
@@ -202,36 +183,12 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
                 }
             }
 
-            //item_edit_amount.setOnClickListener({
-            //    show()
-            //})
-            //item_edit_amount.doAfterTextChanged {  e ->
-            //    e?.let {
-            //        mItemModel[adapterPosition].item_amount = it.toString()
-            //        //handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, it.toString(), mItemModel[adapterPosition].item_invnum, mItemModel[adapterPosition].item_status, -1))
-            //    }
-            //}
-
-            //item_edit_invnum.doAfterTextChanged {  e ->
-            //    e?.let {
-            //        mItemModel[adapterPosition].item_invnum = it.toString()
-            //        handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, it.toString(), mItemModel[adapterPosition].item_status, -1))
-            //    }
-            // }
-
-            //item_edit_status.doAfterTextChanged {  e ->
-            //    e?.let {
-            //        mItemModel[adapterPosition].item_invnum = it.toString()
-            //        handler.handleItemCardUpdate(ItemCardUpdate(mItemModel[adapterPosition].item_key, mItemModel[adapterPosition].item_id, mItemModel[adapterPosition].item_amount, mItemModel[adapterPosition].item_invnum, it.toString(), -1))
-            //    }
-            //}
         }
 
         fun bind(model: BoxItemModel): Unit {
             item_name.text = model.item_name
             //item_edit_amount.setText(model.item_amount)
             item_edit_amount.progress = model.item_amount.toInt()
-            Log.e("Error", "Model Item Color is " + model.item_color.toString())
             setColorButtonColor(model.item_color, item_color_button)
 
             item_edit_invnum.removeAllViews()
@@ -251,39 +208,14 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>, private
             if (model.item_invnum == ""){
 
             }
-            //item_edit_invnum.setText(model.item_invnum)
-            //item_edit_status.setText(model.item_status)
-        }
-
-
-        @SuppressLint("ResourceType")
-        override fun onClick(view: View?) {
-            if (view != null) {
-                //val myFragment: Fragment = ItemsFragment.newInstance(mDataList[adapterPosition])
-                //val context = view.getContext()
-                //pushFragment(myFragment, context, view)
-            }
         }
     }
 
-    //fun removeFromItemList(newlist: ArrayList<BoxItemModel>, position: Int) {
-    //    this.mItemModel = newlist
-    //    notifyItemRemoved(position)
-    //    notifyItemRangeChanged(position, mItemModel.size)
-    //}
 
     fun addToItemList(newlist: ArrayList<BoxItemModel>) {
         this.mItemModel = newlist
         notifyItemInserted(mItemModel.size-1)
         notifyItemRangeChanged(0, mItemModel.size)
-    }
-
-    private fun setAnimation(viewToAnimate: View) {
-        if (do_animate) {
-            val animation: Animation =
-                AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left)
-            viewToAnimate.startAnimation(animation)
-        }
     }
 
 
