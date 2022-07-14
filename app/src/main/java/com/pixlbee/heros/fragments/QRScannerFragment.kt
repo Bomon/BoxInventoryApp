@@ -113,7 +113,7 @@ class QRScannerFragment : Fragment() {
                             }
                             if (qrcode.lowercase() == scannedCode.lowercase()){
                                 boxList.clear()
-                                val boxModel = Utils.readBoxModelFromDataSnapshot(box)
+                                val boxModel = Utils.readBoxModelFromDataSnapshot(context, box)
                                 boxList.add(boxModel)
                                 qr_content = it.text
                                 toast?.cancel()

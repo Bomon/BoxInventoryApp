@@ -69,10 +69,10 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>) : Recyc
         val alpha = (color shr 24 and 0xFF).toFloat()
         if ((red * 0.299 + green * 0.587 + blue * 0.114) > 186) {
             button.setTextColor(Color.BLACK)
-            button.setIconTintResource(R.color.black)
+            button.setIconTintResource(R.color.md_black_1000)
         } else {
             button.setTextColor(Color.WHITE)
-            button.setIconTintResource(R.color.white)
+            button.setIconTintResource(R.color.md_black_1000)
         }
     }
 

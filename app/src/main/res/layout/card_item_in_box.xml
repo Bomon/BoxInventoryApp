@@ -41,7 +41,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize25Percent"
-            app:srcCompat="@drawable/ic_placeholder" />
+            app:srcCompat="@drawable/placeholder_with_bg" />
 
         <!-- Title, secondary and supporting text -->
         <TextView

@@ -1,5 +1,6 @@
 package com.pixlbee.heros.models
 
+import androidx.core.content.ContextCompat
 import com.pixlbee.heros.R
 import java.io.Serializable
 
@@ -8,7 +9,7 @@ data class ContentItem(
     val amount: String = "?",
     val id: String = "",
     val invnum: String = "",
-    val color: Int = R.color.default_item_color
+    val color: Int = -1
 )
 
 class BoxModel(

@@ -14,6 +14,7 @@ import android.view.*
 import android.widget.*
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
@@ -61,7 +62,7 @@ class BoxEditFragment() : Fragment() {
     private lateinit var box_edit_qrcode_field_container: TextInputLayout
     private lateinit var box_edit_color_btn: MaterialButton
     private lateinit var box_edit_color_preview: View
-    private var box_edit_color: Int = R.color.default_box_color
+    private var box_edit_color: Int = -1
 
 
     private var is_new_box: Boolean = false
@@ -443,7 +444,7 @@ class BoxEditFragment() : Fragment() {
                             val item_image = item.child("images").value.toString()
                             val item_description = item.child("description").value.toString()
                             val item_tags = item.child("tags").value.toString()
-                            itemList.add(BoxItemModel(temp_key, item_id, "1", "", item_name, item_description, item_tags, R.color.default_item_color, item_image))
+                            itemList.add(BoxItemModel(temp_key, item_id, "1", "", item_name, item_description, item_tags, ContextCompat.getColor(requireContext(), R.color.default_item_color), item_image))
                             box_item_edit_adapter.addToItemList(itemList)
                             return@addOnCompleteListener;
                         }

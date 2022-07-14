@@ -223,7 +223,7 @@ class ItemFragment : Fragment() {
                 for (box: DataSnapshot in boxes.children){
                     for (boxContent: DataSnapshot in box.child("content").children) {
                         if (boxContent.child("id").value.toString() == item_model.id) {
-                            val boxModel = Utils.readBoxModelFromDataSnapshot(box)
+                            val boxModel = Utils.readBoxModelFromDataSnapshot(context, box)
                             boxList.add(boxModel)
                         }
                     }

@@ -44,7 +44,7 @@
                     android:id="@+id/bod_edit_image_overlay"
                     android:layout_width="match_parent"
                     android:layout_height="194dp"
-                    android:background="#80000000"
+                    android:background="#90000000"
                     android:padding="50dp"
                     android:src="@drawable/ic_baseline_edit_24"
                     app:layout_constraintTop_toTopOf="@+id/item_edit_image"

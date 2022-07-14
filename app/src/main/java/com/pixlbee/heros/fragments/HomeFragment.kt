@@ -7,6 +7,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -62,7 +63,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             R.id.home_btn_add -> {
                 if (view != null) {
                     val bundle = Bundle()
-                    val boxModel: BoxModel = BoxModel("", "", "", "", "", "", "", "", R.color.default_box_color, "", ArrayList<ContentItem>())
+                    val boxModel: BoxModel = BoxModel("", "", "", "", "", "", "", "", ContextCompat.getColor(requireContext(), R.color.default_box_color), "", ArrayList<ContentItem>())
                     bundle.putSerializable("boxModel", boxModel)
                     bundle.putSerializable("items", ArrayList<BoxItemModel>().toTypedArray())
                     bundle.putSerializable("isNewBox", true)
@@ -131,7 +132,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                 boxList.clear()
                 val boxes = dataSnapshot.child("boxes")
                 for (box: DataSnapshot in boxes.children){
-                    val boxModel = Utils.readBoxModelFromDataSnapshot(box)
+                    val boxModel = Utils.readBoxModelFromDataSnapshot(context, box)
                     boxList.add(boxModel)
                 }
                 adapter.setFilter(boxList)

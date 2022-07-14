@@ -140,7 +140,7 @@
                     app:layout_constraintStart_toEndOf="@+id/box_summary_location_label"
                     app:layout_constraintTop_toTopOf="parent"
                     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                    app:srcCompat="@drawable/ic_placeholder" />
+                    app:srcCompat="@drawable/placeholder_with_bg" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

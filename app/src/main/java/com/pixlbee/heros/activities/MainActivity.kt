@@ -1,5 +1,6 @@
 package com.pixlbee.heros.activities
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Menu
 import android.widget.ListView
@@ -13,6 +14,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.elevation.SurfaceColors
+import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
 import com.pixlbee.heros.databinding.ActivityMainBinding
 
@@ -26,6 +28,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //supportActionBar?.hide()
+        FirebaseDatabase.getInstance().getReference("boxes").keepSynced(true)
+        FirebaseDatabase.getInstance().getReference("items").keepSynced(true)
+
+        window.statusBarColor = resources.getColor(R.color.status_bar_color)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

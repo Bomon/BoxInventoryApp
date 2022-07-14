@@ -1,9 +1,11 @@
 package com.pixlbee.heros.utility
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.ArrayMap
 import android.util.Base64
+import androidx.core.content.ContextCompat
 import androidx.core.view.allViews
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
@@ -41,7 +43,7 @@ class Utils {
         }
 
 
-        fun readBoxModelFromDataSnapshot(box: DataSnapshot): BoxModel {
+        fun readBoxModelFromDataSnapshot(context: Context?, box: DataSnapshot): BoxModel {
             val image = box.child("image").value.toString()
             val location_image = box.child("location_image").value.toString()
             val location = box.child("location").value.toString()
@@ -53,7 +55,10 @@ class Utils {
 
             var color: Int? = box.child("color").value.toString().toIntOrNull()
             if (color == null) {
-                color = R.color.default_box_color
+                color = -1
+                if (context != null){
+                    color = ContextCompat.getColor(context, R.color.default_box_color)
+                }
             }
 
             val status = box.child("status").value.toString()
@@ -66,7 +71,10 @@ class Utils {
                 val itemInvNum = c.child("invnum").value.toString()
                 var itemColor: Int? = c.child("color").value.toString().toIntOrNull()
                 if (itemColor == null) {
-                    itemColor = R.color.default_item_color
+                    itemColor = -1
+                    if (context != null){
+                        itemColor = ContextCompat.getColor(context, R.color.default_item_color)
+                    }
                 }
                 contentList.add(ContentItem(c.key.toString(), itemAmount, itemId, itemInvNum, itemColor))
             }
@@ -137,38 +145,6 @@ class Utils {
             }
 
             return itemsMap
-        }
-
-
-        fun updateFirebaseEntities(){
-            val itemsRef = FirebaseDatabase.getInstance().reference.child("boxes")
-            itemsRef.get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val boxes: DataSnapshot? = task.result
-                    if (boxes != null) {
-                        for (box: DataSnapshot in boxes.children) {
-                            val boxKey = box.key.toString()
-                            if (!box.hasChild("status")) {
-                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("status").setValue("")
-                            }
-                            if (!box.hasChild("notes")) {
-                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("notes").setValue("")
-                            }
-                            if (!box.hasChild("color")) {
-                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("color").setValue("")
-                            }
-                            for (contentItem: DataSnapshot in box.child("content").children){
-                                val contentItemKey = contentItem.key.toString()
-                                if (!contentItem.hasChild("color")) {
-                                    FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").child(contentItemKey).child("color").setValue(
-                                        R.color.default_item_color
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
 
 

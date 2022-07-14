@@ -277,7 +277,7 @@ class BoxFragment : Fragment(){
                 val boxes = dataSnapshot.child("boxes")
                 for (box: DataSnapshot in boxes.children){
                     if (box.child("id").value.toString() == box_model.id){
-                        box_model = Utils.readBoxModelFromDataSnapshot(box)
+                        box_model = Utils.readBoxModelFromDataSnapshot(context, box)
                         updateContent()
                         break
                     }

@@ -44,7 +44,7 @@
                     android:id="@+id/bod_edit_image_overlay"
                     android:layout_width="match_parent"
                     android:layout_height="194dp"
-                    android:background="#80000000"
+                    android:background="#90000000"
                     android:padding="50dp"
                     android:src="@drawable/ic_baseline_edit_24"
                     app:layout_constraintTop_toTopOf="@+id/box_edit_image"
@@ -193,13 +193,13 @@
                         app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintTop_toTopOf="parent"
                         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                        app:srcCompat="@drawable/ic_placeholder" />
+                        app:srcCompat="@drawable/placeholder_with_bg" />
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/box_edit_location_image_overlay"
                         android:layout_width="80dp"
                         android:layout_height="80dp"
-                        android:background="#80000000"
+                        android:background="#90000000"
                         app:layout_constraintEnd_toEndOf="@+id/box_edit_location_image"
                         app:layout_constraintTop_toTopOf="@+id/box_edit_location_image"
                         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
