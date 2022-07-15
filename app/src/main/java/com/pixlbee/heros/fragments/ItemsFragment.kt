@@ -15,6 +15,7 @@ import com.google.firebase.database.*
 import com.pixlbee.heros.R
 import com.pixlbee.heros.adapters.ItemAdapter
 import com.pixlbee.heros.models.ItemModel
+import com.pixlbee.heros.utility.Utils
 
 class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
@@ -74,12 +75,17 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         items_add_button.setOnClickListener(object: View.OnClickListener {
             override fun onClick(v: View?) {
                 if (view != null) {
-                    val bundle = Bundle()
-                    val itemModel: ItemModel = ItemModel("", "", "", "", "")
-                    bundle.putSerializable("itemModel", itemModel)
-                    bundle.putSerializable("isNewItem", true)
-                    val navController: NavController = Navigation.findNavController(view!!)
-                    navController.navigate(R.id.action_navigation_items_to_itemEditFragment, bundle)
+                    if(Utils.checkHasWritePermission(context)) {
+                        val bundle = Bundle()
+                        val itemModel: ItemModel = ItemModel("", "", "", "", "")
+                        bundle.putSerializable("itemModel", itemModel)
+                        bundle.putSerializable("isNewItem", true)
+                        val navController: NavController = Navigation.findNavController(view!!)
+                        navController.navigate(
+                            R.id.action_navigation_items_to_itemEditFragment,
+                            bundle
+                        )
+                    }
                 }
             }
         })

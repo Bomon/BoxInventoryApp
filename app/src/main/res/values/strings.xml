@@ -82,7 +82,7 @@
     <string name="dialog_save_text">Alte Daten werden überschrieben.</string>
     <string name="error_field_empty">Feld darf nicht leer sein</string>
     <string name="error_box_already_exists_id">Es existiert bereits eine Box mit dieser ID</string>
-    <string name="error_box_already_exists_qrcode">Es existiert bereits eine Box mit dieser ID</string>
+    <string name="error_box_already_exists_qrcode">Es existiert bereits eine Box mit diesem QR-Code</string>
     <string name="fragment_box_edit_title">Box bearbeiten</string>
     <string name="fragment_box_edit_title_new">Box erstellen</string>
     <string name="dialog_delete_box_title">Box Löschen?</string>
@@ -103,4 +103,5 @@
     <string name="error_check_password">Passwort überprüfen</string>
     <string name="error_login_failed">Login Fehlgeschlagen</string>
     <string name="item_details_title">Details</string>
+    <string name="error_no_write_permission">Keine Berechtigung für diese Aktion</string>
 </resources>

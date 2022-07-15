@@ -15,6 +15,7 @@ import android.widget.*
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
@@ -64,6 +65,8 @@ class BoxEditFragment() : Fragment() {
     private lateinit var box_edit_color_preview: View
     private var box_edit_color: Int = -1
 
+    var qrList: ArrayList<String> = ArrayList<String>()
+    var idList: ArrayList<String> = ArrayList<String>()
 
     private var is_new_box: Boolean = false
     lateinit var box_item_edit_adapter: BoxItemEditAdapter
@@ -80,7 +83,7 @@ class BoxEditFragment() : Fragment() {
             box_edit_id_field_container.error = resources.getString(R.string.error_field_empty)
             status = false
         }
-        if (box_edit_id_field.text.toString() in Utils.getAllBoxIds()) {
+        if (box_edit_id_field.text.toString() in idList) {
             box_edit_id_field_container.isErrorEnabled = true
             box_edit_id_field_container.error = resources.getString(R.string.error_box_already_exists_id)
             status = false
@@ -95,7 +98,7 @@ class BoxEditFragment() : Fragment() {
             box_edit_qrcode_field_container.error = resources.getString(R.string.error_field_empty)
             status = false
         }
-        if (box_edit_qrcode_field.text.toString() in Utils.getAllBoxQRcodes()) {
+        if (box_edit_qrcode_field.text.toString() in qrList) {
             box_edit_qrcode_field_container.isErrorEnabled = true
             box_edit_qrcode_field_container.error = resources.getString(R.string.error_box_already_exists_qrcode)
             status = false
@@ -131,16 +134,23 @@ class BoxEditFragment() : Fragment() {
                                 Utils.chipListToString(box_edit_status_chips))
                             FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("location").setValue(box_edit_location_field.text.toString())
                             FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("color").setValue(box_edit_color)
+
+                            var updated_image = ""
                             if (::image_bitmap.isInitialized){
-                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("image").setValue(
-                                    Utils.getEncoded64ImageStringFromBitmap(image_bitmap))
+                                updated_image = Utils.getEncoded64ImageStringFromBitmap(image_bitmap)
                             }
-                            val itemList = box_item_edit_adapter.getCurrentStatus()
+                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("image").setValue(
+                                updated_image)
+
                             FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").removeValue()
+                            val itemList = box_item_edit_adapter.getCurrentStatus()
+                            var updatedContentItems = ArrayList<ContentItem>()
                             for (item: BoxItemModel in itemList) {
                                 var new_item = ContentItem("", item.item_amount, item.item_id, item.item_invnum, item.item_color)
+                                updatedContentItems.add(new_item)
                                 FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").push().setValue(new_item)
                             }
+
                         }
                     }
                 }
@@ -188,6 +198,7 @@ class BoxEditFragment() : Fragment() {
             } else {
                 status = applyChanges()
             }
+
             if (status) {
                 val navController: NavController = Navigation.findNavController(view!!)
                 navController.navigateUp()
@@ -227,12 +238,52 @@ class BoxEditFragment() : Fragment() {
     }
 
 
+    fun initQrCodeList(){
+        val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
+        boxesRef.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val boxes: DataSnapshot? = task.result
+                if (boxes != null) {
+                    qrList.clear()
+                    for (box: DataSnapshot in boxes.children) {
+                        if (box.child("id").value.toString() != box_model.id){
+                            qrList.add(box.child("qrcode").value.toString())
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun initBoxIdList(){
+        val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
+        boxesRef.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val boxes: DataSnapshot? = task.result
+                if (boxes != null) {
+                    idList.clear()
+                    for (box: DataSnapshot in boxes.children) {
+                        if (box.child("id").value.toString() != box_model.id){
+                            idList.add(box.child("id").value.toString())
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             showDismissDialog()
         }
+
+        // This task is done once on fragment creation
+        // Reason: each qrcode / boxId must only exist once. The task is async and so we start it here to have the result when user clicks save
+        initQrCodeList()
+        initBoxIdList()
 
         // Get the arguments from the caller fragment/activity
         box_model = arguments?.getSerializable("boxModel") as BoxModel
@@ -350,6 +401,17 @@ class BoxEditFragment() : Fragment() {
                 }
             }
         })
+
+        box_edit_id_field.onFocusChangeListener = object: View.OnFocusChangeListener{
+            override fun onFocusChange(v: View?, hasFocus: Boolean) {
+                if (!hasFocus) {
+                    if (box_edit_qrcode_field.text.toString() == ""){
+                        box_edit_qrcode_field.text = box_edit_id_field.text
+                    }
+                }
+            }
+
+        }
 
         val fragmentManager = (context as FragmentActivity).supportFragmentManager
         val colors = (context as FragmentActivity).resources.getIntArray(R.array.picker_colors)

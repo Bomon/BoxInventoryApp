@@ -62,13 +62,15 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
             R.id.home_btn_add -> {
                 if (view != null) {
-                    val bundle = Bundle()
-                    val boxModel: BoxModel = BoxModel("", "", "", "", "", "", "", "", ContextCompat.getColor(requireContext(), R.color.default_box_color), "", ArrayList<ContentItem>())
-                    bundle.putSerializable("boxModel", boxModel)
-                    bundle.putSerializable("items", ArrayList<BoxItemModel>().toTypedArray())
-                    bundle.putSerializable("isNewBox", true)
-                    val navController: NavController = Navigation.findNavController(view!!)
-                    navController.navigate(R.id.action_navigation_home_to_boxEditFragment, bundle)
+                    if(Utils.checkHasWritePermission(context)){
+                        val bundle = Bundle()
+                        val boxModel: BoxModel = BoxModel("", "", "", "", "", "", "", "", ContextCompat.getColor(requireContext(), R.color.default_box_color), "", ArrayList<ContentItem>())
+                        bundle.putSerializable("boxModel", boxModel)
+                        bundle.putSerializable("items", ArrayList<BoxItemModel>().toTypedArray())
+                        bundle.putSerializable("isNewBox", true)
+                        val navController: NavController = Navigation.findNavController(view!!)
+                        navController.navigate(R.id.action_navigation_home_to_boxEditFragment, bundle)
+                    }
                 }
                 true
             }

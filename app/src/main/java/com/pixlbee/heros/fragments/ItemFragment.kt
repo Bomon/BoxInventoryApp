@@ -111,16 +111,20 @@ class ItemFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.item_btn_edit) {
-            if (view != null) {
-                val bundle = Bundle()
-                bundle.putSerializable("itemModel", item_model)
-                bundle.putSerializable("isNewItem", false)
-                val navController: NavController = Navigation.findNavController(view!!)
-                navController.navigate(R.id.action_itemFragment_to_itemEditFragment, bundle)
+            if(Utils.checkHasWritePermission(context)) {
+                if (view != null) {
+                    val bundle = Bundle()
+                    bundle.putSerializable("itemModel", item_model)
+                    bundle.putSerializable("isNewItem", false)
+                    val navController: NavController = Navigation.findNavController(view!!)
+                    navController.navigate(R.id.action_itemFragment_to_itemEditFragment, bundle)
+                }
             }
             return true
         } else if (item.itemId == R.id.item_btn_delete) {
-            showDeleteDialog()
+            if(Utils.checkHasWritePermission(context)) {
+                showDeleteDialog()
+            }
             return true
         }
         return super.onOptionsItemSelected(item)

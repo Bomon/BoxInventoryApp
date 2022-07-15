@@ -11,12 +11,14 @@ import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -97,19 +99,26 @@ class BoxFragment : Fragment(){
     }
 
 
+
+
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.box_btn_edit) {
-            if (view != null) {
-                val bundle = Bundle()
-                bundle.putSerializable("boxModel", box_model)
-                bundle.putSerializable("items", itemList.toTypedArray())
-                bundle.putSerializable("isNewBox", false)
-                val navController: NavController = Navigation.findNavController(view!!)
-                navController.navigate(R.id.action_boxFragment_to_boxEditFragment, bundle)
+            if (Utils.checkHasWritePermission(context)) {
+                if (view != null) {
+                    val bundle = Bundle()
+                    bundle.putSerializable("boxModel", box_model)
+                    bundle.putSerializable("items", itemList.toTypedArray())
+                    bundle.putSerializable("isNewBox", false)
+                    val navController: NavController = Navigation.findNavController(view!!)
+                    navController.navigate(R.id.action_boxFragment_to_boxEditFragment, bundle)
+                }
             }
             return true
         } else if (item.itemId == R.id.box_btn_delete) {
-            showDeleteDialog()
+            if (Utils.checkHasWritePermission(context)) {
+                showDeleteDialog()
+            }
             return true
         } else if (item.itemId == R.id.box_btn_print) {
             if (checkPermission()) {

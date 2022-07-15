@@ -1,7 +1,9 @@
 package com.pixlbee.heros.activities
 
-import android.graphics.drawable.ColorDrawable
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
@@ -12,9 +14,14 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.elevation.SurfaceColors
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.pixlbee.heros.R
 import com.pixlbee.heros.databinding.ActivityMainBinding
 
@@ -27,9 +34,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        initFirebaseListener(this)
+
         //supportActionBar?.hide()
-        FirebaseDatabase.getInstance().getReference("boxes").keepSynced(true)
-        FirebaseDatabase.getInstance().getReference("items").keepSynced(true)
 
         window.statusBarColor = resources.getColor(R.color.status_bar_color)
 
@@ -60,6 +68,39 @@ class MainActivity : AppCompatActivity() {
             return@setOnItemSelectedListener true
         }
 
+    }
+
+
+    private fun initFirebaseListener(context: Context) {
+        val firebaseListener: ValueEventListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+
+                val sharedPreferences: SharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+
+                val userId = FirebaseAuth.getInstance().currentUser?.uid.toString()
+                val write_users = dataSnapshot.child("write_users").value.toString()
+                val read_users = dataSnapshot.child("write_users").value.toString()
+
+                if (write_users.contains(userId)) {
+                    editor.putBoolean("write_permission", true)
+                } else {
+                    editor.putBoolean("write_permission", false)
+                }
+
+                if (read_users.contains(userId)) {
+                    editor.putBoolean("read_permission", true)
+                } else {
+                    editor.putBoolean("read_permission", false)
+                }
+
+                editor.commit()
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {}
+        }
+        FirebaseDatabase.getInstance().reference.addValueEventListener(firebaseListener)
     }
 
 

@@ -1,12 +1,16 @@
 package com.pixlbee.heros.utility
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.ArrayMap
 import android.util.Base64
+import android.util.Log
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.allViews
+import androidx.preference.PreferenceManager
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.android.material.chip.Chip
@@ -96,6 +100,20 @@ class Utils {
                 }
             }
             return idList
+        }
+
+
+        fun checkHasWritePermission(context: Context?): Boolean {
+            if (context != null) {
+                val sharedPreferences = context.getSharedPreferences("AppPreferences", MODE_PRIVATE)
+                val hasWritePermission = sharedPreferences.getBoolean("write_permission", false)
+                if (hasWritePermission) {
+                    return true
+                }
+            }
+            Toast.makeText(context,
+                context?.resources?.getString(R.string.error_no_write_permission) ?: "NO_WRITE_PERMISSION", Toast.LENGTH_SHORT).show()
+            return false
         }
 
 
