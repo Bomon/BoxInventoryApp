@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         initFirebaseListener(this)
+        initDefaultSettings()
 
         //supportActionBar?.hide()
 
@@ -70,12 +71,19 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun initDefaultSettings() {
+        val sharedPreferences: SharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("pdf_title", resources.getString(R.string.pdf_title))
+        editor.putString("pdf_subtitle", resources.getString(R.string.pdf_subtitle))
+        editor.putString("pdf_address", resources.getString(R.string.pdf_address))
+        editor.commit()
+    }
+
 
     private fun initFirebaseListener(context: Context) {
         val firebaseListener: ValueEventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-
                 val sharedPreferences: SharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
                 val editor = sharedPreferences.edit()
 

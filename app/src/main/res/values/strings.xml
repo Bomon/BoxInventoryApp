@@ -104,4 +104,13 @@
     <string name="error_login_failed">Login Fehlgeschlagen</string>
     <string name="item_details_title">Details</string>
     <string name="error_no_write_permission">Keine Berechtigung für diese Aktion</string>
+    <string name="pdf_share_label">PDF Label teilen</string>
+    <string name="pdf_saved_in_downloads">PDF in Downloads gespeichert</string>
+    <string name="pdf_open_with">PDF öffnen mit</string>
+    <string name="pdf_title">Bundesanstalt Technisches Hilfswerk</string>
+    <string name="pdf_subtitle">Ortsverband Obernburg, FGr Öl (C)</string>
+    <string name="pdf_address">\"Im Weidig 22 - 63785 Obernburg - Tel: (0 60 22) 64 95 10\"</string>
+    <string name="pdf_item_amount">Anz.</string>
+    <string name="pdf_item_name">Gegenstand</string>
+    <string name="pdf_item_invnr">Inventar Nr.</string>
 </resources>

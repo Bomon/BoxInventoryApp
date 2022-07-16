@@ -72,7 +72,7 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>) : Recyc
             button.setIconTintResource(R.color.md_black_1000)
         } else {
             button.setTextColor(Color.WHITE)
-            button.setIconTintResource(R.color.md_black_1000)
+            button.setIconTintResource(R.color.md_white_1000)
         }
     }
 

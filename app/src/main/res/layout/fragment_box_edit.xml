@@ -35,7 +35,7 @@
                     android:layout_height="194dp"
                     android:contentDescription="@string/content_description_media"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/placeholder_with_bg"
+                    app:srcCompat="@drawable/placeholder_with_bg_80"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -67,6 +67,7 @@
                     android:layout_marginBottom="16dp"
                     android:layout_weight="1"
                     android:text="@string/edit_box_title"
+                    android:textStyle="bold"
                     android:textAppearance="?attr/textAppearanceTitleLarge"
                     android:textColor="?android:attr/textColorSecondary" />
 
@@ -193,7 +194,7 @@
                         app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintTop_toTopOf="parent"
                         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                        app:srcCompat="@drawable/placeholder_with_bg" />
+                        app:srcCompat="@drawable/placeholder_with_bg_80" />
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/box_edit_location_image_overlay"
@@ -239,6 +240,7 @@
                     android:layout_marginBottom="16dp"
                     android:layout_weight="1"
                     android:text="@string/edit_box_markings"
+                    android:textStyle="bold"
                     android:textAppearance="?attr/textAppearanceTitleLarge"
                     android:textColor="?android:attr/textColorSecondary" />
 
@@ -331,13 +333,14 @@
                         android:layout_marginTop="16dp"
                         android:layout_weight="1"
                         android:text="@string/content"
+                        android:textStyle="bold"
                         android:textAppearance="?attr/textAppearanceTitleLarge"
                         android:textColor="?android:attr/textColorSecondary" />
 
 
                     <Button
                         android:id="@+id/box_edit_add_button"
-                        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                        style="@style/Widget.Material3.Button.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"

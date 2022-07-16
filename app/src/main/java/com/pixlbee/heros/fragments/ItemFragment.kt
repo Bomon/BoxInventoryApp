@@ -170,7 +170,7 @@ class ItemFragment : Fragment() {
         }
 
         if (item_image == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg).into(item_image_field)
+            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(item_image_field)
         } else {
             item_image_field.scaleType=ImageView.ScaleType.CENTER_CROP
             item_image_field.setImageBitmap(Utils.StringToBitMap(item_image))

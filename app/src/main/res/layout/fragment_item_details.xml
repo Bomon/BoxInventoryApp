@@ -31,7 +31,7 @@
                 android:id="@+id/item_summary_image"
                 android:layout_width="match_parent"
                 android:layout_height="194dp"
-                app:srcCompat="@drawable/placeholder_with_bg"
+                app:srcCompat="@drawable/placeholder_with_bg_80"
                 android:contentDescription="@string/content_description_media"
                 />
 

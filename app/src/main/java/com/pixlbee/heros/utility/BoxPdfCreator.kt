@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -15,6 +16,7 @@ import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.lifecycle.LifecycleOwner
@@ -94,8 +96,6 @@ class BoxPdfCreator {
                     document.close()
 
                     mHandler.post(Runnable {
-                        Log.e("Error", "Handler Response")
-
                         val transition = LayoutTransition()
                         transition.setAnimateParentHierarchy(false)
                         sheetContainer.setLayoutTransition(transition)
@@ -110,7 +110,6 @@ class BoxPdfCreator {
                 thread.start()
 
                 bottomSheetDialog.setOnDismissListener {
-                    Log.e("Error", "File Dialog was dismissed")
                     mHandler.removeCallbacks(runnable)
                     thread.interrupt()
                     it.dismiss()
@@ -135,7 +134,7 @@ class BoxPdfCreator {
 
                     // required to omit Permission Denial error
                     intentShareFile.clipData = ClipData(
-                        "Generated PDF with Box description",
+                        context.resources.getString(R.string.pdf_share_label),
                         listOf("application/pdf").toTypedArray(),
                         ClipData.Item(uri)
                     )
@@ -152,7 +151,7 @@ class BoxPdfCreator {
                     //)
                     //intentShareFile.putExtra(Intent.EXTRA_TEXT, "Text")
 
-                    context.startActivity(Intent.createChooser(intentShareFile, "PDF Teilen"))
+                    context.startActivity(Intent.createChooser(intentShareFile, context.resources.getString(R.string.pdf_share_label)))
                 }
 
             }
@@ -187,7 +186,7 @@ class BoxPdfCreator {
 
                     Toast.makeText(
                         context,
-                        "PDF in Downloads gespeichert",
+                        context.resources.getString(R.string.pdf_saved_in_downloads),
                         Toast.LENGTH_SHORT
                     ).show()
 
@@ -196,7 +195,7 @@ class BoxPdfCreator {
                     intent.setDataAndType(uri, "application/pdf")
                     intent.putExtra(
                         Intent.EXTRA_SUBJECT,
-                        "PDF öffnen mit"
+                        context.resources.getString(R.string.pdf_open_with)
                     )
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     context.startActivity(intent)
@@ -219,7 +218,6 @@ class BoxPdfCreator {
 
     fun buildPDFcontent(context: Context, document: Document, box_model: BoxModel){
 
-        Log.e("Error", "Prepare Images")
         val eagle: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_adler)
         //val imageEagle = prepareImage(eagle)
         val oel: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_oel)
@@ -229,7 +227,7 @@ class BoxPdfCreator {
         var qrcode: Bitmap? = encodeAsBitmap(box_model.qrcode, BarcodeFormat.QR_CODE, 512, 512);
         //val qrcodeImg = prepareImage(bmp)
         val qr_logo: Bitmap = BitmapFactory.decodeResource(context.resources,
-            R.drawable.qrcode_center_round
+            R.drawable.qrcode_center_round_blue
         )
         //val qrcodeLogoImg = prepareImage(qr_logo)
 
@@ -242,8 +240,6 @@ class BoxPdfCreator {
                 val eagle_job = async { prepareImage(eagle) }
 
                 val (qrcodeLogoImg, qrcodeImg, imageThw, imageOel, imageEagle) = awaitAll(logo_job, qrcode_job, thw_job, oel_job, eagle_job)
-
-                Log.e("Error", "Build Document")
 
                 document.setMargins(10f, 10f, 16f, 10f);
                 // Create Header
@@ -261,13 +257,17 @@ class BoxPdfCreator {
                     headerTable.addCell(cell)
                 }
 
+                val sharedPreferences: SharedPreferences = context.getSharedPreferences("AppPreferences",
+                    AppCompatActivity.MODE_PRIVATE
+                )
+
                 val textTable = PdfPTable(1)
-                val cell2 = PdfPCell(Phrase("Bundesanstalt Technisches Hilfswerk",
+                val cell2 = PdfPCell(Phrase(sharedPreferences.getString("pdf_title", "TITLE"),
                     FontFactory.getFont(FontFactory.TIMES_BOLD, 16f)))
                 cell2.border = Rectangle.NO_BORDER
                 textTable.addCell(cell2)
 
-                val cell3 = PdfPCell(Phrase("Ortsverband Obernburg, FGr Öl (C)",
+                val cell3 = PdfPCell(Phrase(sharedPreferences.getString("pdf_subtitle", "SUBTITLE"),
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16f)))
                 cell3.border = Rectangle.NO_BORDER
                 textTable.addCell(cell3)
@@ -303,7 +303,7 @@ class BoxPdfCreator {
                 val p = Paragraph(Phrase("           " + timeStamp,
                     FontFactory.getFont(FontFactory.HELVETICA, 7f)))
                 p.add(Chunk(glue))
-                p.add(Phrase("Im Weidig 22 - 63785 Obernburg - Tel: (0 60 22) 64 95 10",
+                p.add(Phrase(sharedPreferences.getString("pdf_address", "ADRRESS"),
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8f)))
                 p.add(Chunk(glue))
                 p.add(Phrase(box_model.id + " - " + box_model.name + "           ",
@@ -351,21 +351,21 @@ class BoxPdfCreator {
                 cellTitle0.horizontalAlignment = Rectangle.ALIGN_LEFT
                 contentTable.addCell(cellTitle0)
 
-                val cellTitle1 = PdfPCell(Phrase("Anz.",
+                val cellTitle1 = PdfPCell(Phrase(context.resources.getString(R.string.pdf_item_amount),
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18f)))
                 cellTitle1.border = Rectangle.NO_BORDER
                 cellTitle1.horizontalAlignment = Rectangle.ALIGN_LEFT
                 cellTitle1.paddingBottom = 4f
                 contentTable.addCell(cellTitle1)
 
-                val cellTitle2 = PdfPCell(Phrase("Gegenstand",
+                val cellTitle2 = PdfPCell(Phrase(context.resources.getString(R.string.pdf_item_name),
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18f)))
                 cellTitle2.border = Rectangle.NO_BORDER
                 cellTitle2.horizontalAlignment = Rectangle.ALIGN_LEFT
                 cellTitle2.paddingBottom = 4f
                 contentTable.addCell(cellTitle2)
 
-                val cellTitle3 = PdfPCell(Phrase("InvNr.",
+                val cellTitle3 = PdfPCell(Phrase(context.resources.getString(R.string.pdf_item_invnr),
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18f)))
                 cellTitle3.border = Rectangle.NO_BORDER
                 cellTitle3.horizontalAlignment = Rectangle.ALIGN_LEFT
@@ -428,7 +428,6 @@ class BoxPdfCreator {
                     boxImage.setAbsolutePosition(605f, 150f)
                     document.add(boxImage)
                 }
-                Log.e("Error", "Build Document - DONE")
 
             }
             job.join()

@@ -205,14 +205,14 @@ class BoxFragment : Fragment(){
         }
 
         if (box_img == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg).into(box_summary_image_field)
+            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(box_summary_image_field)
         } else {
             box_summary_image_field.scaleType=ImageView.ScaleType.CENTER_CROP
             box_summary_image_field.setImageBitmap(Utils.StringToBitMap(box_img))
         }
 
         if (box_location_img == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg).into(box_location_image_field)
+            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(box_location_image_field)
         } else {
             box_location_image_field.setImageBitmap(Utils.StringToBitMap(box_location_img))
         }

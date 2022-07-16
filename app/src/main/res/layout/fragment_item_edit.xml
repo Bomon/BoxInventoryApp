@@ -35,7 +35,7 @@
                     android:layout_height="194dp"
                     android:contentDescription="@string/item_edit_image"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/placeholder_with_bg"
+                    app:srcCompat="@drawable/placeholder_with_bg_80"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

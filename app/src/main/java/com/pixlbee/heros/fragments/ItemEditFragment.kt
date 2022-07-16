@@ -239,7 +239,7 @@ class ItemEditFragment : Fragment() {
         item_edit_name_field.setText(item_model.name)
         item_edit_description_field.setText(item_model.description)
         if (item_model.image == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg).into(item_edit_image_field)
+            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(item_edit_image_field)
         } else {
             item_edit_image_field.setImageBitmap(Utils.StringToBitMap(item_model.image))
         }
