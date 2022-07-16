@@ -32,8 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="194dp"
                 app:srcCompat="@drawable/placeholder_with_bg_80"
-                android:contentDescription="@string/content_description_media"
-                />
+                android:contentDescription="@string/content_description_item_image"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -46,7 +45,7 @@
                     android:id="@+id/item_summary_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/title"
+                    android:text="@string/content_description_title"
                     android:textAppearance="?attr/textAppearanceTitleLarge"
                     />
 
@@ -55,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="@string/secondary_text"
+                    android:text="@string/content_description_description"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textColor="?android:attr/textColorSecondary" />
 

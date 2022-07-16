@@ -3,8 +3,9 @@ package com.pixlbee.heros.fragments
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.*
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -14,6 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.*
 import com.pixlbee.heros.*
 import com.pixlbee.heros.R
@@ -26,6 +28,7 @@ import com.pixlbee.heros.utility.Utils
 
 class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
+    private var viewGroup: ViewGroup? = null
     var boxList: ArrayList<BoxModel> = ArrayList<BoxModel>()
     lateinit var adapter: BoxAdapter
     lateinit var rv: RecyclerView
@@ -37,6 +40,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_home, menu)
         val searchBtn = menu.findItem(R.id.home_btn_search)
+
         val searchView: SearchView = MenuItemCompat.getActionView(searchBtn) as SearchView
         searchView.setOnQueryTextListener(this)
         searchBtn.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
@@ -74,6 +78,48 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                 }
                 true
             }
+            R.id.home_btn_sort -> {
+                if (context != null){
+                    val builder: MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context!!)
+                    builder.setTitle(context!!.resources.getString(R.string.dialog_sort_title))
+
+                    val viewInflated: View = LayoutInflater.from(context)
+                        .inflate(R.layout.dialog_sort_boxes, viewGroup, false)
+
+                    builder.setView(viewInflated)
+
+                    val mAlertDialog: androidx.appcompat.app.AlertDialog = builder.create();
+                    val radioGroup = viewInflated.findViewById<View>(R.id.radioButtonGroup) as RadioGroup
+                    radioGroup.setOnCheckedChangeListener { radioGroup, i ->
+
+                        when (radioGroup.findViewById<RadioButton>(i).text.toString()) {
+                            resources.getString(R.string.dialog_order_by_id) -> {
+                                Log.e("Error", "Sort by ID")
+                                mAlertDialog.dismiss()
+                            }
+                            resources.getString(R.string.dialog_order_by_name) -> {
+                                Log.e("Error", "Sort by name")
+                                mAlertDialog.dismiss()
+                            }
+                            resources.getString(R.string.dialog_order_by_location) -> {
+                                Log.e("Error", "Sort by location")
+                                mAlertDialog.dismiss()
+                            }
+                            resources.getString(R.string.dialog_order_by_status) -> {
+                                Log.e("Error", "Sort by status")
+                                mAlertDialog.dismiss()
+                            }
+                            resources.getString(R.string.dialog_order_by_color) -> {
+                                Log.e("Error", "Sort by color")
+                                mAlertDialog.dismiss()
+                            }
+                        }
+                    }
+                    mAlertDialog.show()
+                }
+
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -102,6 +148,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewGroup = container
         val view: View = inflater.inflate(R.layout.fragment_home, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_home) as RecyclerView
         adapter = BoxAdapter(boxList)

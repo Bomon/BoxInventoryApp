@@ -4,11 +4,11 @@
     <item
         android:id="@+id/item_edit_btn_save"
         android:icon="@drawable/ic_baseline_save_24"
-        android:title="Speichern"
+        android:title="@string/btn_save"
         app:showAsAction="always|collapseActionView"></item>
     <item
         android:id="@+id/item_edit_btn_cancel"
         android:icon="@drawable/ic_baseline_cancel_24"
-        android:title="Abbrechen"
+        android:title="@string/btn_cancel"
         app:showAsAction="always"></item>
 </menu>

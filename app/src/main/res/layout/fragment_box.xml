@@ -33,7 +33,7 @@
                 android:id="@+id/box_summary_image"
                 android:layout_width="match_parent"
                 android:layout_height="194dp"
-                android:contentDescription="@string/content_description_media"
+                android:contentDescription="@string/content_description_box_image"
                 app:srcCompat="@drawable/placeholder_with_bg_80" />
 
             <LinearLayout
@@ -61,7 +61,7 @@
                         android:id="@+id/box_summary_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/title"
+                        android:text="@string/content_description_title"
                         android:textAppearance="?attr/textAppearanceTitleLarge"
                         />
 
@@ -72,7 +72,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="@string/secondary_text"
+                    android:text="@string/content_description_description"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textColor="?android:attr/textColorSecondary" />
 
@@ -121,7 +121,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/supporting_text"
+                    android:text="@string/content_description_location"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/box_summary_location_label" />
 
@@ -132,7 +132,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
-                    android:contentDescription="@string/content_description_media"
+                    android:contentDescription="@string/content_description_location_image"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

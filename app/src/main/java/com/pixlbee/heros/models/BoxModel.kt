@@ -19,7 +19,7 @@ class BoxModel(
     var qrcode: String,
     var location: String,
     var image: String,
-    var location_img: String,
+    var location_image: String,
     var notes: String,
     var color: Int,
     var status: String,

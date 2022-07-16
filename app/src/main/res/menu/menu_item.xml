@@ -4,11 +4,11 @@
     <item
         android:id="@+id/item_btn_edit"
         android:icon="@drawable/ic_baseline_edit_24"
-        android:title="Bearbeiten"
+        android:title="@string/btn_edit"
         app:showAsAction="always|collapseActionView"></item>
     <item
         android:id="@+id/item_btn_delete"
         android:icon="@drawable/ic_baseline_delete_24"
-        android:title="Löschen"
+        android:title="@string/btn_delete"
         app:showAsAction="always"></item>
 </menu>

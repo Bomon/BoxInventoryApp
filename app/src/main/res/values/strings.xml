@@ -1,30 +1,14 @@
 <resources>
     <string name="app_name">Heros Gitterbox</string>
-    <string name="title_home">Boxen</string>
-    <string name="title_qrscanner">QR</string>
-    <string name="title_notifications">Ausrüstung</string>
+    <string name="title_nav_home">Boxen</string>
+    <string name="title_nav_qrscanner">QR</string>
+    <string name="title_nav_items">Ausrüstung</string>
 
     <string name="item_id">Item ID</string>
     <string name="item_count">XX</string>
     <string name="box_id">Box ID</string>
     <string name="box_name">Box Name</string>
     <string name="box_location">Box Location</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_box">BoxActivity</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="content_description_media">Content Description</string>
-    <string name="title">Title</string>
-    <string name="secondary_text">Secondary Text</string>
-    <string name="supporting_text">Supporting Text</string>
-    <string name="status">Status</string>
 
     <string name="location">Standort</string>
     <string name="content">Inhalt</string>
@@ -104,13 +88,38 @@
     <string name="error_login_failed">Login Fehlgeschlagen</string>
     <string name="item_details_title">Details</string>
     <string name="error_no_write_permission">Keine Berechtigung für diese Aktion</string>
+
     <string name="pdf_share_label">PDF Label teilen</string>
     <string name="pdf_saved_in_downloads">PDF in Downloads gespeichert</string>
     <string name="pdf_open_with">PDF öffnen mit</string>
+
     <string name="pdf_title">Bundesanstalt Technisches Hilfswerk</string>
     <string name="pdf_subtitle">Ortsverband Obernburg, FGr Öl (C)</string>
-    <string name="pdf_address">\"Im Weidig 22 - 63785 Obernburg - Tel: (0 60 22) 64 95 10\"</string>
+    <string name="pdf_address">"Im Weidig 22 - 63785 Obernburg - Tel: (0 60 22) 64 95 10"</string>
     <string name="pdf_item_amount">Anz.</string>
     <string name="pdf_item_name">Gegenstand</string>
     <string name="pdf_item_invnr">Inventar Nr.</string>
+
+    <string name="btn_search">Suche</string>
+    <string name="btn_sort">Sortieren</string>
+    <string name="btn_add_box">Neu</string>
+    <string name="btn_print">Drucken</string>
+    <string name="btn_edit">Bearbeiten</string>
+    <string name="btn_delete">Löschen</string>
+    <string name="btn_save">Speichern</string>
+    <string name="btn_cancel">Abbrechen</string>
+    <string name="content_description_box_image">Box Foto</string>
+    <string name="content_description_title">Titel</string>
+    <string name="content_description_description">Beschreibung</string>
+    <string name="content_description_item_image">Ausrüstung Foto</string>
+    <string name="content_description_location">Standort</string>
+    <string name="content_description_location_image">Standort Foto</string>
+    <string name="dialog_order_by_name_az">Name (A-Z)</string>
+    <string name="dialog_order_by_name_za">Name (Z-A)</string>
+    <string name="dialog_order_by_name">Name</string>
+    <string name="dialog_order_by_id">ID / Nummer</string>
+    <string name="dialog_order_by_location">Standort</string>
+    <string name="dialog_order_by_status">"Status "</string>
+    <string name="dialog_order_by_color">Farbe</string>
+    <string name="dialog_sort_title">Sortieren Nach</string>
 </resources>

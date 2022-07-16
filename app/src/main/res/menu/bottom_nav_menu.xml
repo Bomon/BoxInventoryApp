@@ -4,16 +4,16 @@
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_baseline_widgets_24"
-        android:title="@string/title_home" />
+        android:title="@string/title_nav_home" />
 
     <item
         android:id="@+id/navigation_qrscanner"
         android:icon="@drawable/ic_baseline_qr_code_scanner_24"
-        android:title="@string/title_qrscanner" />
+        android:title="@string/title_nav_qrscanner" />
 
     <item
         android:id="@+id/navigation_items"
         android:icon="@drawable/ic_baseline_build_24"
-        android:title="@string/title_notifications" />
+        android:title="@string/title_nav_items" />
 
 </menu>

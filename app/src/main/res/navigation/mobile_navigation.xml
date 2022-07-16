@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.pixlbee.heros.fragments.HomeFragment"
-        android:label="@string/title_home"
+        android:label="@string/title_nav_home"
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_navigation_home_to_boxFragment"
@@ -21,7 +21,7 @@
     <fragment
         android:id="@+id/navigation_qrscanner"
         android:name="com.pixlbee.heros.fragments.QRScannerFragment"
-        android:label="@string/title_qrscanner"
+        android:label="@string/title_nav_qrscanner"
         tools:layout="@layout/fragment_qrscanner" >
         <action
             android:id="@+id/action_navigation_qrscanner_to_boxFragment"
@@ -31,7 +31,7 @@
     <fragment
         android:id="@+id/navigation_items"
         android:name="com.pixlbee.heros.fragments.ItemsFragment"
-        android:label="@string/title_notifications"
+        android:label="@string/title_nav_items"
         tools:layout="@layout/fragment_items" >
         <action
             android:id="@+id/action_navigation_items_to_itemFragment"

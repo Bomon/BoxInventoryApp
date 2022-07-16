@@ -174,7 +174,7 @@ class BoxFragment : Fragment(){
         val box_description = box_model.description
         val box_status = box_model.status
         val box_color = box_model.color
-        val box_location_img = box_model.location_img
+        val box_location_img = box_model.location_image
 
         //box_id_field.text = box_id
         box_name_field.text = box_name
@@ -214,6 +214,7 @@ class BoxFragment : Fragment(){
         if (box_location_img == "") {
             Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(box_location_image_field)
         } else {
+            box_location_image_field.scaleType=ImageView.ScaleType.CENTER_CROP
             box_location_image_field.setImageBitmap(Utils.StringToBitMap(box_location_img))
         }
 
@@ -253,6 +254,7 @@ class BoxFragment : Fragment(){
                 .withTransitionFrom(box_summary_image_field)
                 .show(true)
         }
+
         box_location_image_field.setOnClickListener {
             val drawables: ArrayList<Drawable> = ArrayList()
             drawables.add(box_location_image_field.drawable)

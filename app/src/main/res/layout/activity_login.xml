@@ -50,7 +50,6 @@
                 android:layout_height="200dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:contentDescription="@string/content_description_media"
                 app:layout_constraintBottom_toTopOf="@+id/card_item_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
