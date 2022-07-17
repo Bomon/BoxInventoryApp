@@ -1,12 +1,17 @@
 package com.pixlbee.heros.activities
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.ListView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
@@ -14,9 +19,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.preference.PreferenceManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.elevation.SurfaceColors
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -28,6 +33,7 @@ import com.pixlbee.heros.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var mDrawer: DrawerLayout
     private lateinit var binding: ActivityMainBinding
     private lateinit var listView: ListView
 
@@ -35,39 +41,49 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //init firebase
         initFirebaseListener(this)
         initDefaultSettings()
 
-        //supportActionBar?.hide()
-
+        // Color the status bar
         window.statusBarColor = resources.getColor(R.color.status_bar_color)
+        window.navigationBarColor = SurfaceColors.SURFACE_2.getColor(this)
 
+        // init view
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val navView: BottomNavigationView = binding.navView
+        setSupportActionBar(binding.toolbar)
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        NavigationUI.setupActionBarWithNavController(this, navController);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
+        // Init App bar configuration (defines home fragments where drawer is visible, otherwise back button)
+        mDrawer= binding.drawerLayout
         val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_qrscanner, R.id.navigation_items
-            )
+            setOf(R.id.navigation_home, R.id.navigation_qrscanner, R.id.navigation_items),
+            mDrawer
         )
+
+        // add logic to drawer button
+        binding.toolbar.setupWithNavController(navController, appBarConfiguration)
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
 
-        getWindow().setNavigationBarColor(SurfaceColors.SURFACE_2.getColor(this));
+        binding.toolbar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this))
 
-        //Always color the nav button correctly
+        val sharedPreferences = this.getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        val currentUser = sharedPreferences.getString("current_user", "USER")
+        binding.navViewDrawer.getHeaderView(0).findViewById<TextView>(R.id.drawer_header_username).text = currentUser
+
+        //Always color the bottom nav button correctly
+        val navView: BottomNavigationView = binding.bottomNavView
         navView.setOnItemSelectedListener { item ->
             // In order to get the expected behavior, you have to call default Navigation method manually
             NavigationUI.onNavDestinationSelected(item, navController)
-
             return@setOnItemSelectedListener true
         }
+
+
+        val nvDrawer: NavigationView = findViewById(R.id.nav_view_drawer)
+        setupDrawerContent(nvDrawer);
 
     }
 
@@ -78,6 +94,29 @@ class MainActivity : AppCompatActivity() {
         editor.putString("pdf_subtitle", resources.getString(R.string.pdf_subtitle))
         editor.putString("pdf_address", resources.getString(R.string.pdf_address))
         editor.commit()
+    }
+
+
+
+    private fun setupDrawerContent(navigationView: NavigationView) {
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            selectDrawerItem(menuItem)
+            true
+        }
+    }
+
+    fun selectDrawerItem(menuItem: MenuItem) {
+        // Create a new fragment and specify the fragment to show based on nav item clicked
+        when (menuItem.itemId) {
+            R.id.nav_logout -> {
+                FirebaseAuth.getInstance().signOut()
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+            }
+            R.id.nav_settings -> Log.e("Error", "Clicked Settings")
+        }
+        menuItem.setChecked(false)
+        mDrawer.closeDrawers()
     }
 
 

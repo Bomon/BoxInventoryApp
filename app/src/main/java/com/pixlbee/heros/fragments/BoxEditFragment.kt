@@ -1,8 +1,6 @@
 package com.pixlbee.heros.fragments
 
 import android.app.Activity
-import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -18,7 +16,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
@@ -36,11 +33,11 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.*
-import com.pixlbee.heros.models.ItemModel
 import com.pixlbee.heros.adapters.BoxItemEditAdapter
 import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ContentItem
+import com.pixlbee.heros.models.ItemModel
 import com.pixlbee.heros.utility.Utils
 import dev.sasikanth.colorsheet.ColorSheet
 import java.time.Instant
@@ -249,6 +246,7 @@ class BoxEditFragment() : Fragment() {
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.e("Error", "Options Item")
         if (item.itemId == R.id.box_edit_btn_save) {
             showSaveDialog()
         } else if (item.itemId == R.id.box_edit_btn_cancel) {

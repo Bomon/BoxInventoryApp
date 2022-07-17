@@ -1,43 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="24dp"
     android:paddingRight="24dp">
 
-    <RadioGroup
-        android:id="@+id/radioButtonGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
 
-        <RadioButton
-            android:id="@+id/radioButtonOrderName"
-            android:layout_width="match_parent"
+        <RadioGroup
+            android:id="@+id/radioButtonGroup"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/dialog_order_by_id" />
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
 
-        <RadioButton
-            android:id="@+id/radioButtonOrderId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/dialog_order_by_name" />
+            <RadioButton
+                android:id="@+id/radioButtonOrderLatest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/dialog_order_by_latest" />
 
-        <RadioButton
-            android:id="@+id/radioButtonOrderLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/dialog_order_by_location" />
+            <RadioButton
+                android:id="@+id/radioButtonOrderName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_order_by_id" />
 
-        <RadioButton
-            android:id="@+id/radioButtonOrderStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/dialog_order_by_status" />
+            <RadioButton
+                android:id="@+id/radioButtonOrderId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_order_by_name" />
 
-        <RadioButton
-            android:id="@+id/radioButtonOrderColor"
+            <RadioButton
+                android:id="@+id/radioButtonOrderLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_order_by_location" />
+
+            <RadioButton
+                android:id="@+id/radioButtonOrderStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_order_by_status" />
+
+            <RadioButton
+                android:id="@+id/radioButtonOrderColor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_order_by_color" />
+        </RadioGroup>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/sort_divider"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <RadioGroup
+            android:id="@+id/radioButtonGroupAscDesc"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/dialog_order_by_color" />
-    </RadioGroup>
+            android:layout_marginTop="8dp">
+
+            <RadioButton
+                android:id="@+id/radioButtonOrderAscending"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/dialog_order_ascending" />
+
+            <RadioButton
+                android:id="@+id/radioButtonOrderDescending"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_order_descending" />
+        </RadioGroup>
+    </LinearLayout>
 </FrameLayout>

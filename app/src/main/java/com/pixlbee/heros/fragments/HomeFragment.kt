@@ -1,5 +1,8 @@
 package com.pixlbee.heros.fragments
 
+import android.content.Context.MODE_PRIVATE
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,9 +19,11 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.pixlbee.heros.*
 import com.pixlbee.heros.R
+import com.pixlbee.heros.activities.LoginActivity
 import com.pixlbee.heros.adapters.BoxAdapter
 import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.BoxModel
@@ -35,6 +40,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     lateinit var firebase_listener: ValueEventListener
     private var doubleBackToExitPressedOnce: Boolean = false
     lateinit var exitToast: Toast
+    private var searchQueryText: String = ""
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -46,7 +52,8 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         searchBtn.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 // Do something when collapsed
-                adapter.setFilter(boxList)
+                searchQueryText = ""
+                adapter.setFilter(filterAndSort(boxList))
                 return true // Return true to collapse action view
             }
 
@@ -55,6 +62,16 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                 return true // Return true to expand action view
             }
         })
+    }
+
+
+    override fun onQueryTextChange(newText: String): Boolean {
+        searchQueryText = newText
+        adapter.setFilter(filterAndSort(boxList))
+        //activity?.runOnUiThread {
+        //    adapter.notifyDataSetChanged()
+        //}
+        return true
     }
 
 
@@ -88,34 +105,33 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
                     builder.setView(viewInflated)
 
-                    val mAlertDialog: androidx.appcompat.app.AlertDialog = builder.create();
+                    // init radio groups
                     val radioGroup = viewInflated.findViewById<View>(R.id.radioButtonGroup) as RadioGroup
-                    radioGroup.setOnCheckedChangeListener { radioGroup, i ->
+                    val radioGroupAscDesc = viewInflated.findViewById<View>(R.id.radioButtonGroupAscDesc) as RadioGroup
 
-                        when (radioGroup.findViewById<RadioButton>(i).text.toString()) {
-                            resources.getString(R.string.dialog_order_by_id) -> {
-                                Log.e("Error", "Sort by ID")
-                                mAlertDialog.dismiss()
-                            }
-                            resources.getString(R.string.dialog_order_by_name) -> {
-                                Log.e("Error", "Sort by name")
-                                mAlertDialog.dismiss()
-                            }
-                            resources.getString(R.string.dialog_order_by_location) -> {
-                                Log.e("Error", "Sort by location")
-                                mAlertDialog.dismiss()
-                            }
-                            resources.getString(R.string.dialog_order_by_status) -> {
-                                Log.e("Error", "Sort by status")
-                                mAlertDialog.dismiss()
-                            }
-                            resources.getString(R.string.dialog_order_by_color) -> {
-                                Log.e("Error", "Sort by color")
-                                mAlertDialog.dismiss()
-                            }
-                        }
+                    // Set button checked that is stored in settings
+                    val sharedPreferences = context!!.getSharedPreferences("AppPreferences", MODE_PRIVATE)
+                    val saved_order_by_btn = sharedPreferences.getInt("settings_box_order_by", R.id.radioButtonOrderId)
+                    val saved_order_asc_desc = sharedPreferences.getInt("settings_box_order_asc_desc", R.id.radioButtonOrderAscending)
+                    radioGroup.findViewById<RadioButton>(saved_order_by_btn).isChecked = true
+                    radioGroupAscDesc.findViewById<RadioButton>(saved_order_asc_desc).isChecked = true
+
+                    // Build dialog
+                    builder.setPositiveButton(R.string.btn_save) { dialog, which ->
+                        val editor = sharedPreferences.edit()
+                        editor.putInt("settings_box_order_asc_desc", radioGroupAscDesc.checkedRadioButtonId)
+                        editor.putInt("settings_box_order_by", radioGroup.checkedRadioButtonId)
+                        editor.commit()
+
+                        adapter.setFilter(filterAndSort(boxList))
+                        dialog.dismiss()
                     }
-                    mAlertDialog.show()
+
+                    builder.setNegativeButton(R.string.btn_cancel) { dialog, which ->
+                        dialog.dismiss()
+                    }
+
+                    builder.show()
                 }
 
                 true
@@ -184,21 +200,11 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                     val boxModel = Utils.readBoxModelFromDataSnapshot(context, box)
                     boxList.add(boxModel)
                 }
-                adapter.setFilter(boxList)
+                adapter.setFilter(filterAndSort(boxList))
             }
             override fun onCancelled(databaseError: DatabaseError) {}
         }
         FirebaseDatabase.getInstance().reference.addValueEventListener(firebase_listener)
-    }
-
-
-    override fun onQueryTextChange(newText: String): Boolean {
-        val filteredModelList: List<BoxModel> = filter(boxList, newText)
-        adapter.setFilter(filteredModelList)
-        activity?.runOnUiThread {
-            adapter.notifyDataSetChanged()
-        }
-        return true
     }
 
 
@@ -207,10 +213,10 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
-    private fun filter(models: List<BoxModel>, query: String): List<BoxModel> {
-        var query = query
-        query = query.toLowerCase()
+    private fun filterAndSort(models: List<BoxModel>): List<BoxModel> {
+        val query = searchQueryText.toLowerCase()
         val filteredModelList: MutableList<BoxModel> = ArrayList()
+        // filter list according to query
         for (model in models) {
             if (model.id.lowercase().contains(query)) {
                 filteredModelList.add(model)
@@ -218,8 +224,58 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                 filteredModelList.add(model)
             } else if (model.name.lowercase().contains(query)) {
                 filteredModelList.add(model)
+            } else if (model.status.lowercase().contains(query)) {
+                filteredModelList.add(model)
             }
         }
+        val sharedPreferences = context!!.getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        val order_by = sharedPreferences.getInt("settings_box_order_by", R.id.radioButtonOrderId)
+        val order_asc_desc = sharedPreferences.getInt("settings_box_order_asc_desc", R.id.radioButtonOrderAscending)
+        // Sort list according to settings
+        when (order_by) {
+
+            R.id.radioButtonOrderLatest -> {
+                if (order_asc_desc == R.id.radioButtonOrderAscending)
+                    filteredModelList.reverse()
+                true
+            }
+            R.id.radioButtonOrderId -> {
+                if (order_asc_desc == R.id.radioButtonOrderAscending)
+                    filteredModelList.sortBy { it.id }
+                else
+                    filteredModelList.sortByDescending { it.id }
+                true
+            }
+            R.id.radioButtonOrderName -> {
+                if (order_asc_desc == R.id.radioButtonOrderAscending)
+                    filteredModelList.sortBy { it.name }
+                else
+                    filteredModelList.sortByDescending { it.name }
+                true
+            }
+            R.id.radioButtonOrderLocation -> {
+                if (order_asc_desc == R.id.radioButtonOrderAscending)
+                    filteredModelList.sortBy { it.location }
+                else
+                    filteredModelList.sortByDescending { it.location }
+                true
+            }
+            R.id.radioButtonOrderStatus -> {
+                if (order_asc_desc == R.id.radioButtonOrderAscending)
+                    filteredModelList.sortBy { it.status }
+                else
+                    filteredModelList.sortByDescending { it.status }
+                true
+            }
+            R.id.radioButtonOrderColor -> {
+                if (order_asc_desc == R.id.radioButtonOrderAscending)
+                    filteredModelList.sortBy { it.color }
+                else
+                    filteredModelList.sortByDescending { it.color }
+                true
+            }
+        }
+
         return filteredModelList
     }
 
