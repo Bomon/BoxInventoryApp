@@ -10,16 +10,24 @@ import android.view.*
 import android.widget.*
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
+import androidx.navigation.ActivityNavigatorExtras
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.transition.platform.Hold
+import com.google.android.material.transition.platform.MaterialContainerTransform
+import com.google.android.material.transition.platform.MaterialElevationScale
 import com.google.firebase.database.*
 import com.pixlbee.heros.*
 import com.pixlbee.heros.R
@@ -143,6 +151,11 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
+        //exitTransition = Hold()
+        exitTransition = MaterialElevationScale(/* growing= */ false)
+        reenterTransition = MaterialElevationScale(/* growing= */ true)
+        enterTransition = MaterialElevationScale(/* growing= */ true)
+
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (doubleBackToExitPressedOnce) {
                 exitToast.cancel()
@@ -164,27 +177,37 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        postponeEnterTransition()
+
         viewGroup = container
+
         val view: View = inflater.inflate(R.layout.fragment_home, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_home) as RecyclerView
+
         adapter = BoxAdapter(boxList)
         adapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
             override fun onBoxClicked(box: BoxModel, view: View) {
+                view.transitionName = box.id
+                val extras = FragmentNavigatorExtras(
+                    view to box.id
+                )
                 val navController: NavController = Navigation.findNavController(view)
-                val bundle = Bundle()
-                bundle.putSerializable("boxModel", box)
-                navController.navigate(R.id.action_navigation_home_to_boxFragment, bundle)
+                navController.navigate(HomeFragmentDirections.actionNavigationHomeToBoxFragment(box), extras)
             }
         })
+
+        recyclerview.doOnPreDraw { startPostponedEnterTransition() }
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = adapter
 
-        val dividerItemDecoration: ItemDecoration = BoxDividerItemDecorator(
-            ContextCompat.getDrawable(
-                context!!, R.drawable.rv_divider
-            )!!
-        )
-        recyclerview.addItemDecoration(dividerItemDecoration)
+        // Item decorators for inserting dividers into RecyclerView
+        //val dividerItemDecoration: ItemDecoration = BoxDividerItemDecorator(
+        //    ContextCompat.getDrawable(
+        //        context!!, R.drawable.rv_divider
+        //    )!!
+        //)
+        //recyclerview.addItemDecoration(dividerItemDecoration)
 
         // Swipe functionality
         ItemTouchHelper(object :
@@ -243,10 +266,13 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                     Log.e("Error", "New color: " + color)
 
                     adapter.updateColorInFirebase(position)
-                    adapter.notifyItemChanged(position)
                 }
             }
         }).attachToRecyclerView(recyclerview)
+
+        recyclerview.doOnPreDraw {
+            startPostponedEnterTransition()
+        }
 
         initFirebase()
 

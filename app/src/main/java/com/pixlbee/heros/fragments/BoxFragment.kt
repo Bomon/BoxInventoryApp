@@ -8,29 +8,28 @@ import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.transition.*
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.transition.platform.MaterialContainerTransform
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.stfalcon.imageviewer.StfalconImageViewer
 import com.pixlbee.heros.*
 import com.pixlbee.heros.adapters.BoxItemAdapter
 import com.pixlbee.heros.models.BoxItemModel
@@ -38,6 +37,7 @@ import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ContentItem
 import com.pixlbee.heros.utility.BoxPdfCreator
 import com.pixlbee.heros.utility.Utils
+import com.stfalcon.imageviewer.StfalconImageViewer
 
 
 class BoxFragment : Fragment(){
@@ -161,9 +161,16 @@ class BoxFragment : Fragment(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        //sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        sharedElementEnterTransition = MaterialContainerTransform()
 
         // Get the arguments from the caller fragment/activity
         box_model = arguments?.getSerializable("boxModel") as BoxModel
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
     }
 
 
@@ -241,7 +248,10 @@ class BoxFragment : Fragment(){
         box_summary_image_field = v.findViewById(R.id.box_summary_image)
         box_location_image_field = v.findViewById(R.id.box_location_image)
         box_color_field = v.findViewById(R.id.box_summary_color)
-        var box_container: View = v.findViewById(R.id.box_card)
+        var box_container: View = v.findViewById(R.id.box_fragment_container)
+
+        // Transition Taget element
+        box_container.transitionName = box_model.id
 
         updateContent()
 
@@ -328,7 +338,6 @@ class BoxFragment : Fragment(){
                     }
                     oldBoxModel.item_color = color
 
-                    box_item_adapter.notifyItemChanged(position)
                     box_item_adapter.updateColorInFirebase(position)
                 }
             }

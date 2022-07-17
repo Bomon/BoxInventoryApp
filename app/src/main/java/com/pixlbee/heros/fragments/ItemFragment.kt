@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.transition.platform.MaterialContainerTransform
 import com.google.firebase.database.*
 import com.stfalcon.imageviewer.StfalconImageViewer
 import com.pixlbee.heros.*
@@ -134,6 +136,7 @@ class ItemFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        sharedElementEnterTransition = MaterialContainerTransform()
 
         (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.item_details_title)
 
@@ -203,6 +206,11 @@ class ItemFragment : Fragment() {
         item_description_field = v.findViewById(R.id.item_summary_description)
         item_image_field = v.findViewById(R.id.item_summary_image)
         item_containing_boxes_empty_label = v.findViewById(R.id.item_summary_content_empty_label)
+
+        var item_container: ConstraintLayout = v.findViewById(R.id.item_fragment_container)
+
+        // Transition Taget element
+        item_container.transitionName = item_model.id
 
         updateContent()
 

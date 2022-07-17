@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.pixlbee.heros.R
@@ -89,6 +90,7 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
         var item_image: ImageView = itemView.findViewById<ImageView>(R.id.card_item_img)
         val item_tags: ChipGroup = itemView.findViewById<ChipGroup>(R.id.card_item_tags)
         val item_tags_container: LinearLayout = itemView.findViewById<LinearLayout>(R.id.card_item_tags_container)
+        val item_container: MaterialCardView = itemView.findViewById(R.id.card_item_small)
 
         init {
             itemView.setOnClickListener(this)
@@ -96,7 +98,8 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
 
         override fun onClick(view: View?) {
             if(mListener != null){
-                mListener.onItemClicked(mItemList[adapterPosition], item_image)
+                // second argument is the element from which the transition will start
+                mListener.onItemClicked(mItemList[adapterPosition], item_name)
             }
             true
         }

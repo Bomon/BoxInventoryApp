@@ -87,6 +87,7 @@ class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, boxId: Stri
     }
 
     fun updateColorInFirebase(position: Int) {
+        notifyItemChanged(position)
         val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {

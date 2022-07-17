@@ -5,12 +5,16 @@ import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.transition.platform.MaterialContainerTransform
+import com.google.android.material.transition.platform.MaterialElevationScale
 import com.google.firebase.database.*
 import com.pixlbee.heros.R
 import com.pixlbee.heros.adapters.ItemAdapter
@@ -45,27 +49,40 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        exitTransition = MaterialElevationScale(/* growing= */ false)
+        reenterTransition = MaterialElevationScale(/* growing= */ true)
+        enterTransition = MaterialElevationScale(/* growing= */ true)
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        //(activity as AppCompatActivity).getSupportActionBar()?.show()
-        //activity?.getActionBar()?.show()
 
-        //setHasOptionsMenu(true);
+        postponeEnterTransition()
+
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_items, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_items) as RecyclerView
+
         adapter = ItemAdapter(itemList)
         adapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
             override fun onItemClicked(item: ItemModel, view: View) {
+                view.transitionName = item.id
+                val extras = FragmentNavigatorExtras(
+                    view to item.id
+                )
                 val navController: NavController = Navigation.findNavController(view)
-                val bundle = Bundle()
-                bundle.putSerializable("itemModel", item)
-                navController.navigate(R.id.action_navigation_items_to_itemFragment, bundle)
+                navController.navigate(ItemsFragmentDirections.actionNavigationItemsToItemFragment(item), extras)
             }
         })
+
+        recyclerview.doOnPreDraw { startPostponedEnterTransition() }
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = adapter
 

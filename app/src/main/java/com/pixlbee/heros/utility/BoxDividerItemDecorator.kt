@@ -2,13 +2,18 @@ package com.pixlbee.heros.utility
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Paint.Align
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.pixlbee.heros.R
+
 
 class BoxDividerItemDecorator (private val mDivider: Drawable) : RecyclerView.ItemDecoration() {
 
@@ -36,6 +41,18 @@ class BoxDividerItemDecorator (private val mDivider: Drawable) : RecyclerView.It
                     val dividerBottom = dividerTop + mDivider.intrinsicHeight + 92
                     mDivider.setBounds(dividerLeft, dividerTop, dividerRight, dividerBottom)
                     mDivider.draw(canvas)
+
+                    var mText = currentChildLocation
+                    var mPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+                    mPaint.color = Color.BLUE
+                    val textSize = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_SP,
+                        20f, parent.resources.getDisplayMetrics()
+                    )
+                    mPaint.textSize = textSize
+                    mPaint.textAlign = Align.LEFT
+
+                    canvas.drawText(currentChildLocation, 100f, dividerTop.toFloat(), mPaint)
                 }
             }
         }

@@ -108,7 +108,8 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
 
         override fun onClick(view: View?) {
             if(mListener != null){
-                mListener.onBoxClicked(mBoxList[adapterPosition], box_container)
+                // second argument is the element from which the transition will start
+                mListener.onBoxClicked(mBoxList[adapterPosition], box_id)
             }
             true
         }
@@ -132,6 +133,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
     }
 
     fun updateColorInFirebase(position: Int) {
+        notifyItemChanged(position)
         val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
