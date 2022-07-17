@@ -1,8 +1,8 @@
 package com.pixlbee.heros.fragments
 
 import android.content.Context.MODE_PRIVATE
-import android.content.Intent
-import android.content.SharedPreferences
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,16 +18,16 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.pixlbee.heros.*
 import com.pixlbee.heros.R
-import com.pixlbee.heros.activities.LoginActivity
 import com.pixlbee.heros.adapters.BoxAdapter
 import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ContentItem
+import com.pixlbee.heros.utility.BoxDividerItemDecorator
 import com.pixlbee.heros.utility.Utils
 
 
@@ -179,6 +179,13 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = adapter
 
+        val dividerItemDecoration: ItemDecoration = BoxDividerItemDecorator(
+            ContextCompat.getDrawable(
+                context!!, R.drawable.rv_divider
+            )!!
+        )
+        recyclerview.addItemDecoration(dividerItemDecoration)
+
         initFirebase()
 
         return view
@@ -233,45 +240,47 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         val order_asc_desc = sharedPreferences.getInt("settings_box_order_asc_desc", R.id.radioButtonOrderAscending)
         // Sort list according to settings
         when (order_by) {
-
             R.id.radioButtonOrderLatest -> {
                 if (order_asc_desc == R.id.radioButtonOrderAscending)
                     filteredModelList.reverse()
                 true
             }
             R.id.radioButtonOrderId -> {
-                if (order_asc_desc == R.id.radioButtonOrderAscending)
-                    filteredModelList.sortBy { it.id }
-                else
-                    filteredModelList.sortByDescending { it.id }
+                filteredModelList.sortWith(
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { it.id }
+                )
+                if (order_asc_desc == R.id.radioButtonOrderDescending)
+                    filteredModelList.reverse()
                 true
             }
             R.id.radioButtonOrderName -> {
-                if (order_asc_desc == R.id.radioButtonOrderAscending)
-                    filteredModelList.sortBy { it.name }
-                else
-                    filteredModelList.sortByDescending { it.name }
+                filteredModelList.sortWith(
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }
+                )
+                if (order_asc_desc == R.id.radioButtonOrderDescending)
+                    filteredModelList.reverse()
                 true
             }
             R.id.radioButtonOrderLocation -> {
-                if (order_asc_desc == R.id.radioButtonOrderAscending)
-                    filteredModelList.sortBy { it.location }
-                else
-                    filteredModelList.sortByDescending { it.location }
+                filteredModelList.sortWith(
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { it.location }
+                )
+                if (order_asc_desc == R.id.radioButtonOrderDescending)
+                    filteredModelList.reverse()
                 true
             }
             R.id.radioButtonOrderStatus -> {
-                if (order_asc_desc == R.id.radioButtonOrderAscending)
-                    filteredModelList.sortBy { it.status }
-                else
-                    filteredModelList.sortByDescending { it.status }
+                filteredModelList.sortWith(
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { it.status }
+                )
+                if (order_asc_desc == R.id.radioButtonOrderDescending)
+                    filteredModelList.reverse()
                 true
             }
             R.id.radioButtonOrderColor -> {
-                if (order_asc_desc == R.id.radioButtonOrderAscending)
-                    filteredModelList.sortBy { it.color }
-                else
-                    filteredModelList.sortByDescending { it.color }
+                filteredModelList.sortBy { it.color }
+                if (order_asc_desc == R.id.radioButtonOrderDescending)
+                    filteredModelList.reverse()
                 true
             }
         }

@@ -25,7 +25,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
 
 
     init {
-        setFilter(content)
+        //setFilter(content)
     }
 
 
