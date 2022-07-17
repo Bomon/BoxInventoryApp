@@ -7,36 +7,35 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.*
-import android.widget.*
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
-import androidx.navigation.ActivityNavigatorExtras
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.transition.platform.Hold
 import com.google.android.material.transition.platform.MaterialContainerTransform
 import com.google.android.material.transition.platform.MaterialElevationScale
-import com.google.firebase.database.*
-import com.pixlbee.heros.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.pixlbee.heros.R
 import com.pixlbee.heros.adapters.BoxAdapter
 import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ContentItem
-import com.pixlbee.heros.utility.BoxDividerItemDecorator
 import com.pixlbee.heros.utility.Utils
+import java.util.*
 
 
 class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -119,16 +118,17 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
                     // Set button checked that is stored in settings
                     val sharedPreferences = context!!.getSharedPreferences("AppPreferences", MODE_PRIVATE)
-                    val saved_order_by_btn = sharedPreferences.getInt("settings_box_order_by", R.id.radioButtonOrderId)
-                    val saved_order_asc_desc = sharedPreferences.getInt("settings_box_order_asc_desc", R.id.radioButtonOrderAscending)
-                    radioGroup.findViewById<RadioButton>(saved_order_by_btn).isChecked = true
-                    radioGroupAscDesc.findViewById<RadioButton>(saved_order_asc_desc).isChecked = true
+                    val saved_order_by_btn_id: Int = Utils.getButtonForSortSetting(sharedPreferences.getString("settings_box_order_by", "order_by_id"))
+                    val saved_order_asc_desc_btn_id: Int = Utils.getButtonForSortSettingAscDesc(sharedPreferences.getString("settings_box_order_asc_desc", "order_asc"))
+
+                    radioGroup.findViewById<RadioButton>(saved_order_by_btn_id).isChecked = true
+                    radioGroupAscDesc.findViewById<RadioButton>(saved_order_asc_desc_btn_id).isChecked = true
 
                     // Build dialog
                     builder.setPositiveButton(R.string.btn_save) { dialog, which ->
                         val editor = sharedPreferences.edit()
-                        editor.putInt("settings_box_order_asc_desc", radioGroupAscDesc.checkedRadioButtonId)
-                        editor.putInt("settings_box_order_by", radioGroup.checkedRadioButtonId)
+                        editor.putString("settings_box_order_asc_desc", Utils.getSortSettingAscDescForButton( radioGroupAscDesc.checkedRadioButtonId ))
+                        editor.putString("settings_box_order_by", Utils.getSortSettingForButton( radioGroup.checkedRadioButtonId ))
                         editor.commit()
 
                         adapter.setFilter(filterAndSort(boxList))
@@ -152,9 +152,13 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         //exitTransition = Hold()
-        exitTransition = MaterialElevationScale(/* growing= */ false)
+        //exitTransition = MaterialElevationScale(/* growing= */ false)
         reenterTransition = MaterialElevationScale(/* growing= */ true)
         enterTransition = MaterialElevationScale(/* growing= */ true)
+        //sharedElementEnterTransition = MaterialContainerTransform()
+        //sharedElementReturnTransition = MaterialContainerTransform()
+        sharedElementEnterTransition = MaterialContainerTransform()
+        sharedElementReturnTransition = MaterialContainerTransform()
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (doubleBackToExitPressedOnce) {
@@ -172,13 +176,13 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        postponeEnterTransition()
 
         viewGroup = container
 
@@ -197,7 +201,6 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         })
 
-        recyclerview.doOnPreDraw { startPostponedEnterTransition() }
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = adapter
 
@@ -270,10 +273,6 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         }).attachToRecyclerView(recyclerview)
 
-        recyclerview.doOnPreDraw {
-            startPostponedEnterTransition()
-        }
-
         initFirebase()
 
         return view
@@ -283,6 +282,9 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
     }
 
 
@@ -308,8 +310,16 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
+    private fun replaceUmlauteForSorting(text: String): String{
+        var text = text.lowercase(Locale.getDefault()).replace("ä","ae")
+        text = text.replace("ö","oe")
+        text = text.replace("ü","ue")
+        return text
+    }
+
+
     private fun filterAndSort(models: List<BoxModel>): List<BoxModel> {
-        val query = searchQueryText.toLowerCase()
+        val query = searchQueryText.lowercase(Locale.getDefault())
         val filteredModelList: MutableList<BoxModel> = ArrayList()
         // filter list according to query
         for (model in models) {
@@ -324,50 +334,51 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         }
         val sharedPreferences = context!!.getSharedPreferences("AppPreferences", MODE_PRIVATE)
-        val order_by = sharedPreferences.getInt("settings_box_order_by", R.id.radioButtonOrderId)
-        val order_asc_desc = sharedPreferences.getInt("settings_box_order_asc_desc", R.id.radioButtonOrderAscending)
+        val saved_order_by_btn_id = Utils.getButtonForSortSetting(sharedPreferences.getString("settings_box_order_by", "order_by_id"))
+        val saved_order_asc_desc_btn_id = Utils.getButtonForSortSettingAscDesc(sharedPreferences.getString("settings_box_order_asc_desc", "order_asc"))
+
         // Sort list according to settings
-        when (order_by) {
+        when (saved_order_by_btn_id) {
             R.id.radioButtonOrderLatest -> {
-                if (order_asc_desc == R.id.radioButtonOrderAscending)
+                if (saved_order_asc_desc_btn_id == R.id.radioButtonOrderAscending)
                     filteredModelList.reverse()
                 true
             }
             R.id.radioButtonOrderId -> {
                 filteredModelList.sortWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER) { it.id }
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { replaceUmlauteForSorting(it.id) }
                 )
-                if (order_asc_desc == R.id.radioButtonOrderDescending)
+                if (saved_order_asc_desc_btn_id == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
                 true
             }
             R.id.radioButtonOrderName -> {
                 filteredModelList.sortWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { replaceUmlauteForSorting(it.name) }
                 )
-                if (order_asc_desc == R.id.radioButtonOrderDescending)
+                if (saved_order_asc_desc_btn_id == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
                 true
             }
             R.id.radioButtonOrderLocation -> {
                 filteredModelList.sortWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER) { it.location }
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { replaceUmlauteForSorting(it.location) }
                 )
-                if (order_asc_desc == R.id.radioButtonOrderDescending)
+                if (saved_order_asc_desc_btn_id == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
                 true
             }
             R.id.radioButtonOrderStatus -> {
                 filteredModelList.sortWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER) { it.status }
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { replaceUmlauteForSorting(it.status) }
                 )
-                if (order_asc_desc == R.id.radioButtonOrderDescending)
+                if (saved_order_asc_desc_btn_id == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
                 true
             }
             R.id.radioButtonOrderColor -> {
                 filteredModelList.sortBy { it.color }
-                if (order_asc_desc == R.id.radioButtonOrderDescending)
+                if (saved_order_asc_desc_btn_id == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
                 true
             }

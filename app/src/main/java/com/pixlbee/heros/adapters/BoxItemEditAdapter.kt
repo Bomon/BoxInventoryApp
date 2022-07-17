@@ -97,7 +97,6 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>) : Recyc
             item_color_button = itemView.findViewById<MaterialButton>(R.id.box_item_color_btn)
             item_invnum_button = itemView.findViewById<MaterialButton>(R.id.box_item_invnum_btn)
             item_delete_button.setOnClickListener {
-
                 mItemModel.removeAt(adapterPosition)
                 notifyItemRemoved(adapterPosition)
                 notifyItemRangeChanged(adapterPosition, mItemModel.size)
@@ -222,7 +221,6 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>) : Recyc
         mItemModel.clear()
         mItemModel.addAll(itemList)
         this.notifyDataSetChanged()
-
     }
 
 

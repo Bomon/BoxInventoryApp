@@ -7,6 +7,8 @@ import android.graphics.BitmapFactory
 import android.util.ArrayMap
 import android.util.Base64
 import android.util.Log
+import android.view.View
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.allViews
@@ -177,6 +179,47 @@ class Utils {
                 }
             }
             return chipString.removePrefix(";")
+        }
+
+
+        fun getButtonForSortSetting(btnText: String?): Int {
+            when (btnText) {
+                "order_by_id" -> { return R.id.radioButtonOrderId }
+                "order_by_name" -> { return R.id.radioButtonOrderName }
+                "order_by_location" -> { return R.id.radioButtonOrderLocation }
+                "order_by_status" -> { return R.id.radioButtonOrderStatus }
+                "order_by_color" -> { return R.id.radioButtonOrderColor }
+                "order_by_latest" -> { return R.id.radioButtonOrderLatest }
+            }
+            return R.id.radioButtonOrderId
+        }
+
+        fun getSortSettingForButton(btnId: Int): String {
+            when (btnId) {
+                R.id.radioButtonOrderId -> { return "order_by_id" }
+                R.id.radioButtonOrderName -> { return "order_by_name" }
+                R.id.radioButtonOrderLocation -> { return "order_by_location" }
+                R.id.radioButtonOrderStatus -> { return "order_by_status" }
+                R.id.radioButtonOrderColor -> { return "order_by_color" }
+                R.id.radioButtonOrderLatest -> { return "order_by_latest" }
+            }
+            return "order_by_id"
+        }
+
+        fun getButtonForSortSettingAscDesc(btnText: String?): Int {
+            when (btnText) {
+                "order_ascending" -> { return R.id.radioButtonOrderAscending }
+                "order_descending" -> { return R.id.radioButtonOrderDescending }
+            }
+            return R.id.radioButtonOrderAscending
+        }
+
+        fun getSortSettingAscDescForButton(btnId: Int): String {
+            when (btnId) {
+                R.id.radioButtonOrderAscending -> { return "order_ascending" }
+                R.id.radioButtonOrderDescending -> { return "order_descending" }
+            }
+            return "order_ascending"
         }
 
 

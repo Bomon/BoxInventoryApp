@@ -27,9 +27,11 @@ class BoxDividerItemDecorator (private val mDivider: Drawable) : RecyclerView.It
         val sharedPreferences = parent.context.getSharedPreferences("AppPreferences",
             Context.MODE_PRIVATE
         )
-        val saved_order_by_btn = sharedPreferences.getInt("settings_box_order_by", R.id.radioButtonOrderId)
 
-        if (saved_order_by_btn == R.id.radioButtonOrderLocation){
+
+        val saved_order_by_btn_id = Utils.getButtonForSortSetting(sharedPreferences.getString("settings_box_order_by", "order_by_id"))
+
+        if (saved_order_by_btn_id == R.id.radioButtonOrderLocation){
             for (i in 0..childCount - 1) {
                 val child = parent.getChildAt(i)
                 val childLocation = child.findViewById<Chip>(R.id.box_location).text.toString()
@@ -65,9 +67,9 @@ class BoxDividerItemDecorator (private val mDivider: Drawable) : RecyclerView.It
         val sharedPreferences = parent.context.getSharedPreferences("AppPreferences",
             Context.MODE_PRIVATE
         )
-        val saved_order_by_btn = sharedPreferences.getInt("settings_box_order_by", R.id.radioButtonOrderId)
+        val saved_order_by_btn_id = Utils.getButtonForSortSetting(sharedPreferences.getString("settings_box_order_by", "order_by_id"))
 
-        if (saved_order_by_btn == R.id.radioButtonOrderLocation){
+        if (saved_order_by_btn_id == R.id.radioButtonOrderLocation){
             var childPosition: Int = parent.getChildAdapterPosition(view)
             Log.e("Error", childPosition.toString())
             if (childPosition == 0){

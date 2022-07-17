@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.pixlbee.heros.R
@@ -21,11 +22,15 @@ import com.pixlbee.heros.utility.Utils
 class ContainingBoxAdapter(
     private val mDataList: ArrayList<BoxModel>,
     item_id: String,
-) : RecyclerView.Adapter<ContainingBoxAdapter.BoxItemViewHolder>() {
+) : RecyclerView.Adapter<ContainingBoxAdapter.ContainingBoxViewHolder>() {
 
     lateinit var context: Context
     lateinit var item_id: String
-    private var mBoxModel: ArrayList<BoxModel> = ArrayList()
+    private var mBoxList: ArrayList<BoxModel> = ArrayList()
+
+
+    private lateinit var mListener: ContainingBoxAdapter.OnContainingBoxClickListener
+    lateinit var holder: ContainingBoxViewHolder
 
 
     init {
@@ -34,54 +39,51 @@ class ContainingBoxAdapter(
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BoxItemViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContainingBoxViewHolder {
         context = parent.context
         val layoutInflater = LayoutInflater.from(parent.context)
-        return BoxItemViewHolder(layoutInflater.inflate(R.layout.card_box_with_inv, parent, false))
+        return ContainingBoxViewHolder(layoutInflater.inflate(R.layout.card_box_with_inv, parent, false))
     }
 
 
     override fun getItemCount(): Int {
-        return mBoxModel.size
+        return mBoxList.size
     }
 
 
-    override fun onBindViewHolder(holder: BoxItemViewHolder, position: Int) {
-        (holder as BoxItemViewHolder).bind(mBoxModel[position]);
+    override fun onBindViewHolder(holder: ContainingBoxViewHolder, position: Int) {
+        (holder as ContainingBoxViewHolder).bind(mBoxList[position]);
     }
 
 
-    inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
+    inner class ContainingBoxViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
-        var box_id: TextView? = null
-        var box_name: TextView? = null
-        var box_location: TextView? = null
-        var box_image: ImageView? = null
-        var box_inv_label: TextView? = null
-        var box_invnums: ChipGroup? = null
-        var box_status: ChipGroup? = null
+        var box_id: TextView = itemView.findViewById<TextView>(R.id.box_inv_id)
+        var box_name: TextView = itemView.findViewById<TextView>(R.id.box_inv_name)
+        var box_location: TextView = itemView.findViewById<TextView>(R.id.box_inv_location)
+        var box_image: ImageView = itemView.findViewById<ImageView>(R.id.box_inv_img)
+        var box_inv_label: TextView = itemView.findViewById<TextView>(R.id.box_inv_label)
+        var box_invnums: ChipGroup = itemView.findViewById<ChipGroup>(R.id.box_inv_invnums)
+        var box_status: ChipGroup = itemView.findViewById<ChipGroup>(R.id.box_inv_status)
+        var box_color: View = itemView.findViewById<View>(R.id.box_inv_color)
+        var box_container: MaterialCardView = itemView.findViewById<MaterialCardView>(R.id.box_inv_card_small)
 
         init {
             itemView.setOnClickListener(this)
-            box_id = itemView.findViewById<TextView>(R.id.box_inv_id)
-            box_name = itemView.findViewById<TextView>(R.id.box_inv_name)
-            box_location = itemView.findViewById<TextView>(R.id.box_inv_location)
-            box_image = itemView.findViewById<ImageView>(R.id.box_inv_img)
-            box_inv_label = itemView.findViewById<TextView>(R.id.box_inv_label)
-            box_invnums = itemView.findViewById<ChipGroup>(R.id.box_inv_invnums)
-            box_status = itemView.findViewById<ChipGroup>(R.id.box_inv_status)
         }
 
         fun bind(model: BoxModel): Unit {
-            box_id?.text = model.id
-            box_name?.text = model.name
-            box_location?.text = model.location
+            box_id.text = model.id
+            box_name.text = model.name
+            box_location.text = model.location
+            box_color.background.setTint(model.color)
+
             val img = Utils.StringToBitMap(model.image)
             if (img != null){
-                box_image?.setImageBitmap(img)
+                box_image.setImageBitmap(img)
             }
 
-            box_status?.removeAllViews()
+            box_status.removeAllViews()
             if(model.status != ""){
                 for (tag in model.status.split(";")){
                     if (tag != ""){
@@ -125,23 +127,30 @@ class ContainingBoxAdapter(
 
         }
 
-        @SuppressLint("ResourceType")
         override fun onClick(view: View?) {
-            if (view != null) {
-                val navController: NavController = Navigation.findNavController(view)
-                val bundle = Bundle()
-                bundle.putSerializable("boxModel", mDataList[adapterPosition])
-                navController.navigate(R.id.action_itemFragment_to_boxFragment, bundle)
+            if(mListener != null){
+                // second argument is the element from which the transition will start
+                mListener.onContainingBoxClicked(mBoxList[adapterPosition], box_container)
             }
+            true
         }
     }
 
 
     fun setFilter(itemList: List<BoxModel>) {
-        mBoxModel.clear()
-        mBoxModel.addAll(itemList)
+        mBoxList.clear()
+        mBoxList.addAll(itemList)
         this.notifyDataSetChanged()
+    }
 
+
+    interface OnContainingBoxClickListener{
+        fun onContainingBoxClicked(box: BoxModel, view: View)
+    }
+
+
+    fun setOnBoxClickListener(mListener: OnContainingBoxClickListener) {
+        this.mListener = mListener
     }
 
 

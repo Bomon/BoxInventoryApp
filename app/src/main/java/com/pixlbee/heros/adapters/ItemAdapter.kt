@@ -26,7 +26,6 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
 
 
     init {
-        setFilter(content)
         setHasStableIds(true)
     }
 
@@ -99,7 +98,7 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
         override fun onClick(view: View?) {
             if(mListener != null){
                 // second argument is the element from which the transition will start
-                mListener.onItemClicked(mItemList[adapterPosition], item_name)
+                mListener.onItemClicked(mItemList[adapterPosition], item_image)
             }
             true
         }

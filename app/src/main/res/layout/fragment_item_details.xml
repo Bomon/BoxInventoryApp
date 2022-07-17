@@ -4,6 +4,7 @@
     android:id="@+id/item_fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -31,7 +32,7 @@
                 android:id="@+id/item_summary_image"
                 android:layout_width="match_parent"
                 android:layout_height="194dp"
-                app:srcCompat="@drawable/placeholder_with_bg_80"
+                app:srcCompat="@drawable/placeholder_with_bg_80_yellow"
                 android:contentDescription="@string/content_description_item_image"/>
 
             <LinearLayout

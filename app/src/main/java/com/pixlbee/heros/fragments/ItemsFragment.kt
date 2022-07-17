@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -20,6 +21,8 @@ import com.pixlbee.heros.R
 import com.pixlbee.heros.adapters.ItemAdapter
 import com.pixlbee.heros.models.ItemModel
 import com.pixlbee.heros.utility.Utils
+import java.util.*
+
 
 class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
@@ -27,6 +30,7 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     lateinit var adapter: ItemAdapter
     lateinit var rv: RecyclerView
     lateinit var firebase_listener: ValueEventListener
+    private var searchQueryText: String = ""
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -37,7 +41,8 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         itemBtn.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 // Do something when collapsed
-                adapter.setFilter(itemList)
+                searchQueryText = ""
+                adapter.setFilter(filterAndSort(itemList))
                 return true // Return true to collapse action view
             }
 
@@ -52,7 +57,8 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        exitTransition = MaterialElevationScale(/* growing= */ false)
+        sharedElementEnterTransition = MaterialContainerTransform()
+        //exitTransition = MaterialElevationScale(/* growing= */ false)
         reenterTransition = MaterialElevationScale(/* growing= */ true)
         enterTransition = MaterialElevationScale(/* growing= */ true)
     }
@@ -129,7 +135,8 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                     val tags = box.child("tags").value.toString()
                     itemList.add(ItemModel(id, name, description, tags, image))
                 }
-                adapter.setFilter(itemList)
+                adapter.setFilter(filterAndSort(itemList))
+                adapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}
@@ -138,11 +145,11 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        val filteredModelList: List<ItemModel> = filter(itemList, newText)
-        adapter.setFilter(filteredModelList)
-        activity?.runOnUiThread {
-            adapter.notifyDataSetChanged()
-        }
+        searchQueryText = newText
+        adapter.setFilter(filterAndSort(itemList))
+        //activity?.runOnUiThread {
+        //    adapter.notifyDataSetChanged()
+        //}
 
         return true
     }
@@ -151,8 +158,8 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         return false
     }
 
-    private fun filter(models: List<ItemModel>, query: String): List<ItemModel> {
-        var query = query
+    private fun filterAndSort(models: List<ItemModel>): List<ItemModel> {
+        var query = searchQueryText.toLowerCase()
         query = query.toLowerCase()
         val filteredModelList: MutableList<ItemModel> = ArrayList()
         for (item_model in models) {
@@ -166,6 +173,16 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                 filteredModelList.add(item_model)
             }
         }
+
+        filteredModelList.sortWith(
+            compareBy(String.CASE_INSENSITIVE_ORDER) {
+                var name = it.name.lowercase(Locale.getDefault()).replace("ä","ae")
+                name = name.replace("ö","oe")
+                name = name.replace("ü","ue")
+                name
+            }
+        )
+
         return filteredModelList
     }
 

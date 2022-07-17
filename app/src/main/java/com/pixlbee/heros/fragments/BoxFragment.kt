@@ -6,6 +6,7 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.transition.*
@@ -26,6 +27,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.transition.platform.MaterialContainerTransform
+import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -162,7 +164,13 @@ class BoxFragment : Fragment(){
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         //sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-        sharedElementEnterTransition = MaterialContainerTransform()
+        val transform = MaterialContainerTransform()
+        transform.scrimColor = Color.TRANSPARENT
+
+        sharedElementEnterTransition = transform
+        sharedElementReturnTransition = transform
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
 
         // Get the arguments from the caller fragment/activity
         box_model = arguments?.getSerializable("boxModel") as BoxModel
@@ -251,7 +259,7 @@ class BoxFragment : Fragment(){
         var box_container: View = v.findViewById(R.id.box_fragment_container)
 
         // Transition Taget element
-        box_container.transitionName = box_model.id
+        box_summary_image_field.transitionName = box_model.id
 
         updateContent()
 

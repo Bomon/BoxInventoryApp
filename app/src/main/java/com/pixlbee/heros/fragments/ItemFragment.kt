@@ -1,6 +1,7 @@
 package com.pixlbee.heros.fragments
 
 import android.app.AlertDialog
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
@@ -12,16 +13,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.transition.platform.MaterialContainerTransform
+import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.google.firebase.database.*
 import com.stfalcon.imageviewer.StfalconImageViewer
 import com.pixlbee.heros.*
 import com.pixlbee.heros.R
+import com.pixlbee.heros.adapters.BoxAdapter
 import com.pixlbee.heros.adapters.ContainingBoxAdapter
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ItemModel
@@ -136,7 +140,14 @@ class ItemFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        sharedElementEnterTransition = MaterialContainerTransform()
+
+        val transform = MaterialContainerTransform()
+        transform.scrimColor = Color.TRANSPARENT
+        sharedElementEnterTransition = transform
+        sharedElementReturnTransition = transform
+
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
 
         (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.item_details_title)
 
@@ -172,9 +183,7 @@ class ItemFragment : Fragment() {
             }
         }
 
-        if (item_image == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(item_image_field)
-        } else {
+        if (item_image != "") {
             item_image_field.scaleType=ImageView.ScaleType.CENTER_CROP
             item_image_field.setImageBitmap(Utils.StringToBitMap(item_image))
         }
@@ -210,13 +219,26 @@ class ItemFragment : Fragment() {
         var item_container: ConstraintLayout = v.findViewById(R.id.item_fragment_container)
 
         // Transition Taget element
-        item_container.transitionName = item_model.id
+        item_image_field.transitionName = item_model.id
 
         updateContent()
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.item_summary_containing_boxes) as RecyclerView
         containing_box_adapter = ContainingBoxAdapter(boxList, item_model.id)
+        containing_box_adapter.setOnBoxClickListener(object: ContainingBoxAdapter.OnContainingBoxClickListener{
+            override fun onContainingBoxClicked(box: BoxModel, view: View) {
+                view.transitionName = box.id
+                val extras = FragmentNavigatorExtras(
+                    view to box.id
+                )
+                // second argument is the animation start view
+                val navController: NavController = Navigation.findNavController(view)
+                navController.navigate(ItemFragmentDirections.actionItemFragmentToBoxFragment(box), extras)
+            }
+        })
+
+
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = containing_box_adapter
 

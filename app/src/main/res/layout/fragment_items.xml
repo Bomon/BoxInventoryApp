@@ -6,6 +6,7 @@
     android:id="@+id/fragment_items"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:transitionName="shared_element_box_edit_to_box_item_add"
     tools:context=".fragments.ItemsFragment">
 
     <ImageView

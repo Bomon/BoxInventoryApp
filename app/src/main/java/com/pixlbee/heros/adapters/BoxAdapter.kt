@@ -109,7 +109,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
         override fun onClick(view: View?) {
             if(mListener != null){
                 // second argument is the element from which the transition will start
-                mListener.onBoxClicked(mBoxList[adapterPosition], box_id)
+                mListener.onBoxClicked(mBoxList[adapterPosition], box_img)
             }
             true
         }
