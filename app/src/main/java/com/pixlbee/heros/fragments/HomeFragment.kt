@@ -2,7 +2,6 @@ package com.pixlbee.heros.fragments
 
 import android.content.Context.MODE_PRIVATE
 import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,6 +15,7 @@ import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
@@ -85,7 +85,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                 if (view != null) {
                     if(Utils.checkHasWritePermission(context)){
                         val bundle = Bundle()
-                        val boxModel: BoxModel = BoxModel("", "", "", "", "", "", "", "", ContextCompat.getColor(requireContext(), R.color.default_box_color), "", ArrayList<ContentItem>())
+                        val boxModel: BoxModel = BoxModel(System.currentTimeMillis(), "", "", "", "", "", "", "", "", ContextCompat.getColor(requireContext(), R.color.default_box_color), "", ArrayList<ContentItem>())
                         bundle.putSerializable("boxModel", boxModel)
                         bundle.putSerializable("items", ArrayList<BoxItemModel>().toTypedArray())
                         bundle.putSerializable("isNewBox", true)
@@ -185,6 +185,68 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             )!!
         )
         recyclerview.addItemDecoration(dividerItemDecoration)
+
+        // Swipe functionality
+        ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT + ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                if (Utils.checkHasWritePermission(context, false)) {
+                    super.onChildDraw(
+                        c,
+                        recyclerView,
+                        viewHolder,
+                        dX / 5,
+                        dY,
+                        actionState,
+                        isCurrentlyActive
+                    )
+                } else {
+                    super.onChildDraw(
+                        c,
+                        recyclerView,
+                        viewHolder,
+                        0f,
+                        dY,
+                        actionState,
+                        isCurrentlyActive
+                    )
+                }
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                if (Utils.checkHasWritePermission(context, false)) {
+                    val oldBoxModel: BoxModel = boxList[viewHolder.adapterPosition]
+                    val position = viewHolder.adapterPosition
+                    //boxList.removeAt(viewHolder.adapterPosition)
+
+                    var color: Int = Utils.getNextColor(context!!, oldBoxModel.color)
+                    if (direction == ItemTouchHelper.RIGHT) {
+                        color = Utils.getPreviousColor(context!!, oldBoxModel.color)
+                    }
+                    oldBoxModel.color = color
+                    Log.e("Error", "New color: " + color)
+
+                    adapter.updateColorInFirebase(position)
+                    adapter.notifyItemChanged(position)
+                }
+            }
+        }).attachToRecyclerView(recyclerview)
 
         initFirebase()
 

@@ -13,6 +13,7 @@ data class ContentItem(
 )
 
 class BoxModel(
+    var numeric_id: Long,
     var id: String,
     var name: String,
     var description: String,

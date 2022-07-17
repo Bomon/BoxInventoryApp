@@ -9,21 +9,31 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
 import com.pixlbee.heros.utility.Utils
 import com.pixlbee.heros.models.BoxItemModel
 
 
-class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adapter<BoxItemAdapter.BoxItemViewHolder>() {
+class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxItemViewHolder>() {
 
     lateinit var context: Context
     private var mItemList: ArrayList<BoxItemModel> = ArrayList()
+    private lateinit var box_id: String
 
 
     init {
-        setFilter(mDataList)
+        box_id = boxId
     }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BoxItemViewHolder {
         context = parent.context
@@ -74,6 +84,32 @@ class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>) : RecyclerV
         mItemList.addAll(itemList)
         this.notifyDataSetChanged()
 
+    }
+
+    fun updateColorInFirebase(position: Int) {
+        val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
+        boxesRef.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val boxes: DataSnapshot? = task.result
+                if (boxes != null) {
+                    for (box: DataSnapshot in boxes.children) {
+                        val id = box.child("id").value.toString()
+                        if (id == box_id) {
+                            val boxKey: String = box.key.toString()
+                            for (item: DataSnapshot in box.child("content").children){
+                                val item_id = item.child("id").value.toString()
+                                if (mItemList[position].item_id == item_id) {
+                                    val itemKey: String = item.key.toString()
+                                    FirebaseDatabase.getInstance().reference.child("boxes")
+                                        .child(boxKey).child("content").child(itemKey)
+                                        .child("color").setValue(mItemList[position].item_color)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 

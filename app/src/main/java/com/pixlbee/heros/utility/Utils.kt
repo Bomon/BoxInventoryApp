@@ -52,6 +52,8 @@ class Utils {
             val location_image = box.child("location_image").value.toString()
             val location = box.child("location").value.toString()
             val id = box.child("id").value.toString()
+            Log.e("Error", id.toString())
+            val numeric_id = box.child("numeric_id").value.toString().toLong()
             val name = box.child("name").value.toString()
             val description = box.child("description").value.toString()
             val qrcode = box.child("qrcode").value.toString()
@@ -82,7 +84,7 @@ class Utils {
                 }
                 contentList.add(ContentItem(c.key.toString(), itemAmount, itemId, itemInvNum, itemColor))
             }
-            return BoxModel(id, name, description, qrcode, location, image, location_image, notes, color, status, contentList)
+            return BoxModel(numeric_id, id, name, description, qrcode, location, image, location_image, notes, color, status, contentList)
         }
 
 
@@ -103,7 +105,7 @@ class Utils {
         }
 
 
-        fun checkHasWritePermission(context: Context?): Boolean {
+        fun checkHasWritePermission(context: Context?, showToast: Boolean = true): Boolean {
             if (context != null) {
                 val sharedPreferences = context.getSharedPreferences("AppPreferences", MODE_PRIVATE)
                 val hasWritePermission = sharedPreferences.getBoolean("write_permission", false)
@@ -111,8 +113,9 @@ class Utils {
                     return true
                 }
             }
-            Toast.makeText(context,
-                context?.resources?.getString(R.string.error_no_write_permission) ?: "NO_WRITE_PERMISSION", Toast.LENGTH_SHORT).show()
+            if (showToast)
+                Toast.makeText(context,
+                    context?.resources?.getString(R.string.error_no_write_permission) ?: "NO_WRITE_PERMISSION", Toast.LENGTH_SHORT).show()
             return false
         }
 
@@ -200,6 +203,39 @@ class Utils {
 
             }
             return itemName
+        }
+
+
+        fun getNextColor(context: Context, currentColor: Int): Int{
+            var colorCircle = ArrayList<Int>()
+            colorCircle.add(context.resources.getColor(R.color.thw_blue))
+            colorCircle.add(context.resources.getColor(R.color.md_green_500))
+            colorCircle.add(context.resources.getColor(R.color.md_yellow_500))
+            colorCircle.add(context.resources.getColor(R.color.md_red_500))
+
+            var colorPos = colorCircle.indexOf(currentColor)
+            if (colorPos == -1){
+                return colorCircle[0]
+            } else if (colorPos == colorCircle.size - 1)
+                return colorCircle[0]
+            return colorCircle[colorPos + 1]
+        }
+
+
+        fun getPreviousColor(context: Context, currentColor: Int): Int {
+            var colorCircle = ArrayList<Int>()
+            colorCircle.add(context.resources.getColor(R.color.thw_blue))
+            colorCircle.add(context.resources.getColor(R.color.md_green_500))
+            colorCircle.add(context.resources.getColor(R.color.md_yellow_500))
+            colorCircle.add(context.resources.getColor(R.color.md_orange_500))
+            colorCircle.add(context.resources.getColor(R.color.md_red_500))
+
+            var colorPos = colorCircle.indexOf(currentColor)
+            if (colorPos == -1) {
+                return colorCircle[0]
+            } else if (colorPos == 0)
+                return colorCircle[colorCircle.size - 1]
+            return colorCircle[colorPos - 1]
         }
     }
 

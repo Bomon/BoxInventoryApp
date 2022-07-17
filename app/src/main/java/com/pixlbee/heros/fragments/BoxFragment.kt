@@ -5,6 +5,7 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -268,9 +270,69 @@ class BoxFragment : Fragment(){
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.box_summary_content) as RecyclerView
-        box_item_adapter = BoxItemAdapter(itemList)
+        box_item_adapter = BoxItemAdapter(itemList, box_model.id)
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = box_item_adapter
+
+        // Swipe functionality
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT + ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                if (Utils.checkHasWritePermission(context, false)){
+                    super.onChildDraw(
+                        c,
+                        recyclerView,
+                        viewHolder,
+                        dX/5,
+                        dY,
+                        actionState,
+                        isCurrentlyActive
+                    )
+                } else {
+                    super.onChildDraw(
+                        c,
+                        recyclerView,
+                        viewHolder,
+                        0f,
+                        dY,
+                        actionState,
+                        isCurrentlyActive
+                    )
+                }
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                if (Utils.checkHasWritePermission(context, false)){
+                    val oldBoxModel: BoxItemModel = itemList[viewHolder.adapterPosition]
+                    val position = viewHolder.adapterPosition
+                    //boxList.removeAt(viewHolder.adapterPosition)
+
+                    var color: Int = Utils.getNextColor(context!!, oldBoxModel.item_color)
+                    if (direction == ItemTouchHelper.RIGHT){
+                        color = Utils.getPreviousColor(context!!, oldBoxModel.item_color)
+                    }
+                    oldBoxModel.item_color = color
+
+                    box_item_adapter.notifyItemChanged(position)
+                    box_item_adapter.updateColorInFirebase(position)
+                }
+            }
+        }).attachToRecyclerView(recyclerview)
 
         (activity as AppCompatActivity).supportActionBar?.title = box_model.id
 

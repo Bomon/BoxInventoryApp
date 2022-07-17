@@ -141,17 +141,17 @@ class BoxEditFragment() : Fragment() {
                             var updated_image = ""
                             if (::image_bitmap.isInitialized){
                                 updated_image = Utils.getEncoded64ImageStringFromBitmap(image_bitmap)
+                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("image").setValue(
+                                    updated_image)
                             }
-                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("image").setValue(
-                                updated_image)
 
 
                             var updated_location_image = ""
                             if (::location_image_bitmap.isInitialized){
                                 updated_location_image = Utils.getEncoded64ImageStringFromBitmap(location_image_bitmap)
+                                FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("location_image").setValue(
+                                    updated_location_image)
                             }
-                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("location_image").setValue(
-                                updated_location_image)
 
                             FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").removeValue()
                             val itemList = box_item_edit_adapter.getCurrentStatus()

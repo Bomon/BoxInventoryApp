@@ -1,6 +1,7 @@
 package com.pixlbee.heros.activities
 
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
@@ -26,6 +27,8 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.statusBarColor = resources.getColor(R.color.status_bar_color)
 
         setContentView(R.layout.activity_login)
         getSupportActionBar()?.hide()
@@ -71,6 +74,12 @@ class LoginActivity : AppCompatActivity() {
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             Toast.makeText(this, resources.getString(R.string.login_successful), Toast.LENGTH_LONG).show()
+
+                            val sharedPreferences: SharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
+                            val editor = sharedPreferences.edit()
+                            editor.putString("current_user", email.replaceAfter("@", "").replace("@", ""))
+                            editor.commit()
+
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
                             finish()
