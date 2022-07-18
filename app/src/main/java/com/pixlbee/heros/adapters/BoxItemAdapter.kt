@@ -16,7 +16,7 @@ import com.pixlbee.heros.utility.Utils
 import com.pixlbee.heros.models.BoxItemModel
 
 
-class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxItemViewHolder>() {
+class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxItemViewHolder>() {
 
     lateinit var context: Context
     private var mItemList: ArrayList<BoxItemModel> = ArrayList()
@@ -71,11 +71,11 @@ class BoxItemAdapter(private val mDataList: ArrayList<BoxItemModel>, boxId: Stri
 
 
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-        var item_color = itemView.findViewById<View>(R.id.item_color)
-        var item_amount: TextView = itemView.findViewById<TextView>(R.id.item_amount)
-        var item_name = itemView.findViewById<TextView>(R.id.item_name)
-        var item_invnums = itemView.findViewById<ChipGroup>(R.id.item_invnums)
-        var item_image = itemView.findViewById<ImageView>(R.id.item_img)
+        var item_color: View = itemView.findViewById(R.id.item_color)
+        var item_amount: TextView = itemView.findViewById(R.id.item_amount)
+        var item_name: TextView = itemView.findViewById(R.id.item_name)
+        var item_invnums: ChipGroup = itemView.findViewById(R.id.item_invnums)
+        var item_image: ImageView = itemView.findViewById(R.id.item_img)
     }
 
 

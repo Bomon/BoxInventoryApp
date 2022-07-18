@@ -33,13 +33,13 @@ import com.pixlbee.heros.utility.Utils
 class ItemFragment : Fragment() {
     private lateinit var item_model: ItemModel
     lateinit var containing_box_adapter: ContainingBoxAdapter
-    lateinit var firebase_listener: ValueEventListener
-    var boxList: ArrayList<BoxModel> = ArrayList<BoxModel>()
+    private lateinit var firebase_listener: ValueEventListener
+    var boxList: ArrayList<BoxModel> = ArrayList()
 
-    lateinit var item_name_field: TextView
-    lateinit var item_description_field: TextView
-    lateinit var item_tags_field: ChipGroup
-    lateinit var item_image_field: ImageView
+    private lateinit var item_name_field: TextView
+    private lateinit var item_description_field: TextView
+    private lateinit var item_tags_field: ChipGroup
+    private lateinit var item_image_field: ImageView
     lateinit var item_containing_boxes_empty_label: TextView
 
 
@@ -49,7 +49,7 @@ class ItemFragment : Fragment() {
     }
 
 
-    fun deleteItem() {
+    private fun deleteItem() {
         // remove from boxes
         val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
@@ -91,7 +91,7 @@ class ItemFragment : Fragment() {
     }
 
 
-    fun showDeleteDialog() {
+    private fun showDeleteDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(resources.getString(R.string.dialog_delete_item_title))
         builder.setMessage(resources.getString(R.string.dialog_delete_item_text))
@@ -209,9 +209,9 @@ class ItemFragment : Fragment() {
         item_image_field = v.findViewById(R.id.item_summary_image)
         item_containing_boxes_empty_label = v.findViewById(R.id.item_summary_content_empty_label)
 
-        var item_container: ConstraintLayout = v.findViewById(R.id.item_fragment_container)
+        val item_container: ConstraintLayout = v.findViewById(R.id.item_fragment_container)
 
-        // Transition Taget element
+        // Transition taget element
         item_container.transitionName = item_model.id
 
         updateContent()
@@ -242,7 +242,7 @@ class ItemFragment : Fragment() {
     }
 
 
-    fun initFirebase(){
+    private fun initFirebase(){
         firebase_listener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 val items = dataSnapshot.child("items")

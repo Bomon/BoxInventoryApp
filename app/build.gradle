@@ -78,6 +78,5 @@ dependencies {
     implementation 'com.budiyev.android:code-scanner:2.1.0'
     implementation 'co.lujun:androidtagview:1.1.7'
 
-    //implementation 'com.github.jrvansuita:PickImage:+'
     implementation 'com.github.dhaval2404:imagepicker:2.1'
 }

@@ -52,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
 
         loginBtn.setOnClickListener {
             var email: String = emailEt.text.toString()
-            var password: String = passwordEt.text.toString()
+            val password: String = passwordEt.text.toString()
 
             if(TextUtils.isEmpty(email)) {
                 emailEtContainer.isErrorEnabled = true
@@ -68,7 +68,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-                email = email + "@thw.thw"
+                email += "@thw.thw"
                 auth = Firebase.auth
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this) { task ->

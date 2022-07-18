@@ -18,13 +18,13 @@ import com.pixlbee.heros.R
 import com.pixlbee.heros.models.BoxModel
 
 
-class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = false) : RecyclerView.Adapter<BoxAdapter.BoxViewHolder>() {
+class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Boolean = false) : RecyclerView.Adapter<BoxAdapter.BoxViewHolder>() {
 
     lateinit var context: Context
     private var mBoxList: ArrayList<BoxModel> = ArrayList()
 
     private lateinit var mListener: OnBoxClickListener
-    lateinit var holder: BoxViewHolder
+    private lateinit var holder: BoxViewHolder
 
 
     init {
@@ -60,7 +60,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
         holder.box_color.background.setTint(mBoxList[position].color)
 
         if (mBoxList[position].image != ""){
-            var imageByteArray = Base64.decode(mBoxList[position].image, Base64.DEFAULT)
+            val imageByteArray = Base64.decode(mBoxList[position].image, Base64.DEFAULT)
             Glide.with(context)
                 .load(imageByteArray)
                 .into(holder.box_img)
@@ -90,20 +90,20 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
     }
 
 
-    inner class BoxViewHolder(itemView: View, var mListener: OnBoxClickListener, var compactView: Boolean) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
+    inner class BoxViewHolder(itemView: View, private var mListener: OnBoxClickListener, compactView: Boolean) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
-        var box_id: TextView = itemView.findViewById<TextView>(R.id.box_id)
-        var box_name: TextView = itemView.findViewById<TextView>(R.id.box_name)
-        var box_location: TextView = itemView.findViewById<TextView>(R.id.box_location)
-        var box_img: ImageView = itemView.findViewById<ImageView>(R.id.box_img)
-        var box_status_tags: ChipGroup = itemView.findViewById<ChipGroup>(R.id.box_status)
-        var box_container: MaterialCardView = itemView.findViewById<MaterialCardView>(R.id.box_card_small)
-        var box_color: View = itemView.findViewById<View>(R.id.box_color)
+        var box_id: TextView = itemView.findViewById(R.id.box_id)
+        var box_name: TextView = itemView.findViewById(R.id.box_name)
+        var box_location: TextView = itemView.findViewById(R.id.box_location)
+        var box_img: ImageView = itemView.findViewById(R.id.box_img)
+        var box_status_tags: ChipGroup = itemView.findViewById(R.id.box_status)
+        var box_container: MaterialCardView = itemView.findViewById(R.id.box_card_small)
+        var box_color: View = itemView.findViewById(R.id.box_color)
 
         init {
             itemView.setOnClickListener(this)
 
-            if (compactView == true) {
+            if (compactView) {
                 box_status_tags.visibility = View.GONE
             }
         }

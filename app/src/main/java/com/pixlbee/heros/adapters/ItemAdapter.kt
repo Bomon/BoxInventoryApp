@@ -14,17 +14,16 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.pixlbee.heros.R
-import com.pixlbee.heros.utility.Utils
 import com.pixlbee.heros.models.ItemModel
 
 
-class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     lateinit var context: Context
     private var mItemList: ArrayList<ItemModel> = ArrayList()
 
     private lateinit var mListener: OnItemClickListener
-    lateinit var holder: ItemViewHolder
+    private lateinit var holder: ItemViewHolder
 
 
     init {
@@ -76,7 +75,7 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
 
         //holder.item_description.text = mItemList[position].description
         if (mItemList[position].image != ""){
-            var imageByteArray = Base64.decode(mItemList[position].image, Base64.DEFAULT)
+            val imageByteArray = Base64.decode(mItemList[position].image, Base64.DEFAULT)
             Glide.with(context)
                 .load(imageByteArray)
                 .into(holder.item_image)
@@ -86,13 +85,13 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
     }
 
 
-    inner class ItemViewHolder(itemView: View, var mListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
+    inner class ItemViewHolder(itemView: View, private var mListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
-        var item_name: TextView = itemView.findViewById<TextView>(R.id.card_item_name)
+        var item_name: TextView = itemView.findViewById(R.id.card_item_name)
         //var item_description: TextView = itemView.findViewById<TextView>(R.id.item_description)
-        var item_image: ImageView = itemView.findViewById<ImageView>(R.id.card_item_img)
-        val item_tags: ChipGroup = itemView.findViewById<ChipGroup>(R.id.card_item_tags)
-        val item_tags_container: LinearLayout = itemView.findViewById<LinearLayout>(R.id.card_item_tags_container)
+        var item_image: ImageView = itemView.findViewById(R.id.card_item_img)
+        val item_tags: ChipGroup = itemView.findViewById(R.id.card_item_tags)
+        val item_tags_container: LinearLayout = itemView.findViewById(R.id.card_item_tags_container)
         val item_container: MaterialCardView = itemView.findViewById(R.id.card_item_small)
 
         init {

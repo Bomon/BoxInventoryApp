@@ -1,6 +1,5 @@
 package com.pixlbee.heros.fragments
 
-import android.Manifest
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import androidx.appcompat.app.AlertDialog
@@ -45,18 +44,17 @@ class BoxFragment : Fragment(){
 
     private lateinit var box_model: BoxModel
     lateinit var box_item_adapter: BoxItemAdapter
-    lateinit var firebase_listener: ValueEventListener
-    var itemList: ArrayList<BoxItemModel> = ArrayList<BoxItemModel>()
+    private lateinit var firebase_listener: ValueEventListener
+    var itemList: ArrayList<BoxItemModel> = ArrayList()
 
-    lateinit var box_id_field: TextView
-    lateinit var box_name_field: TextView
-    lateinit var box_description_field: TextView
-    lateinit var box_location_field: TextView
-    lateinit var box_status_field: ChipGroup
-    lateinit var box_color_field: View
+    private lateinit var box_name_field: TextView
+    private lateinit var box_description_field: TextView
+    private lateinit var box_location_field: TextView
+    private lateinit var box_status_field: ChipGroup
+    private lateinit var box_color_field: View
 
-    lateinit var box_summary_image_field: ImageView
-    lateinit var box_location_image_field: ImageView
+    private lateinit var box_summary_image_field: ImageView
+    private lateinit var box_location_image_field: ImageView
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -65,7 +63,7 @@ class BoxFragment : Fragment(){
     }
 
 
-    fun deleteBox() {
+    private fun deleteBox() {
         val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -85,7 +83,7 @@ class BoxFragment : Fragment(){
     }
 
 
-    fun showDeleteDialog() {
+    private fun showDeleteDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(resources.getString(R.string.dialog_delete_box_title))
         builder.setMessage(resources.getString(R.string.dialog_delete_box_text))
@@ -103,42 +101,46 @@ class BoxFragment : Fragment(){
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.box_btn_edit) {
-            if (Utils.checkHasWritePermission(context)) {
-                if (view != null) {
-                    val bundle = Bundle()
-                    bundle.putSerializable("boxModel", box_model)
-                    bundle.putSerializable("items", itemList.toTypedArray())
-                    bundle.putSerializable("isNewBox", false)
-                    val navController: NavController = Navigation.findNavController(view!!)
-                    navController.navigate(R.id.action_boxFragment_to_boxEditFragment, bundle)
+        when (item.itemId) {
+            R.id.box_btn_edit -> {
+                if (Utils.checkHasWritePermission(context)) {
+                    if (view != null) {
+                        val bundle = Bundle()
+                        bundle.putSerializable("boxModel", box_model)
+                        bundle.putSerializable("items", itemList.toTypedArray())
+                        bundle.putSerializable("isNewBox", false)
+                        val navController: NavController = Navigation.findNavController(view!!)
+                        navController.navigate(R.id.action_boxFragment_to_boxEditFragment, bundle)
+                    }
                 }
+                return true
             }
-            return true
-        } else if (item.itemId == R.id.box_btn_delete) {
-            if (Utils.checkHasWritePermission(context)) {
-                showDeleteDialog()
+            R.id.box_btn_delete -> {
+                if (Utils.checkHasWritePermission(context)) {
+                    showDeleteDialog()
+                }
+                return true
             }
-            return true
-        } else if (item.itemId == R.id.box_btn_print) {
-            if (checkPermission()) {
-                var creator = BoxPdfCreator()
-                creator.createPdf(context, box_model, viewLifecycleOwner)
-            } else {
-                requestPermission()
+            R.id.box_btn_print -> {
+                if (checkPermission()) {
+                    val creator = BoxPdfCreator()
+                    creator.createPdf(context, box_model, viewLifecycleOwner)
+                } else {
+                    requestPermission()
+                }
+                return true
             }
-            return true
+            else -> return super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 
 
     private fun checkPermission(): Boolean {
         // checking of permissions.
         val permission1 =
-            ContextCompat.checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            ContextCompat.checkSelfPermission(context!!, WRITE_EXTERNAL_STORAGE)
         val permission2 =
-            ContextCompat.checkSelfPermission(context!!, Manifest.permission.READ_EXTERNAL_STORAGE)
+            ContextCompat.checkSelfPermission(context!!, READ_EXTERNAL_STORAGE)
         return permission1 == PackageManager.PERMISSION_GRANTED && permission2 == PackageManager.PERMISSION_GRANTED
     }
 
@@ -251,9 +253,9 @@ class BoxFragment : Fragment(){
         box_summary_image_field = v.findViewById(R.id.box_summary_image)
         box_location_image_field = v.findViewById(R.id.box_location_image)
         box_color_field = v.findViewById(R.id.box_summary_color)
-        var box_container: View = v.findViewById(R.id.box_fragment_container)
+        val box_container: View = v.findViewById(R.id.box_fragment_container)
 
-        // Transition Taget element
+        // Transition taget element
         box_container.transitionName = box_model.id
 
         updateContent()
@@ -283,7 +285,7 @@ class BoxFragment : Fragment(){
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.box_summary_content) as RecyclerView
-        box_item_adapter = BoxItemAdapter(itemList, box_model.id)
+        box_item_adapter = BoxItemAdapter(box_model.id)
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = box_item_adapter
 
@@ -354,7 +356,7 @@ class BoxFragment : Fragment(){
     }
 
 
-    fun initFirebase(){
+    private fun initFirebase(){
         firebase_listener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 val boxes = dataSnapshot.child("boxes")
@@ -374,9 +376,16 @@ class BoxFragment : Fragment(){
                         val name = item.child("name").value.toString()
                         val description = item.child("description").value.toString()
                         val tags = item.child("tags").value.toString()
-                        val itemid = item.child("id").value.toString()
-                        if (itemid == contentItem.id) {
-                            itemList.add(BoxItemModel(contentItem.key, contentItem.id, contentItem.amount, contentItem.invnum, name, description, tags, contentItem.color, image))
+                        val itemId = item.child("id").value.toString()
+                        if (itemId == contentItem.id) {
+                            itemList.add(BoxItemModel(
+                                contentItem.id,
+                                contentItem.amount,
+                                contentItem.invnum,
+                                name,
+                                contentItem.color,
+                                image
+                            ))
                         }
                     }
                 }

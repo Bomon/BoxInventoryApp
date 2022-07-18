@@ -28,15 +28,15 @@ import com.pixlbee.heros.utility.Utils
 
 class QRScannerFragment : Fragment() {
 
-    //private var _binding: FragmentQrscannerBinding? = null
+    //private var _binding: FragmentQRscannerBinding? = null
     private lateinit var codeScanner: CodeScanner
-    var boxList: ArrayList<BoxModel> = ArrayList<BoxModel>()
+    var boxList: ArrayList<BoxModel> = ArrayList()
     lateinit var adapter: BoxAdapter
     lateinit var rv: RecyclerView
 
     private var qr_content: String = ""
     private var toast: Toast? = null
-    lateinit var firebase_listener: ValueEventListener
+    private lateinit var firebase_listener: ValueEventListener
 
 
     private val requestPermission =
@@ -61,7 +61,7 @@ class QRScannerFragment : Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
 
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -114,12 +114,11 @@ class QRScannerFragment : Fragment() {
                             val qrcode = box.child("qrcode").value.toString()
                             val urlSplit = it.text.split("&")
                             var scannedCode = ""
-                            if (urlSplit.size == 1){
+                            scannedCode = if (urlSplit.size == 1){
                                 // Assume this is a legacy QRcode (without URL)
-                                scannedCode = urlSplit[0]
-                            }
-                            else {
-                                scannedCode = urlSplit[1].replace("box=", "")
+                                urlSplit[0]
+                            } else {
+                                urlSplit[1].replace("box=", "")
                             }
                             if (qrcode.lowercase() == scannedCode.lowercase()){
                                 boxList.clear()
@@ -162,11 +161,6 @@ class QRScannerFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         codeScanner.startPreview()
-    }
-
-
-    fun pause() {
-        codeScanner.releaseResources()
     }
 
 

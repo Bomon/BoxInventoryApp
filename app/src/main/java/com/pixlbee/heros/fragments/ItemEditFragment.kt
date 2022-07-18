@@ -50,7 +50,7 @@ class ItemEditFragment : Fragment() {
     private lateinit var image_bitmap: Bitmap
 
 
-    fun checkFields(): Boolean {
+    private fun checkFields(): Boolean {
         var status = true
         if (item_edit_name_field.text.toString() == "") {
             item_edit_name_label.isErrorEnabled = true
@@ -62,7 +62,7 @@ class ItemEditFragment : Fragment() {
     }
 
 
-    fun applyChanges(): Boolean {
+    private fun applyChanges(): Boolean {
         val fieldsOk: Boolean = checkFields()
         if (!fieldsOk) return false
 
@@ -92,11 +92,11 @@ class ItemEditFragment : Fragment() {
     }
 
 
-    fun createItem(): Boolean {
+    private fun createItem(): Boolean {
         val fieldsOk: Boolean = checkFields()
         if (!fieldsOk) return false
 
-        var item_date_key = DateTimeFormatter.ISO_INSTANT.format(Instant.now()).toString()
+        val item_date_key = DateTimeFormatter.ISO_INSTANT.format(Instant.now()).toString()
         item_model.id = item_date_key
         item_model.name = item_edit_name_field.text.toString()
         item_model.description = item_edit_description_field.text.toString()
@@ -116,7 +116,7 @@ class ItemEditFragment : Fragment() {
     }
 
 
-    fun showSaveDialog() {
+    private fun showSaveDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(resources.getString(R.string.dialog_save_title))
         builder.setMessage(resources.getString(R.string.dialog_save_text))
@@ -145,7 +145,7 @@ class ItemEditFragment : Fragment() {
     }
 
 
-    fun showDismissDialog() {
+    private fun showDismissDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(resources.getString(R.string.dialog_dismiss_title))
         builder.setMessage(resources.getString(R.string.dialog_dismiss_text))
@@ -162,7 +162,7 @@ class ItemEditFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.item_edit_btn_save) {
-            // dont show save dialog for new items
+            // do not show save dialog for new items
             if (is_new_item){
                 val status: Boolean = createItem()
                 if (status) {
@@ -294,14 +294,15 @@ class ItemEditFragment : Fragment() {
             }
         })
 
-        item_edit_image_field.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                ImagePicker.with(thisFragment)
-                    .crop(4f, 3f)	    			//Crop image(Optional), Check Customization for more option
-                    .compress(1024)			//Final image size will be less than 1 MB(Optional)
-                    .start()
-            }
-        })
+        item_edit_image_field.setOnClickListener {
+            ImagePicker.with(thisFragment)
+                .crop(
+                    4f,
+                    3f
+                )                    //Crop image(Optional), Check Customization for more option
+                .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                .start()
+        }
 
         return v
     }

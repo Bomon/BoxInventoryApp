@@ -32,7 +32,7 @@
     <string name="password_hint">Passwort</string>
     <string name="user_hint">Benutzername</string>
     <string name="containting_box">Enthalten in:</string>
-    <string name="containting_box_empty">In keiner Box enthalten</string>
+    <string name="containing_box_empty">In keiner Box enthalten</string>
     <string name="invnums_label">Inventarnummern:</string>
 
 

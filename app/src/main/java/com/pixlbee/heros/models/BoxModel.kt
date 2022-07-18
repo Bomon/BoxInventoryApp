@@ -1,7 +1,5 @@
 package com.pixlbee.heros.models
 
-import androidx.core.content.ContextCompat
-import com.pixlbee.heros.R
 import java.io.Serializable
 
 data class ContentItem(
@@ -21,7 +19,7 @@ class BoxModel(
     var location: String,
     var image: String,
     var location_image: String,
-    var notes: String,
     var color: Int,
     var status: String,
-    var content: ArrayList<ContentItem>): Serializable
+    var content: ArrayList<ContentItem>
+): Serializable

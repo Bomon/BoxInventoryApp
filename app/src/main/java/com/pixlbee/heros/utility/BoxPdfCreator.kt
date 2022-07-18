@@ -12,7 +12,6 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
@@ -44,24 +43,24 @@ import java.util.*
 
 class BoxPdfCreator {
 
-    lateinit var loadingView: ConstraintLayout
-    lateinit var doneView: ConstraintLayout
-    lateinit var share_btn: MaterialButton
-    lateinit var download_btn: MaterialButton
-    lateinit var bottomSheetDialog: BottomSheetDialog
-    lateinit var imageDoneView: ShapeableImageView
-    lateinit var sheetContainer: FrameLayout
+    private lateinit var loadingView: ConstraintLayout
+    private lateinit var doneView: ConstraintLayout
+    private lateinit var share_btn: MaterialButton
+    private lateinit var download_btn: MaterialButton
+    private lateinit var bottomSheetDialog: BottomSheetDialog
+    private lateinit var imageDoneView: ShapeableImageView
+    private lateinit var sheetContainer: FrameLayout
 
-    fun showExportSheet(context: Context) {
+    private fun showExportSheet(context: Context) {
         bottomSheetDialog = BottomSheetDialog(context)
         bottomSheetDialog.setContentView(R.layout.sheet_export_pdf)
 
-        loadingView = bottomSheetDialog.findViewById<ConstraintLayout>(R.id.sheet_export_loading_container)!!
-        doneView = bottomSheetDialog.findViewById<ConstraintLayout>(R.id.sheet_export_loading_done_container)!!
-        share_btn = bottomSheetDialog.findViewById<MaterialButton>(R.id.sheet_export_share_btn)!!
-        download_btn = bottomSheetDialog.findViewById<MaterialButton>(R.id.sheet_export_save_btn)!!
-        imageDoneView = bottomSheetDialog.findViewById<ShapeableImageView>(R.id.loading_done)!!
-        sheetContainer = bottomSheetDialog.findViewById<FrameLayout>(R.id.standard_bottom_sheet)!!
+        loadingView = bottomSheetDialog.findViewById(R.id.sheet_export_loading_container)!!
+        doneView = bottomSheetDialog.findViewById(R.id.sheet_export_loading_done_container)!!
+        share_btn = bottomSheetDialog.findViewById(R.id.sheet_export_share_btn)!!
+        download_btn = bottomSheetDialog.findViewById(R.id.sheet_export_save_btn)!!
+        imageDoneView = bottomSheetDialog.findViewById(R.id.loading_done)!!
+        sheetContainer = bottomSheetDialog.findViewById(R.id.standard_bottom_sheet)!!
 
         bottomSheetDialog.show()
     }
@@ -83,7 +82,7 @@ class BoxPdfCreator {
 
                     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
                     val pdfFileName = box_model.id + "_" + timeStamp
-                    file = File(context.cacheDir, pdfFileName + ".pdf")
+                    file = File(context.cacheDir, "$pdfFileName.pdf")
                     file!!.deleteOnExit()
 
                     val document = Document(RectangleReadOnly(842f,595f), 10f, 10f, 10f, 10f)
@@ -96,7 +95,7 @@ class BoxPdfCreator {
                     buildPDFcontent(context, document, box_model)
                     document.close()
 
-                    mHandler.post(Runnable {
+                    mHandler.post({
                         val transition = LayoutTransition()
                         transition.setAnimateParentHierarchy(false)
                         sheetContainer.layoutTransition = transition
@@ -160,7 +159,7 @@ class BoxPdfCreator {
             download_btn.setOnClickListener {
                 if (file != null) {
 
-                    var fis = FileInputStream(file)
+                    val fis = FileInputStream(file)
 
                     val baos = ByteArrayOutputStream(1024)
                     val buffer = ByteArray(1024)
@@ -176,8 +175,8 @@ class BoxPdfCreator {
                     try {
                         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
                         val pdfFileName = box_model.id + "_" + timeStamp
-                        var downloadFile = File(storageDir, pdfFileName)
-                        var fos = FileOutputStream(downloadFile)
+                        val downloadFile = File(storageDir, pdfFileName)
+                        val fos = FileOutputStream(downloadFile)
                         baos.writeTo(fos)
                         fos.close()
 
@@ -216,7 +215,7 @@ class BoxPdfCreator {
         }
     }
 
-    fun prepareImage(bmp: Bitmap?): Image? {
+    private fun prepareImage(bmp: Bitmap?): Image? {
         val stream = ByteArrayOutputStream()
         if (bmp != null) {
             bmp.compress(Bitmap.CompressFormat.PNG, 80, stream)
@@ -236,7 +235,7 @@ class BoxPdfCreator {
         //val imageOel = prepareImage(oel)
         val thw: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_thw)
         //val imageThw = prepareImage(pixlbee)
-        var qrcode: Bitmap? = encodeAsBitmap(box_model.qrcode, BarcodeFormat.QR_CODE, 512, 512)
+        val qrcode: Bitmap? = encodeAsBitmap(box_model.qrcode, BarcodeFormat.QR_CODE, 512, 512)
         //val qrcodeImg = prepareImage(bmp)
         val qr_logo: Bitmap = BitmapFactory.decodeResource(context.resources,
             R.drawable.qrcode_center_round_blue
@@ -311,10 +310,11 @@ class BoxPdfCreator {
                 //footer
                 val glue = Chunk(VerticalPositionMark())
                 val timeStamp: String = SimpleDateFormat("dd.MM.yyyy").format(Date())
-                val p = Paragraph(Phrase("           " + timeStamp,
+                val p = Paragraph(Phrase(
+                    "           $timeStamp",
                     FontFactory.getFont(FontFactory.HELVETICA, 7f)))
                 p.add(Chunk(glue))
-                p.add(Phrase(sharedPreferences.getString("pdf_address", "ADRRESS"),
+                p.add(Phrase(sharedPreferences.getString("pdf_address", "ADDRESS"),
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8f)))
                 p.add(Chunk(glue))
                 p.add(Phrase(box_model.id + " - " + box_model.name + "           ",
@@ -334,7 +334,7 @@ class BoxPdfCreator {
                 document.open()
 
                 // Add title
-                var titleContainer = Paragraph()
+                val titleContainer = Paragraph()
 
                 val title = Paragraph()
                 title.add(Phrase("Box ",
@@ -414,7 +414,7 @@ class BoxPdfCreator {
 
                 }
 
-                var contentContainer = Paragraph()
+                val contentContainer = Paragraph()
                 contentContainer.add(contentTable)
                 document.add(contentTable)
 
@@ -453,15 +453,16 @@ class BoxPdfCreator {
         }
     }
 
-    fun encodeAsBitmap(
+    private fun encodeAsBitmap(
         contents: String,
         format: BarcodeFormat?,
         desiredWidth: Int,
         desiredHeight: Int
     ): Bitmap? {
-        var qr_code_contents = "https://play.google.com/store/apps/details?id=com.pixlbee.heros&box=" + contents
+        val qr_code_contents =
+            "https://play.google.com/store/apps/details?id=com.pixlbee.heros&box=$contents"
 
-        var hints: HashMap<EncodeHintType, Any> = HashMap<EncodeHintType, Any>()
+        val hints: HashMap<EncodeHintType, Any> = HashMap<EncodeHintType, Any>()
         hints[EncodeHintType.ERROR_CORRECTION] = ErrorCorrectionLevel.M
         val encoding: String? = guessAppropriateEncoding(qr_code_contents)
         if (encoding != null) {
@@ -486,8 +487,8 @@ class BoxPdfCreator {
 
     private fun guessAppropriateEncoding(contents: String): String? {
         // Very crude at the moment
-        for (i in 0 until contents.length) {
-            if (contents[i].code > 0xFF) {
+        for (element in contents) {
+            if (element.code > 0xFF) {
                 return "UTF-8"
             }
         }

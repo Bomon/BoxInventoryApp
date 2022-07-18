@@ -67,20 +67,20 @@ class BoxEditFragment : Fragment() {
     private lateinit var box_edit_color_preview: View
     private var box_edit_color: Int = -1
 
-    var qrList: ArrayList<String> = ArrayList<String>()
-    var idList: ArrayList<String> = ArrayList<String>()
+    private var qrList: ArrayList<String> = ArrayList()
+    private var idList: ArrayList<String> = ArrayList()
 
     private var is_new_box: Boolean = false
-    lateinit var box_item_edit_adapter: BoxItemEditAdapter
+    private lateinit var box_item_edit_adapter: BoxItemEditAdapter
 
-    lateinit var itemList: ArrayList<BoxItemModel>
-    lateinit var navController: NavController
+    private lateinit var itemList: ArrayList<BoxItemModel>
+    private lateinit var navController: NavController
 
     private lateinit var image_bitmap: Bitmap
     private lateinit var location_image_bitmap: Bitmap
 
 
-    fun checkFields(): Boolean {
+    private fun checkFields(): Boolean {
         var status = true
         if (box_edit_id_field.text.toString() == "") {
             box_edit_id_field_container.isErrorEnabled = true
@@ -117,7 +117,7 @@ class BoxEditFragment : Fragment() {
     }
 
 
-    fun applyChanges(): Boolean {
+    private fun applyChanges(): Boolean {
         val fieldsOk: Boolean = checkFields()
         if (!fieldsOk) return false
 
@@ -177,7 +177,7 @@ class BoxEditFragment : Fragment() {
     }
 
 
-    fun createBox(): Boolean {
+    private fun createBox(): Boolean {
         val fieldsOk: Boolean = checkFields()
         if (!fieldsOk) return false
 
@@ -206,7 +206,7 @@ class BoxEditFragment : Fragment() {
     }
 
 
-    fun showSaveDialog() {
+    private fun showSaveDialog() {
         val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setTitle(resources.getString(R.string.dialog_save_title))
         builder.setMessage(R.string.dialog_save_text)
@@ -224,7 +224,7 @@ class BoxEditFragment : Fragment() {
     }
 
 
-    fun showDismissDialog() {
+    private fun showDismissDialog() {
         val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setTitle(resources.getString(R.string.dialog_dismiss_title))
         builder.setMessage(resources.getString(R.string.dialog_dismiss_text))
@@ -258,7 +258,7 @@ class BoxEditFragment : Fragment() {
     }
 
 
-    fun initQrCodeList(){
+    private fun initQrCodeList(){
         val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -275,7 +275,7 @@ class BoxEditFragment : Fragment() {
         }
     }
 
-    fun initBoxIdList(){
+    private fun initBoxIdList(){
         val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -402,16 +402,14 @@ class BoxEditFragment : Fragment() {
             }
         })
 
-        box_edit_id_field.onFocusChangeListener = object: View.OnFocusChangeListener{
-            override fun onFocusChange(v: View?, hasFocus: Boolean) {
+        box_edit_id_field.onFocusChangeListener =
+            View.OnFocusChangeListener { v, hasFocus ->
                 if (!hasFocus) {
                     if (box_edit_qrcode_field.text.toString() == ""){
                         box_edit_qrcode_field.text = box_edit_id_field.text
                     }
                 }
             }
-
-        }
 
         val fragmentManager = (context as FragmentActivity).supportFragmentManager
         val colors = (context as FragmentActivity).resources.getIntArray(R.array.picker_colors)
@@ -473,16 +471,17 @@ class BoxEditFragment : Fragment() {
                 }
             }
 
-        box_edit_image_field.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                ImagePicker.with(thisFragment)
-                    .crop(4f, 3f)	    			//Crop image(Optional), Check Customization for more option
-                    .compress(1024)			//Final image size will be less than 1 MB(Optional)
-                    .createIntent { intent ->
-                        startForMainImageResult.launch(intent)
-                    }
-            }
-        })
+        box_edit_image_field.setOnClickListener {
+            ImagePicker.with(thisFragment)
+                .crop(
+                    4f,
+                    3f
+                )                    //Crop image(Optional), Check Customization for more option
+                .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                .createIntent { intent ->
+                    startForMainImageResult.launch(intent)
+                }
+        }
 
         val startForLocationImageResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -502,16 +501,14 @@ class BoxEditFragment : Fragment() {
             }
 
 
-        box_edit_location_image_field.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                ImagePicker.with(thisFragment)
-                    .crop()	    			//Crop image(Optional), Check Customization for more option
-                    .compress(1024)			//Final image size will be less than 1 MB(Optional)
-                    .createIntent { intent ->
-                        startForLocationImageResult.launch(intent)
-                    }
-            }
-        })
+        box_edit_location_image_field.setOnClickListener {
+            ImagePicker.with(thisFragment)
+                .crop()                    //Crop image(Optional), Check Customization for more option
+                .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                .createIntent { intent ->
+                    startForLocationImageResult.launch(intent)
+                }
+        }
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.box_edit_content) as RecyclerView
@@ -520,26 +517,28 @@ class BoxEditFragment : Fragment() {
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = box_item_edit_adapter
 
-        box_edit_add_button.setOnClickListener(object: View.OnClickListener {
-            override fun onClick(view: View?) {
-                if (view != null) {
-                    exitTransition = Hold()
-                    // Temp store elements for when item was added
-                    box_model.status = Utils.chipListToString(box_edit_status_chips)
-                    box_model.color = box_edit_color
-                    itemList = box_item_edit_adapter.getCurrentStatus()
+        box_edit_add_button.setOnClickListener { view ->
+            if (view != null) {
+                exitTransition = Hold()
+                // Temp store elements for when item was added
+                box_model.status = Utils.chipListToString(box_edit_status_chips)
+                box_model.color = box_edit_color
+                itemList = box_item_edit_adapter.getCurrentStatus()
 
-                    val extras = FragmentNavigatorExtras(view to "transition_to_items")
-                    findNavController().navigate(BoxEditFragmentDirections.actionBoxEditFragmentToNavigationItems(returnItemInsteadOfShowDetails = true), extras)
-                }
+                val extras = FragmentNavigatorExtras(view to "transition_to_items")
+                findNavController().navigate(
+                    BoxEditFragmentDirections.actionBoxEditFragmentToNavigationItems(
+                        returnItemInsteadOfShowDetails = true
+                    ), extras
+                )
             }
-        })
+        }
 
         return v
     }
 
 
-    fun addSelectedItem(item_id: String?) {
+    private fun addSelectedItem(item_id: String?) {
         val temp_key = DateTimeFormatter.ISO_INSTANT.format(Instant.now()).toString()
         val itemsRef = FirebaseDatabase.getInstance().reference.child("items")
         itemsRef.get().addOnCompleteListener { task ->
@@ -553,7 +552,14 @@ class BoxEditFragment : Fragment() {
                             val item_image = item.child("images").value.toString()
                             val item_description = item.child("description").value.toString()
                             val item_tags = item.child("tags").value.toString()
-                            itemList.add(BoxItemModel(temp_key, item_id, "1", "", item_name, item_description, item_tags, ContextCompat.getColor(requireContext(), R.color.default_item_color), item_image))
+                            itemList.add(BoxItemModel(
+                                item_id,
+                                "1",
+                                "",
+                                item_name,
+                                ContextCompat.getColor(requireContext(), R.color.default_item_color),
+                                item_image
+                            ))
                             box_item_edit_adapter.addToItemList(itemList)
                             return@addOnCompleteListener
                         }

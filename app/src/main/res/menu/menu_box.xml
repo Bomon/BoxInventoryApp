@@ -5,15 +5,15 @@
         android:id="@+id/box_btn_print"
         android:icon="@drawable/ic_baseline_print_24"
         android:title="@string/btn_print"
-        app:showAsAction="always|collapseActionView"></item>
+        app:showAsAction="always|collapseActionView" />
     <item
         android:id="@+id/box_btn_edit"
         android:icon="@drawable/ic_baseline_edit_24"
         android:title="@string/btn_edit"
-        app:showAsAction="always|collapseActionView"></item>
+        app:showAsAction="always|collapseActionView" />
     <item
         android:id="@+id/box_btn_delete"
         android:icon="@drawable/ic_baseline_delete_24"
         android:title="@string/btn_delete"
-        app:showAsAction="always"></item>
+        app:showAsAction="always" />
 </menu>

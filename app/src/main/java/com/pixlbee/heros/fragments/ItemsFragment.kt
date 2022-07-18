@@ -30,7 +30,7 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     var itemList: ArrayList<ItemModel> = ArrayList<ItemModel>()
     lateinit var adapter: ItemAdapter
     lateinit var rv: RecyclerView
-    lateinit var firebase_listener: ValueEventListener
+    private lateinit var firebase_listener: ValueEventListener
     private var searchQueryText: String = ""
 
 
@@ -83,14 +83,14 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         val view: View = inflater.inflate(R.layout.fragment_items, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_items) as RecyclerView
 
-        adapter = ItemAdapter(itemList)
+        adapter = ItemAdapter()
         adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
         return_item_instead_of_show_details = arguments?.getBoolean("return_item_instead_of_show_details") as Boolean
         if (return_item_instead_of_show_details){
             adapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
                 override fun onItemClicked(item: ItemModel, view: View) {
-                    var item_id = item.id
+                    val item_id = item.id
                     //adapter.setFilter(itemList)
                     val navController: NavController = Navigation.findNavController(view)
                     // push the selected item back to BoxEditFragment
@@ -118,20 +118,23 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         initFirebase()
 
         val items_add_button: FloatingActionButton = view.findViewById(R.id.items_add_button)
-        items_add_button.setOnClickListener(object: View.OnClickListener {
-            override fun onClick(viwe: View?) {
-                if (viwe != null) {
-                    if(Utils.checkHasWritePermission(context)) {
-                        val itemModel: ItemModel = ItemModel("", "", "", "", "")
-                        exitTransition = Hold()
-                        val extras = FragmentNavigatorExtras(
-                            viwe to "transition_add_item"
-                        )
-                        findNavController().navigate(ItemsFragmentDirections.actionNavigationItemsToItemEditFragment(itemModel, true), extras)
-                    }
+        items_add_button.setOnClickListener { viwe ->
+            if (viwe != null) {
+                if (Utils.checkHasWritePermission(context)) {
+                    val itemModel = ItemModel("", "", "", "", "")
+                    exitTransition = Hold()
+                    val extras = FragmentNavigatorExtras(
+                        viwe to "transition_add_item"
+                    )
+                    findNavController().navigate(
+                        ItemsFragmentDirections.actionNavigationItemsToItemEditFragment(
+                            itemModel,
+                            true
+                        ), extras
+                    )
                 }
             }
-        })
+        }
 
         return view
     }
@@ -156,7 +159,7 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
-    fun initFirebase(){
+    private fun initFirebase(){
         firebase_listener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 itemList.clear()

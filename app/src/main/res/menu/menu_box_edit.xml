@@ -5,10 +5,10 @@
         android:id="@+id/box_edit_btn_save"
         android:icon="@drawable/ic_baseline_save_24"
         android:title="@string/btn_save"
-        app:showAsAction="always|collapseActionView"></item>
+        app:showAsAction="always|collapseActionView" />
     <item
         android:id="@+id/box_edit_btn_cancel"
         android:icon="@drawable/ic_baseline_cancel_24"
         android:title="@string/btn_cancel"
-        app:showAsAction="always"></item>
+        app:showAsAction="always" />
 </menu>

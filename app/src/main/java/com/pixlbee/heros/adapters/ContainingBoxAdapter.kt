@@ -1,15 +1,11 @@
 package com.pixlbee.heros.adapters
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
@@ -20,7 +16,7 @@ import com.pixlbee.heros.utility.Utils
 
 
 class ContainingBoxAdapter(
-    private val mDataList: ArrayList<BoxModel>,
+    mDataList: ArrayList<BoxModel>,
     item_id: String,
 ) : RecyclerView.Adapter<ContainingBoxAdapter.ContainingBoxViewHolder>() {
 
@@ -29,8 +25,7 @@ class ContainingBoxAdapter(
     private var mBoxList: ArrayList<BoxModel> = ArrayList()
 
 
-    private lateinit var mListener: ContainingBoxAdapter.OnContainingBoxClickListener
-    lateinit var holder: ContainingBoxViewHolder
+    private lateinit var mListener: OnContainingBoxClickListener
 
 
     init {
@@ -58,15 +53,15 @@ class ContainingBoxAdapter(
 
     inner class ContainingBoxViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
-        var box_id: TextView = itemView.findViewById<TextView>(R.id.box_inv_id)
-        var box_name: TextView = itemView.findViewById<TextView>(R.id.box_inv_name)
-        var box_location: TextView = itemView.findViewById<TextView>(R.id.box_inv_location)
-        var box_image: ImageView = itemView.findViewById<ImageView>(R.id.box_inv_img)
-        var box_inv_label: TextView = itemView.findViewById<TextView>(R.id.box_inv_label)
-        var box_invnums: ChipGroup = itemView.findViewById<ChipGroup>(R.id.box_inv_invnums)
-        var box_status: ChipGroup = itemView.findViewById<ChipGroup>(R.id.box_inv_status)
-        var box_color: View = itemView.findViewById<View>(R.id.box_inv_color)
-        var box_container: MaterialCardView = itemView.findViewById<MaterialCardView>(R.id.box_inv_card_small)
+        private var box_id: TextView = itemView.findViewById(R.id.box_inv_id)
+        private var box_name: TextView = itemView.findViewById(R.id.box_inv_name)
+        private var box_location: TextView = itemView.findViewById(R.id.box_inv_location)
+        private var box_image: ImageView = itemView.findViewById(R.id.box_inv_img)
+        private var box_inv_label: TextView = itemView.findViewById(R.id.box_inv_label)
+        private var box_invnums: ChipGroup = itemView.findViewById(R.id.box_inv_invnums)
+        private var box_status: ChipGroup = itemView.findViewById(R.id.box_inv_status)
+        private var box_color: View = itemView.findViewById(R.id.box_inv_color)
+        private var box_container: MaterialCardView = itemView.findViewById(R.id.box_inv_card_small)
 
         init {
             itemView.setOnClickListener(this)
@@ -97,7 +92,7 @@ class ContainingBoxAdapter(
             }
 
             if (box_inv_label != null && box_invnums != null) {
-                var invnums = ArrayList<String>()
+                val invnums = ArrayList<String>()
                 for (ci in model.content){
                     if (ci.id == item_id){
                         if (ci.invnum != ""){

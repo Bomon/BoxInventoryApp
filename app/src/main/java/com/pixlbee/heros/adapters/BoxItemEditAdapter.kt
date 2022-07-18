@@ -1,8 +1,6 @@
 package com.pixlbee.heros.adapters
 
-import androidx.appcompat.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.children
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -20,8 +19,8 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.pixlbee.heros.R
-import com.pixlbee.heros.utility.Utils
 import com.pixlbee.heros.models.BoxItemModel
+import com.pixlbee.heros.utility.Utils
 import dev.sasikanth.colorsheet.ColorSheet
 import it.sephiroth.android.library.numberpicker.NumberPicker
 import it.sephiroth.android.library.numberpicker.NumberPicker.OnNumberPickerChangeListener
@@ -80,22 +79,22 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
         var item_edit_amount: NumberPicker
-        var item_edit_invnum: ChipGroup
+        private var item_edit_invnum: ChipGroup
         //var item_edit_status: EditText
-        var item_name: TextView
-        var item_color_button: MaterialButton
-        var item_delete_button: MaterialButton
-        var item_invnum_button: MaterialButton
+        private var item_name: TextView
+        private var item_color_button: MaterialButton
+        private var item_delete_button: MaterialButton
+        private var item_invnum_button: MaterialButton
 
 
         init {
-            item_edit_amount = itemView.findViewById<NumberPicker>(R.id.box_item_edit_amount)
-            item_edit_invnum = itemView.findViewById<ChipGroup>(R.id.box_item_invnums)
+            item_edit_amount = itemView.findViewById(R.id.box_item_edit_amount)
+            item_edit_invnum = itemView.findViewById(R.id.box_item_invnums)
             //item_edit_status = itemView.findViewById<EditText>(R.id.box_item_edit_status)
             item_name = itemView.findViewById<EditText>(R.id.box_item_name)
-            item_delete_button = itemView.findViewById<MaterialButton>(R.id.box_item_delete_btn)
-            item_color_button = itemView.findViewById<MaterialButton>(R.id.box_item_color_btn)
-            item_invnum_button = itemView.findViewById<MaterialButton>(R.id.box_item_invnum_btn)
+            item_delete_button = itemView.findViewById(R.id.box_item_delete_btn)
+            item_color_button = itemView.findViewById(R.id.box_item_color_btn)
+            item_invnum_button = itemView.findViewById(R.id.box_item_invnum_btn)
             item_delete_button.setOnClickListener {
                 mItemModel.removeAt(adapterPosition)
                 notifyItemRemoved(adapterPosition)
@@ -142,7 +141,7 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
                     val b: Button = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
                     b.setOnClickListener {
                         val inputText = input.text.toString()
-                        if (inputText != "" && !(";" in inputText)) {
+                        if (inputText != "" && ";" !in inputText) {
                             val chip = Chip(context)
                             chip.text = input.text.toString()
                             chip.isCloseIconVisible = true
@@ -173,14 +172,14 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
             }
 
             item_edit_amount.numberPickerChangeListener = object : OnNumberPickerChangeListener{
-                override fun onProgressChanged(numberPicker: it.sephiroth.android.library.numberpicker.NumberPicker, progress: kotlin.Int, fromUser: kotlin.Boolean): kotlin.Unit {
+                override fun onProgressChanged(numberPicker: NumberPicker, progress: Int, fromUser: Boolean): Unit {
                     mItemModel[adapterPosition].item_amount = item_edit_amount.progress.toString()
                 }
 
-                override fun onStartTrackingTouch(numberPicker: it.sephiroth.android.library.numberpicker.NumberPicker): kotlin.Unit {
+                override fun onStartTrackingTouch(numberPicker: NumberPicker): Unit {
                 }
 
-                override fun onStopTrackingTouch(numberPicker: it.sephiroth.android.library.numberpicker.NumberPicker): kotlin.Unit{
+                override fun onStopTrackingTouch(numberPicker: NumberPicker): Unit{
                 }
             }
 
@@ -205,16 +204,12 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
                     }
                 }
             }
-
-            if (model.item_invnum == ""){
-
-            }
         }
     }
 
 
-    fun addToItemList(newlist: ArrayList<BoxItemModel>) {
-        this.mItemModel = newlist
+    fun addToItemList(newList: ArrayList<BoxItemModel>) {
+        this.mItemModel = newList
         notifyItemInserted(mItemModel.size-1)
         notifyItemRangeChanged(0, mItemModel.size)
     }

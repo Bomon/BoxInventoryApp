@@ -6,13 +6,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.ArrayMap
 import android.util.Base64
-import android.util.Log
-import android.view.View
-import android.widget.RadioButton
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.allViews
-import androidx.preference.PreferenceManager
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.android.material.chip.Chip
@@ -86,7 +82,19 @@ class Utils {
                 }
                 contentList.add(ContentItem(c.key.toString(), itemAmount, itemId, itemInvNum, itemColor))
             }
-            return BoxModel(numeric_id, id, name, description, qrcode, location, image, location_image, notes, color, status, contentList)
+            return BoxModel(
+                numeric_id,
+                id,
+                name,
+                description,
+                qrcode,
+                location,
+                image,
+                location_image,
+                color,
+                status,
+                contentList
+            )
         }
 
 
@@ -97,23 +105,6 @@ class Utils {
             val image = item.child("image").value.toString()
             val tags = item.child("tags").value.toString()
             return ItemModel(id, name, description, tags, image)
-        }
-
-
-        fun getAllBoxIds(): ArrayList<String> {
-            var idList: ArrayList<String> = ArrayList<String>()
-            val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
-            boxesRef.get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val boxes: DataSnapshot? = task.result
-                    if (boxes != null) {
-                        for (box: DataSnapshot in boxes.children) {
-                            idList.add(box.child("id").value.toString())
-                        }
-                    }
-                }
-            }
-            return idList
         }
 
 
@@ -132,25 +123,8 @@ class Utils {
         }
 
 
-        fun getAllBoxQRcodes(): ArrayList<String> {
-            var qrList: ArrayList<String> = ArrayList<String>()
-            val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
-            boxesRef.get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val boxes: DataSnapshot? = task.result
-                    if (boxes != null) {
-                        for (box: DataSnapshot in boxes.children) {
-                            qrList.add(box.child("qrcode").value.toString())
-                        }
-                    }
-                }
-            }
-            return qrList
-        }
-
-
         fun getAllItemNames(): ArrayMap<String, String> {
-            var itemsMap: ArrayMap<String, String> = ArrayMap<String, String>()
+            val itemsMap: ArrayMap<String, String> = ArrayMap<String, String>()
             val itemsRef = FirebaseDatabase.getInstance().reference
             val task: Task<DataSnapshot> = itemsRef.child("items").get()
 
@@ -159,13 +133,13 @@ class Utils {
             }
 
             try {
-                Tasks.await<DataSnapshot>(task)
+                Tasks.await(task)
                 if (task.isSuccessful) {
                     val items: DataSnapshot? = task.result
                     if (items != null) {
                         for (item: DataSnapshot in items.children) {
-                            var itemName = item.child("name").value.toString()
-                            var itemId = item.child("id").value.toString()
+                            val itemName = item.child("name").value.toString()
+                            val itemId = item.child("id").value.toString()
                             itemsMap[itemId] = itemName
                         }
                     }
@@ -233,40 +207,14 @@ class Utils {
         }
 
 
-        fun getItemNameForId(id: String): String {
-            var itemName = "?"
-            var done = false
-            val itemsRef = FirebaseDatabase.getInstance().reference.child("items")
-            itemsRef.get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val items: DataSnapshot? = task.result
-                    if (items != null) {
-                        for (item: DataSnapshot in items.children) {
-                            if (item.child("id").value.toString() == id){
-                                itemName = item.child("name").value.toString()
-                                done = true
-                                break
-                            }
-                        }
-                    }
-                }
-                done = true
-            }
-            while (!done){
-
-            }
-            return itemName
-        }
-
-
         fun getNextColor(context: Context, currentColor: Int): Int{
-            var colorCircle = ArrayList<Int>()
+            val colorCircle = ArrayList<Int>()
             colorCircle.add(context.resources.getColor(R.color.thw_blue))
             colorCircle.add(context.resources.getColor(R.color.md_green_500))
             colorCircle.add(context.resources.getColor(R.color.md_yellow_500))
             colorCircle.add(context.resources.getColor(R.color.md_red_500))
 
-            var colorPos = colorCircle.indexOf(currentColor)
+            val colorPos = colorCircle.indexOf(currentColor)
             if (colorPos == -1){
                 return colorCircle[0]
             } else if (colorPos == colorCircle.size - 1)
@@ -276,14 +224,14 @@ class Utils {
 
 
         fun getPreviousColor(context: Context, currentColor: Int): Int {
-            var colorCircle = ArrayList<Int>()
+            val colorCircle = ArrayList<Int>()
             colorCircle.add(context.resources.getColor(R.color.thw_blue))
             colorCircle.add(context.resources.getColor(R.color.md_green_500))
             colorCircle.add(context.resources.getColor(R.color.md_yellow_500))
             colorCircle.add(context.resources.getColor(R.color.md_orange_500))
             colorCircle.add(context.resources.getColor(R.color.md_red_500))
 
-            var colorPos = colorCircle.indexOf(currentColor)
+            val colorPos = colorCircle.indexOf(currentColor)
             if (colorPos == -1) {
                 return colorCircle[0]
             } else if (colorPos == 0)

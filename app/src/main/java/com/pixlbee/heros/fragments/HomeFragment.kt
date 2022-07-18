@@ -44,9 +44,9 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     var boxList: ArrayList<BoxModel> = ArrayList<BoxModel>()
     lateinit var adapter: BoxAdapter
     lateinit var rv: RecyclerView
-    lateinit var firebase_listener: ValueEventListener
+    private lateinit var firebase_listener: ValueEventListener
     private var doubleBackToExitPressedOnce: Boolean = false
-    lateinit var exitToast: Toast
+    private lateinit var exitToast: Toast
     private var searchQueryText: String = ""
 
 
@@ -93,7 +93,19 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                 if (view != null) {
                     if(Utils.checkHasWritePermission(context)){
                         val bundle = Bundle()
-                        val boxModel: BoxModel = BoxModel(System.currentTimeMillis(), "", "", "", "", "", "", "", "", ContextCompat.getColor(requireContext(), R.color.default_box_color), "", ArrayList<ContentItem>())
+                        val boxModel = BoxModel(
+                            System.currentTimeMillis(),
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            ContextCompat.getColor(requireContext(), R.color.default_box_color),
+                            "",
+                            ArrayList<ContentItem>()
+                        )
                         bundle.putSerializable("boxModel", boxModel)
                         bundle.putSerializable("items", ArrayList<BoxItemModel>().toTypedArray())
                         bundle.putSerializable("isNewBox", true)
@@ -105,7 +117,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
             R.id.home_btn_sort -> {
                 if (context != null){
-                    val builder: MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context!!)
+                    val builder = MaterialAlertDialogBuilder(context!!)
                     builder.setTitle(context!!.resources.getString(R.string.dialog_sort_title))
 
                     val viewInflated: View = LayoutInflater.from(context)
@@ -176,7 +188,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         exitTransition = MaterialFadeThrough()
 
@@ -283,7 +295,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
-    fun initFirebase() {
+    private fun initFirebase() {
         firebase_listener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 boxList.clear()
