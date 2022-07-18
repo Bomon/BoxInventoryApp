@@ -170,7 +170,7 @@ class Utils {
                         }
                     }
                 }
-                var success = task.isSuccessful()
+                var success = task.isSuccessful
             } catch (e: ExecutionException) {
                 e.printStackTrace()
             } catch (e: InterruptedException) {

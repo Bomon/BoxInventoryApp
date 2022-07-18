@@ -24,6 +24,4 @@ class BoxModel(
     var notes: String,
     var color: Int,
     var status: String,
-    var content: ArrayList<ContentItem>): Serializable  {
-
-}
+    var content: ArrayList<ContentItem>): Serializable

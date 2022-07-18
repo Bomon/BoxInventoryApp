@@ -125,7 +125,7 @@ class BoxFragment : Fragment(){
                 var creator = BoxPdfCreator()
                 creator.createPdf(context, box_model, viewLifecycleOwner)
             } else {
-                requestPermission();
+                requestPermission()
             }
             return true
         }
@@ -174,11 +174,6 @@ class BoxFragment : Fragment(){
 
         // Get the arguments from the caller fragment/activity
         box_model = arguments?.getSerializable("boxModel") as BoxModel
-    }
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
     }
 
 

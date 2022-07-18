@@ -86,7 +86,7 @@ class BoxPdfCreator {
                     file = File(context.cacheDir, pdfFileName + ".pdf")
                     file!!.deleteOnExit()
 
-                    val document = Document(RectangleReadOnly(842f,595f), 10f, 10f, 10f, 10f);
+                    val document = Document(RectangleReadOnly(842f,595f), 10f, 10f, 10f, 10f)
 
                     PdfWriter.getInstance(
                         document,
@@ -99,7 +99,7 @@ class BoxPdfCreator {
                     mHandler.post(Runnable {
                         val transition = LayoutTransition()
                         transition.setAnimateParentHierarchy(false)
-                        sheetContainer.setLayoutTransition(transition)
+                        sheetContainer.layoutTransition = transition
 
                         loadingView.visibility = View.GONE
                         //TransitionManager.beginDelayedTransition(sheetContainer);
@@ -145,7 +145,7 @@ class BoxPdfCreator {
                         Intent.EXTRA_STREAM,
                         uri
                     )
-                    intentShareFile.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    intentShareFile.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                     //intentShareFile.putExtra(
                     //    Intent.EXTRA_SUBJECT,
                     //    "Subject"
@@ -236,7 +236,7 @@ class BoxPdfCreator {
         //val imageOel = prepareImage(oel)
         val thw: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_thw)
         //val imageThw = prepareImage(pixlbee)
-        var qrcode: Bitmap? = encodeAsBitmap(box_model.qrcode, BarcodeFormat.QR_CODE, 512, 512);
+        var qrcode: Bitmap? = encodeAsBitmap(box_model.qrcode, BarcodeFormat.QR_CODE, 512, 512)
         //val qrcodeImg = prepareImage(bmp)
         val qr_logo: Bitmap = BitmapFactory.decodeResource(context.resources,
             R.drawable.qrcode_center_round_blue
@@ -252,7 +252,7 @@ class BoxPdfCreator {
 
                 val (qrcodeLogoImg, qrcodeImg, imageThw, imageOel, imageEagle) = awaitAll(logo_job, qrcode_job, thw_job, oel_job, eagle_job)
 
-                document.setMargins(10f, 10f, 16f, 10f);
+                document.setMargins(10f, 10f, 16f, 10f)
                 // Create Header
                 val headerPlaceholder = Phrase("", FontFactory.getFont(FontFactory.HELVETICA, 1f))
                 //addEmptyLine(headerPlaceholder, 1)

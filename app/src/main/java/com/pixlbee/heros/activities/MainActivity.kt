@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val nvDrawer: NavigationView = findViewById(R.id.nav_view_drawer)
-        setupDrawerContent(nvDrawer);
+        setupDrawerContent(nvDrawer)
 
     }
 
@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.nav_settings -> {}
         }
-        menuItem.setChecked(false)
+        menuItem.isChecked = false
         mDrawer.closeDrawers()
     }
 

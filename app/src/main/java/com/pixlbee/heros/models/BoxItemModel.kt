@@ -13,6 +13,4 @@ class BoxItemModel(
     var item_description: String,
     var item_tags: String,
     var item_color: Int,
-    var item_image: String): Parcelable {
-
-}
+    var item_image: String): Parcelable

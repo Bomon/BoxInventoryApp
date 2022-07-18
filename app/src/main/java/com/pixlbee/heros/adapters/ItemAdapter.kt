@@ -76,10 +76,10 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
 
         //holder.item_description.text = mItemList[position].description
         if (mItemList[position].image != ""){
-            var imageByteArray = Base64.decode(mItemList[position].image, Base64.DEFAULT);
+            var imageByteArray = Base64.decode(mItemList[position].image, Base64.DEFAULT)
             Glide.with(context)
                 .load(imageByteArray)
-                .into(holder.item_image);
+                .into(holder.item_image)
         }
 
         holder.item_container.transitionName = mItemList[position].id

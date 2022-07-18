@@ -28,12 +28,12 @@ class StartupActivity : AppCompatActivity() {
         FirebaseDatabase.getInstance().getReference("write_users").keepSynced(true)
         FirebaseDatabase.getInstance().getReference("read_users").keepSynced(true)
 
-        window.navigationBarColor = SurfaceColors.SURFACE_2.getColor(this);
+        window.navigationBarColor = SurfaceColors.SURFACE_2.getColor(this)
         val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
         if (user != null) {
             val sharedPreferences: SharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
             val editor = sharedPreferences.edit()
-            editor.putString("current_user", user?.email.toString().replaceAfter("@", "").replace("@", ""))
+            editor.putString("current_user", user.email.toString().replaceAfter("@", "").replace("@", ""))
             editor.commit()
             startActivity(Intent(this, MainActivity::class.java))
             finish()

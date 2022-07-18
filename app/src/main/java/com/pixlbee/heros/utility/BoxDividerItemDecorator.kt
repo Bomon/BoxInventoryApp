@@ -49,7 +49,7 @@ class BoxDividerItemDecorator (private val mDivider: Drawable) : RecyclerView.It
                     mPaint.color = Color.BLUE
                     val textSize = TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_SP,
-                        20f, parent.resources.getDisplayMetrics()
+                        20f, parent.resources.displayMetrics
                     )
                     mPaint.textSize = textSize
                     mPaint.textAlign = Align.LEFT

@@ -52,7 +52,7 @@ class ContainingBoxAdapter(
 
 
     override fun onBindViewHolder(holder: ContainingBoxViewHolder, position: Int) {
-        (holder as ContainingBoxViewHolder).bind(mBoxList[position]);
+        holder.bind(mBoxList[position])
     }
 
 
@@ -91,7 +91,7 @@ class ContainingBoxAdapter(
                         chip.text = tag
                         chip.minHeight = 1
                         chip.setTextAppearance(R.style.BoxStatusChip)
-                        box_status?.addView(chip)
+                        box_status.addView(chip)
                     }
                 }
             }
@@ -107,20 +107,20 @@ class ContainingBoxAdapter(
                 }
 
                 if (invnums.size > 0){
-                    box_inv_label!!.visibility = View.VISIBLE
-                    box_invnums!!.visibility = View.VISIBLE
-                    box_invnums?.removeAllViews()
+                    box_inv_label.visibility = View.VISIBLE
+                    box_invnums.visibility = View.VISIBLE
+                    box_invnums.removeAllViews()
                     for (invnum in invnums){
                         if (invnum != ""){
                             val chip = Chip(context)
                             chip.setTextAppearance(android.R.style.TextAppearance_Material_Small)
                             chip.text = invnum
-                            box_invnums?.addView(chip)
+                            box_invnums.addView(chip)
                         }
                     }
                 } else {
-                    box_inv_label!!.visibility = View.GONE
-                    box_invnums!!.visibility = View.GONE
+                    box_inv_label.visibility = View.GONE
+                    box_invnums.visibility = View.GONE
                 }
             }
             box_container.transitionName = model.id

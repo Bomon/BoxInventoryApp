@@ -92,7 +92,7 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                 override fun onItemClicked(item: ItemModel, view: View) {
                     var item_id = item.id
                     //adapter.setFilter(itemList)
-                    val navController: NavController = Navigation.findNavController(view!!)
+                    val navController: NavController = Navigation.findNavController(view)
                     // push the selected item back to BoxEditFragment
                     navController.previousBackStackEntry?.savedStateHandle?.set("item_id", item_id)
                     navController.popBackStack()
@@ -193,8 +193,8 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun filterAndSort(models: List<ItemModel>): List<ItemModel> {
-        var query = searchQueryText.toLowerCase()
-        query = query.toLowerCase()
+        var query = searchQueryText.lowercase(Locale.getDefault())
+        query = query.lowercase(Locale.getDefault())
         val filteredModelList: MutableList<ItemModel> = ArrayList()
         for (item_model in models) {
             if (item_model.description.lowercase().contains(query)) {

@@ -60,10 +60,10 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
         holder.box_color.background.setTint(mBoxList[position].color)
 
         if (mBoxList[position].image != ""){
-            var imageByteArray = Base64.decode(mBoxList[position].image, Base64.DEFAULT);
+            var imageByteArray = Base64.decode(mBoxList[position].image, Base64.DEFAULT)
             Glide.with(context)
                 .load(imageByteArray)
-                .into(holder.box_img);
+                .into(holder.box_img)
         }
 
         holder.box_container.transitionName = mBoxList[position].id

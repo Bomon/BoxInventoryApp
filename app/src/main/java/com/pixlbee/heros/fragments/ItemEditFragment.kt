@@ -320,9 +320,4 @@ class ItemEditFragment : Fragment() {
     }
 
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
-
-
 }
