@@ -32,7 +32,9 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.google.android.material.transition.platform.MaterialSharedAxis
+import com.google.android.material.transition.Hold
+import com.google.android.material.transition.MaterialFadeThrough
+import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.*
@@ -300,9 +302,8 @@ class BoxEditFragment() : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             showDismissDialog()
         }
-
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
 
         // This task is done once on fragment creation
         // Reason: each qrcode / boxId must only exist once. The task is async and so we start it here to have the result when user clicks save
@@ -355,6 +356,8 @@ class BoxEditFragment() : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
+
+        exitTransition = MaterialFadeThrough()
 
         val v =  inflater.inflate(R.layout.fragment_box_edit, container, false)
 
@@ -521,14 +524,15 @@ class BoxEditFragment() : Fragment() {
         recyclerview.adapter = box_item_edit_adapter
 
         box_edit_add_button.setOnClickListener(object: View.OnClickListener {
-            override fun onClick(v: View?) {
+            override fun onClick(view: View?) {
                 if (view != null) {
+                    exitTransition = Hold()
                     // Temp store elements for when item was added
                     box_model.status = Utils.chipListToString(box_edit_status_chips)
                     box_model.color = box_edit_color
                     itemList = box_item_edit_adapter.getCurrentStatus()
 
-                    val extras = FragmentNavigatorExtras(box_edit_add_button to "shared_element_box_edit_to_box_item_add")
+                    val extras = FragmentNavigatorExtras(view to "transition_box_edit_add_item")
                     findNavController().navigate(BoxEditFragmentDirections.actionBoxEditFragmentToItemsAddFragment(), extras)
                 }
             }

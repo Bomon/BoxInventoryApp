@@ -66,6 +66,8 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
                 .into(holder.box_img);
         }
 
+        holder.box_img.transitionName = mBoxList[position].id
+
 
         //val img = Utils.StringToBitMap(mBoxList[position].image)
         //if (img != null){

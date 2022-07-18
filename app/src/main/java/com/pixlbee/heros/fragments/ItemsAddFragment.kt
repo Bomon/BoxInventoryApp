@@ -1,5 +1,6 @@
 package com.pixlbee.heros.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -8,23 +9,32 @@ import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.transition.Hold
+import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.pixlbee.heros.*
+import com.pixlbee.heros.adapters.ItemAdapter
 import com.pixlbee.heros.adapters.ItemAddAdapter
 import com.pixlbee.heros.models.ItemModel
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
 
     var itemList: ArrayList<ItemModel> = ArrayList<ItemModel>()
-    lateinit var adapter: ItemAddAdapter
+    lateinit var adapter: ItemAdapter
     lateinit var recyclerview: RecyclerView
     lateinit var firebase_listener: ValueEventListener
+    private var searchQueryText: String = ""
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -36,7 +46,7 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
         item.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 // Do something when collapsed
-                adapter.setFilter(itemList)
+                adapter.setFilter(filterAndSort(itemList))
                 return true // Return true to collapse action view
             }
 
@@ -50,6 +60,19 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.items_add_fragment_title)
+        exitTransition = Hold()
+
+        val transformEnter = MaterialContainerTransform(requireContext(), true)
+        transformEnter.scrimColor = Color.TRANSPARENT
+        sharedElementEnterTransition = transformEnter
+
+        val transformReturn = MaterialContainerTransform(requireContext(), false)
+        transformReturn.scrimColor = Color.TRANSPARENT
+        sharedElementReturnTransition = transformReturn
+
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
     }
 
 
@@ -61,11 +84,11 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
 
         val view: View = inflater.inflate(R.layout.fragment_items, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_items) as RecyclerView
-        adapter = ItemAddAdapter(itemList)
-        adapter.setOnItemClickListener(object: ItemAddAdapter.OnItemClickListener{
+        adapter = ItemAdapter(itemList)
+        adapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
             override fun onItemClicked(item: ItemModel, view: View) {
                 var item_id = item.id
-                adapter.setFilter(itemList)
+                //adapter.setFilter(itemList)
 
                 val navController: NavController = Navigation.findNavController(view!!)
                 // push the selected item back to BoxEditFragment
@@ -83,13 +106,20 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
         items_add_button.setOnClickListener(object: View.OnClickListener {
             override fun onClick(v: View?) {
                 if (view != null) {
-                    val bundle = Bundle()
+                    //val bundle = Bundle()
                     val itemModel: ItemModel = ItemModel("", "", "", "", "")
-                    bundle.putSerializable("itemModel", itemModel)
-                    bundle.putSerializable("isNewItem", true)
-                    bundle.putSerializable("isBoxEditMode", true)
-                    val navController: NavController = Navigation.findNavController(view!!)
-                    navController.navigate(R.id.action_itemsAddFragment_to_itemEditFragment, bundle)
+                    //bundle.putSerializable("itemModel", itemModel)
+                    //bundle.putSerializable("isNewItem", true)
+                    //bundle.putSerializable("isBoxEditMode", true)
+                    //val navController: NavController = Navigation.findNavController(view!!)
+                    //navController.navigate(R.id.action_itemsAddFragment_to_itemEditFragment, bundle)
+
+                    exitTransition = Hold()
+                    val extras = FragmentNavigatorExtras(
+                        view to "transition_add_item"
+                    )
+                    val navController: NavController = Navigation.findNavController(view)
+                    findNavController().navigate(ItemsAddFragmentDirections.actionItemsAddFragmentToItemEditFragment(itemModel, true), extras)
                 }
             }
         })
@@ -126,7 +156,7 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
                     val tags = box.child("tags").value.toString()
                     itemList.add(ItemModel(id, name, description, tags, image))
                 }
-                adapter.setFilter(itemList)
+                adapter.setFilter(filterAndSort(itemList))
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}
@@ -136,11 +166,8 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
 
 
     override fun onQueryTextChange(newText: String): Boolean {
-        val filteredModelList: List<ItemModel> = filter(itemList, newText)
-        adapter.setFilter(filteredModelList)
-        activity?.runOnUiThread {
-            adapter.notifyDataSetChanged()
-        }
+        searchQueryText = newText
+        adapter.setFilter(filterAndSort(itemList))
 
         return true
     }
@@ -151,10 +178,10 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
-    private fun filter(models: List<ItemModel>, query: String): List<ItemModel> {
-        var query = query
+    private fun filterAndSort(models: List<ItemModel>): List<ItemModel> {
+        var query = searchQueryText.toLowerCase()
         query = query.toLowerCase()
-        val filteredModelList: MutableList<ItemModel> = ArrayList()
+        val filteredModelList: MutableList<ItemModel> = java.util.ArrayList()
         for (item_model in models) {
             if (item_model.description.lowercase().contains(query)) {
                 filteredModelList.add(item_model)
@@ -166,6 +193,16 @@ class ItemsAddFragment : Fragment(), SearchView.OnQueryTextListener {
                 filteredModelList.add(item_model)
             }
         }
+
+        filteredModelList.sortWith(
+            compareBy(String.CASE_INSENSITIVE_ORDER) {
+                var name = it.name.lowercase(Locale.getDefault()).replace("ä","ae")
+                name = name.replace("ö","oe")
+                name = name.replace("ü","ue")
+                name
+            }
+        )
+
         return filteredModelList
     }
 

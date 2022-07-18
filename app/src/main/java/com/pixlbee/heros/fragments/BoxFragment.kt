@@ -4,16 +4,19 @@ import android.Manifest
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.AlertDialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.transition.*
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -26,8 +29,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.transition.platform.MaterialContainerTransform
-import com.google.android.material.transition.platform.MaterialSharedAxis
+import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -164,13 +167,20 @@ class BoxFragment : Fragment(){
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         //sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-        val transform = MaterialContainerTransform()
-        transform.scrimColor = Color.TRANSPARENT
 
-        sharedElementEnterTransition = transform
-        sharedElementReturnTransition = transform
+        val transformEnter = MaterialContainerTransform(requireContext(), true)
+        transformEnter.scrimColor = Color.TRANSPARENT
+        //transformEnter.duration = 2000
+        sharedElementEnterTransition = transformEnter
+
+        val transformReturn = MaterialContainerTransform(requireContext(), false)
+        transformReturn.scrimColor = Color.TRANSPARENT
+        //transformReturn.duration = 2000
+        sharedElementReturnTransition = transformReturn
+
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
 
         // Get the arguments from the caller fragment/activity
         box_model = arguments?.getSerializable("boxModel") as BoxModel
@@ -259,7 +269,7 @@ class BoxFragment : Fragment(){
         var box_container: View = v.findViewById(R.id.box_fragment_container)
 
         // Transition Taget element
-        box_summary_image_field.transitionName = box_model.id
+        box_container.transitionName = box_model.id
 
         updateContent()
 

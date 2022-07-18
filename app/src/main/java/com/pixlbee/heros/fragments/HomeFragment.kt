@@ -1,7 +1,9 @@
 package com.pixlbee.heros.fragments
 
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.graphics.Canvas
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -23,8 +25,9 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.transition.platform.MaterialContainerTransform
-import com.google.android.material.transition.platform.MaterialElevationScale
+import com.google.android.material.transition.Hold
+import com.google.android.material.transition.MaterialFadeThrough
+import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -151,14 +154,9 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-        //exitTransition = Hold()
-        //exitTransition = MaterialElevationScale(/* growing= */ false)
-        reenterTransition = MaterialElevationScale(/* growing= */ true)
-        enterTransition = MaterialElevationScale(/* growing= */ true)
-        //sharedElementEnterTransition = MaterialContainerTransform()
-        //sharedElementReturnTransition = MaterialContainerTransform()
-        sharedElementEnterTransition = MaterialContainerTransform()
-        sharedElementReturnTransition = MaterialContainerTransform()
+
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (doubleBackToExitPressedOnce) {
@@ -176,23 +174,22 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        viewGroup = container
+        exitTransition = MaterialFadeThrough()
 
+        viewGroup = container
         val view: View = inflater.inflate(R.layout.fragment_home, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_home) as RecyclerView
 
         adapter = BoxAdapter(boxList)
         adapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
             override fun onBoxClicked(box: BoxModel, view: View) {
-                view.transitionName = box.id
+                exitTransition = Hold()
                 val extras = FragmentNavigatorExtras(
                     view to box.id
                 )

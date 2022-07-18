@@ -130,7 +130,7 @@ class ContainingBoxAdapter(
         override fun onClick(view: View?) {
             if(mListener != null){
                 // second argument is the element from which the transition will start
-                mListener.onContainingBoxClicked(mBoxList[adapterPosition], box_container)
+                mListener.onContainingBoxClicked(mBoxList[adapterPosition], box_image)
             }
             true
         }

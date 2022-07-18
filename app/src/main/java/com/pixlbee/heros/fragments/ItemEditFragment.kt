@@ -4,6 +4,7 @@ import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
@@ -22,7 +23,8 @@ import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputLayout
-import com.google.android.material.transition.platform.MaterialSharedAxis
+import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.*
@@ -183,8 +185,18 @@ class ItemEditFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
+        val transformEnter = MaterialContainerTransform(requireContext(), true)
+        transformEnter.scrimColor = Color.TRANSPARENT
+        transformEnter.duration = 5000
+        sharedElementEnterTransition = transformEnter
+
+        val transformReturn = MaterialContainerTransform(requireContext(), false)
+        transformReturn.scrimColor = Color.TRANSPARENT
+        sharedElementReturnTransition = transformReturn
+
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             showDismissDialog()

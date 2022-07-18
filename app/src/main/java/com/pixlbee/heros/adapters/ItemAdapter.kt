@@ -79,6 +79,8 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
                 holder.item_image.setImageBitmap(img)
             }
         }
+
+        holder.item_image.transitionName = mItemList[position].id
     }
 
 
@@ -94,6 +96,8 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
         init {
             itemView.setOnClickListener(this)
         }
+
+
 
         override fun onClick(view: View?) {
             if(mListener != null){

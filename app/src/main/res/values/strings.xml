@@ -119,8 +119,8 @@
     <string name="dialog_order_by_name">Name</string>
     <string name="dialog_order_by_id">ID / Nummer</string>
     <string name="dialog_order_by_location">Standort</string>
-    <string name="dialog_order_by_status">"Status "</string>
-    <string name="dialog_order_by_color">Farbe</string>
+    <string name="dialog_order_by_status">"Status / Tags"</string>
+    <string name="dialog_order_by_color">Farbmarkierung</string>
     <string name="dialog_sort_title">Sortieren Nach</string>
     <string name="navigation_drawer_open">Drawer geöffnet</string>
     <string name="navigation_drawer_close">Drawer geschlossen</string>
@@ -128,6 +128,6 @@
     <string name="drawer_settings">Einstellungen</string>
     <string name="username">Benutzername</string>
     <string name="dialog_order_by_latest">Zuletzt Hinzugefügt</string>
-    <string name="dialog_order_ascending">Aufsteigend</string>
-    <string name="dialog_order_descending">Absteigend</string>
+    <string name="dialog_order_ascending">Aufsteigend (A-Z)</string>
+    <string name="dialog_order_descending">Absteigend (Z-A)</string>
 </resources>

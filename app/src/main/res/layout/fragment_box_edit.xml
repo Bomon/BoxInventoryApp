@@ -348,7 +348,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_weight="0"
                         android:text="@string/edit_box_add"
-                        android:transitionName="shared_element_box_edit_to_box_item_add" />
+                        android:transitionName="transition_box_edit_add_item" />
                         app:icon="@drawable/ic_baseline_add_24" />
 
                 </LinearLayout>

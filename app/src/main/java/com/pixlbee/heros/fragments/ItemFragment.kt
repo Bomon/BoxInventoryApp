@@ -19,8 +19,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.transition.platform.MaterialContainerTransform
-import com.google.android.material.transition.platform.MaterialSharedAxis
+import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.*
 import com.stfalcon.imageviewer.StfalconImageViewer
 import com.pixlbee.heros.*
@@ -219,7 +219,7 @@ class ItemFragment : Fragment() {
         var item_container: ConstraintLayout = v.findViewById(R.id.item_fragment_container)
 
         // Transition Taget element
-        item_image_field.transitionName = item_model.id
+        item_container.transitionName = item_model.id
 
         updateContent()
 

@@ -1,5 +1,6 @@
 package com.pixlbee.heros.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -10,12 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.transition.platform.MaterialContainerTransform
-import com.google.android.material.transition.platform.MaterialElevationScale
+import com.google.android.material.transition.*
 import com.google.firebase.database.*
 import com.pixlbee.heros.R
 import com.pixlbee.heros.adapters.ItemAdapter
@@ -57,10 +58,8 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sharedElementEnterTransition = MaterialContainerTransform()
-        //exitTransition = MaterialElevationScale(/* growing= */ false)
-        reenterTransition = MaterialElevationScale(/* growing= */ true)
-        enterTransition = MaterialElevationScale(/* growing= */ true)
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
     }
 
 
@@ -69,8 +68,7 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        postponeEnterTransition()
+        exitTransition = MaterialFadeThrough()
 
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_items, container, false)
@@ -79,7 +77,7 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         adapter = ItemAdapter(itemList)
         adapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
             override fun onItemClicked(item: ItemModel, view: View) {
-                view.transitionName = item.id
+                exitTransition = Hold()
                 val extras = FragmentNavigatorExtras(
                     view to item.id
                 )
@@ -88,7 +86,6 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         })
 
-        recyclerview.doOnPreDraw { startPostponedEnterTransition() }
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = adapter
 
@@ -99,15 +96,24 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
             override fun onClick(v: View?) {
                 if (view != null) {
                     if(Utils.checkHasWritePermission(context)) {
-                        val bundle = Bundle()
+                        //val bundle = Bundle()
                         val itemModel: ItemModel = ItemModel("", "", "", "", "")
-                        bundle.putSerializable("itemModel", itemModel)
-                        bundle.putSerializable("isNewItem", true)
-                        val navController: NavController = Navigation.findNavController(view!!)
-                        navController.navigate(
-                            R.id.action_navigation_items_to_itemEditFragment,
-                            bundle
+                        //bundle.putSerializable("itemModel", itemModel)
+                        //bundle.putSerializable("isNewItem", true)
+
+
+                        exitTransition = Hold()
+                        val extras = FragmentNavigatorExtras(
+                            view to "transition_add_item"
                         )
+                        val navController: NavController = Navigation.findNavController(view)
+                        findNavController().navigate(ItemsFragmentDirections.actionNavigationItemsToItemEditFragment(itemModel, true), extras)
+
+                        //val navController: NavController = Navigation.findNavController(view!!)
+                        //navController.navigate(
+                        //    R.id.action_navigation_items_to_itemEditFragment,
+                        //    bundle
+                        //)
                     }
                 }
             }
@@ -119,6 +125,8 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
     }
 
     fun initFirebase(){

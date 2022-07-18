@@ -15,15 +15,7 @@
             app:destination="@id/boxFragment" />
         <action
             android:id="@+id/action_navigation_home_to_boxEditFragment"
-            app:destination="@id/boxEditFragment"
-            app:enterAnim="@anim/nav_default_enter_anim" />
-        <action
-            android:id="@+id/action_navigation_home_to_navigation_qrscanner"
-            app:destination="@id/navigation_qrscanner"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_enter_anim"
-            app:popExitAnim="@anim/nav_default_exit_anim" />
+            app:destination="@id/boxEditFragment" />
     </fragment>
 
     <fragment
