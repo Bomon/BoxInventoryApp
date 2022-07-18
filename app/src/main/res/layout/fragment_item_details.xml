@@ -70,6 +70,7 @@
                     app:layout_constraintStart_toEndOf="@+id/box_color"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
 
+
             </LinearLayout>
 
             <com.google.android.material.divider.MaterialDivider

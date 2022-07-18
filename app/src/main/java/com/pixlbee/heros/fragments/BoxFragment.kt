@@ -106,9 +106,6 @@ class BoxFragment : Fragment(){
     }
 
 
-
-
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.box_btn_edit) {
             if (Utils.checkHasWritePermission(context)) {
@@ -166,16 +163,13 @@ class BoxFragment : Fragment(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        //sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
 
         val transformEnter = MaterialContainerTransform(requireContext(), true)
         transformEnter.scrimColor = Color.TRANSPARENT
-        //transformEnter.duration = 2000
         sharedElementEnterTransition = transformEnter
 
         val transformReturn = MaterialContainerTransform(requireContext(), false)
         transformReturn.scrimColor = Color.TRANSPARENT
-        //transformReturn.duration = 2000
         sharedElementReturnTransition = transformReturn
 
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
@@ -245,7 +239,7 @@ class BoxFragment : Fragment(){
             box_location_image_field.setImageBitmap(Utils.StringToBitMap(box_location_img))
         }
 
-        (activity as AppCompatActivity).supportActionBar?.title = box_model.id
+        (activity as AppCompatActivity).supportActionBar?.title = box_id
     }
 
 
@@ -372,8 +366,6 @@ class BoxFragment : Fragment(){
     fun initFirebase(){
         firebase_listener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
-                itemList.clear()
-
                 val boxes = dataSnapshot.child("boxes")
                 for (box: DataSnapshot in boxes.children){
                     if (box.child("id").value.toString() == box_model.id){
@@ -383,6 +375,7 @@ class BoxFragment : Fragment(){
                     }
                 }
 
+                itemList.clear()
                 val items = dataSnapshot.child("items")
                 for (contentItem: ContentItem in box_model.content){
                     for (item: DataSnapshot in items.children){

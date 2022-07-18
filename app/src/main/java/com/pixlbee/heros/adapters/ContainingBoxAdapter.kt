@@ -123,14 +123,13 @@ class ContainingBoxAdapter(
                     box_invnums!!.visibility = View.GONE
                 }
             }
-
-
+            box_container.transitionName = model.id
         }
 
         override fun onClick(view: View?) {
             if(mListener != null){
                 // second argument is the element from which the transition will start
-                mListener.onContainingBoxClicked(mBoxList[adapterPosition], box_image)
+                mListener.onContainingBoxClicked(mBoxList[adapterPosition], box_container)
             }
             true
         }

@@ -6,7 +6,7 @@
     android:id="@+id/fragment_items"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:transitionName="transition_box_edit_add_item"
+    android:transitionName="transition_to_items"
     android:background="?attr/colorSurface"
     tools:context=".fragments.ItemsFragment">
 

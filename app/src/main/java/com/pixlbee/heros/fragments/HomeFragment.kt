@@ -187,6 +187,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         val recyclerview = view.findViewById<View>(R.id.RV_home) as RecyclerView
 
         adapter = BoxAdapter(boxList)
+        adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         adapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
             override fun onBoxClicked(box: BoxModel, view: View) {
                 exitTransition = Hold()
@@ -263,7 +264,6 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                         color = Utils.getPreviousColor(context!!, oldBoxModel.color)
                     }
                     oldBoxModel.color = color
-                    Log.e("Error", "New color: " + color)
 
                     adapter.updateColorInFirebase(position)
                 }

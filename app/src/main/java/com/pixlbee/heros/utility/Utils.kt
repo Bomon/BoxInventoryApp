@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ContentItem
+import com.pixlbee.heros.models.ItemModel
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.ExecutionException
 
@@ -54,7 +55,6 @@ class Utils {
             val location_image = box.child("location_image").value.toString()
             val location = box.child("location").value.toString()
             val id = box.child("id").value.toString()
-            Log.e("Error", id.toString())
             val numeric_id = box.child("numeric_id").value.toString().toLong()
             val name = box.child("name").value.toString()
             val description = box.child("description").value.toString()
@@ -87,6 +87,16 @@ class Utils {
                 contentList.add(ContentItem(c.key.toString(), itemAmount, itemId, itemInvNum, itemColor))
             }
             return BoxModel(numeric_id, id, name, description, qrcode, location, image, location_image, notes, color, status, contentList)
+        }
+
+
+        fun readItemModelFromDataSnapshot(context: Context?, item: DataSnapshot): ItemModel {
+            val id = item.child("id").value.toString()
+            val name = item.child("name").value.toString()
+            val description = item.child("description").value.toString()
+            val image = item.child("image").value.toString()
+            val tags = item.child("tags").value.toString()
+            return ItemModel(id, name, description, tags, image)
         }
 
 

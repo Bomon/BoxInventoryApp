@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
+import androidx.core.app.SharedElementCallback
 import androidx.core.view.MenuItemCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
@@ -12,7 +13,6 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -23,10 +23,17 @@ import com.pixlbee.heros.adapters.ItemAdapter
 import com.pixlbee.heros.models.ItemModel
 import com.pixlbee.heros.utility.Utils
 import java.util.*
+import androidx.core.view.ViewPropertyAnimatorListenerAdapter
+
+import androidx.core.view.ViewCompat
+
+
+
 
 
 class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
+    private var return_item_instead_of_show_details: Boolean = false
     var itemList: ArrayList<ItemModel> = ArrayList<ItemModel>()
     lateinit var adapter: ItemAdapter
     lateinit var rv: RecyclerView
@@ -58,6 +65,14 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val transformEnter = MaterialContainerTransform(requireContext(), true)
+        transformEnter.scrimColor = Color.TRANSPARENT
+        sharedElementEnterTransition = transformEnter
+
+        val transformReturn = MaterialContainerTransform(requireContext(), false)
+        transformReturn.scrimColor = Color.TRANSPARENT
+        sharedElementReturnTransition = transformReturn
+
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
     }
@@ -75,16 +90,33 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         val recyclerview = view.findViewById<View>(R.id.RV_items) as RecyclerView
 
         adapter = ItemAdapter(itemList)
-        adapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
-            override fun onItemClicked(item: ItemModel, view: View) {
-                exitTransition = Hold()
-                val extras = FragmentNavigatorExtras(
-                    view to item.id
-                )
-                val navController: NavController = Navigation.findNavController(view)
-                navController.navigate(ItemsFragmentDirections.actionNavigationItemsToItemFragment(item), extras)
-            }
-        })
+        adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
+        return_item_instead_of_show_details = arguments?.getBoolean("return_item_instead_of_show_details") as Boolean
+        if (return_item_instead_of_show_details){
+            adapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
+                override fun onItemClicked(item: ItemModel, view: View) {
+                    var item_id = item.id
+                    //adapter.setFilter(itemList)
+                    val navController: NavController = Navigation.findNavController(view!!)
+                    // push the selected item back to BoxEditFragment
+                    navController.previousBackStackEntry?.savedStateHandle?.set("item_id", item_id)
+                    navController.popBackStack()
+                }
+            })
+        } else {
+            adapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
+                override fun onItemClicked(item: ItemModel, view: View) {
+                    exitTransition = Hold()
+                    val extras = FragmentNavigatorExtras(
+                        view to item.id
+                    )
+                    val navController: NavController = Navigation.findNavController(view)
+                    navController.navigate(ItemsFragmentDirections.actionNavigationItemsToItemFragment(item), extras)
+                }
+            })
+        }
+
 
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = adapter
@@ -93,27 +125,15 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
         val items_add_button: FloatingActionButton = view.findViewById(R.id.items_add_button)
         items_add_button.setOnClickListener(object: View.OnClickListener {
-            override fun onClick(v: View?) {
-                if (view != null) {
+            override fun onClick(viwe: View?) {
+                if (viwe != null) {
                     if(Utils.checkHasWritePermission(context)) {
-                        //val bundle = Bundle()
                         val itemModel: ItemModel = ItemModel("", "", "", "", "")
-                        //bundle.putSerializable("itemModel", itemModel)
-                        //bundle.putSerializable("isNewItem", true)
-
-
                         exitTransition = Hold()
                         val extras = FragmentNavigatorExtras(
-                            view to "transition_add_item"
+                            viwe to "transition_add_item"
                         )
-                        val navController: NavController = Navigation.findNavController(view)
                         findNavController().navigate(ItemsFragmentDirections.actionNavigationItemsToItemEditFragment(itemModel, true), extras)
-
-                        //val navController: NavController = Navigation.findNavController(view!!)
-                        //navController.navigate(
-                        //    R.id.action_navigation_items_to_itemEditFragment,
-                        //    bundle
-                        //)
                     }
                 }
             }
@@ -125,14 +145,26 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+
         postponeEnterTransition()
         view.doOnPreDraw { startPostponedEnterTransition() }
+
+        if (return_item_instead_of_show_details) {
+            // receive new item from ItemEditFragment
+            val navController = findNavController()
+            navController.currentBackStackEntry?.savedStateHandle?.getLiveData<ItemModel>("item")?.observe(
+                viewLifecycleOwner) { result ->
+                // Push this back to the BoxEditFragment
+                navController.previousBackStackEntry?.savedStateHandle?.set("item_id", result.id)
+                navController.navigateUp()
+            }
+        }
     }
+
 
     fun initFirebase(){
         firebase_listener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
-                Log.e("Error", "Data Change")
                 itemList.clear()
                 val boxes = dataSnapshot.child("items")
                 for (box: DataSnapshot in boxes.children){

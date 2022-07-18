@@ -5,12 +5,14 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -20,6 +22,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -57,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
 
         // Init App bar configuration (defines home fragments where drawer is visible, otherwise back button)
-        mDrawer= binding.drawerLayout
+        mDrawer = binding.drawerLayout
         val appBarConfiguration = AppBarConfiguration(
             setOf(R.id.navigation_home, R.id.navigation_qrscanner, R.id.navigation_items),
             mDrawer
@@ -81,11 +84,11 @@ class MainActivity : AppCompatActivity() {
             return@setOnItemSelectedListener true
         }
 
-
         val nvDrawer: NavigationView = findViewById(R.id.nav_view_drawer)
         setupDrawerContent(nvDrawer);
 
     }
+
 
     private fun initDefaultSettings() {
         val sharedPreferences: SharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
@@ -97,13 +100,13 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     private fun setupDrawerContent(navigationView: NavigationView) {
         navigationView.setNavigationItemSelectedListener { menuItem ->
             selectDrawerItem(menuItem)
             true
         }
     }
+
 
     fun selectDrawerItem(menuItem: MenuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
@@ -113,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
             }
-            R.id.nav_settings -> Log.e("Error", "Clicked Settings")
+            R.id.nav_settings -> {}
         }
         menuItem.setChecked(false)
         mDrawer.closeDrawers()

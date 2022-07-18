@@ -4,12 +4,6 @@
     <string name="title_nav_qrscanner">QR</string>
     <string name="title_nav_items">Ausrüstung</string>
 
-    <string name="item_id">Item ID</string>
-    <string name="item_count">XX</string>
-    <string name="box_id">Box ID</string>
-    <string name="box_name">Box Name</string>
-    <string name="box_location">Box Location</string>
-
     <string name="location">Standort</string>
     <string name="content">Inhalt</string>
     <string name="edit_box_markings">Markierungen</string>
@@ -19,13 +13,11 @@
     <string name="edit_box_status">Status / Tags hinzufügen</string>
     <string name="edit_box_location">Standort</string>
     <string name="edit_box_add">Hinzufügen</string>
-    <string name="edit_item_amount">Menge</string>
     <string name="edit_box_title">Box Daten</string>
     <string name="edit_box_status_helper">Zum Hinzufügen ; oder Enter drücken</string>
     <string name="edit_box_qrcode">QR-Code</string>
-    <string name="edit_box_qrcode_helper">Achtung: Jede Änderung macht ausgedruckte QR-Codes ungültig</string>
+    <string name="edit_box_qrcode_helper">Achtung: Durch eine Änderung werden die QR-Codes auf den ausgedruckten Labels ungültig</string>
 
-    <string name="dialog_set">Übernehmen</string>
     <string name="dialog_add">Hinzufügen</string>
     <string name="dialog_cancel">Abbrechen</string>
     <string name="dialog_invnum">Inventarnummer</string>
@@ -39,27 +31,21 @@
     <string name="login_btn">Login</string>
     <string name="password_hint">Passwort</string>
     <string name="user_hint">Benutzername</string>
-    <string name="open">Öffnen</string>
-    <string name="close">Schließen</string>
     <string name="containting_box">Enthalten in:</string>
     <string name="containting_box_empty">In keiner Box enthalten</string>
     <string name="invnums_label">Inventarnummern:</string>
 
 
     <string name="item_edit_tags_title">Tags</string>
-    <string name="item_edit_tags">Zum Hinzufügen ; oder Enter drücken</string>
     <string name="item_edit_description">Beschreibung / Notizen</string>
     <string name="item_edit_name">Bezeichnung</string>
     <string name="item_edit_title">Allgemeine Daten</string>
     <string name="item_edit_image">Foto</string>
     <string name="press_back_again_to_exit">Zum Verlassen nochmal ZURÜCK klicken</string>
 
-    <string name="color_select_title">Farbe Wählen</string>
     <string name="edit_box_color">Farbmarkierung ändern</string>
     <string name="edit_item_color">Farbe</string>
     <string name="edit_item_invnum">InvNr.</string>
-    <string name="box_card_transition_name">box_card_transition_name</string>
-    <string name="box_card_detail_transition_name">box_card_detail_transition_name</string>
     <string name="dialog_dismiss_title">Änderungen Verwerfen?</string>
     <string name="dialog_dismiss_text">Alle nicht gespeicherten Änderungen gehen verloren.</string>
     <string name="dialog_save_title">Änderungen Speichern?</string>
@@ -74,7 +60,6 @@
     <string name="dialog_add_invnr_title">Inventarnummer Hinzufügen</string>
     <string name="error_dialog_invnr_empty">Inventarnummer darf nicht leer sein</string>
     <string name="error_dialog_invnr_invalid">Inventarnummer darf kein ; enthalten</string>
-    <string name="items_add_fragment_title">Gegenstand hinzufügen</string>
     <string name="fragment_item_edit_title">Gegenstand erstellen</string>
     <string name="fragment_item_edit_title_new">Gegenstand bearbeiten</string>
     <string name="dialog_delete_item_title">Gegenstand Löschen?</string>
@@ -114,20 +99,18 @@
     <string name="content_description_item_image">Ausrüstung Foto</string>
     <string name="content_description_location">Standort</string>
     <string name="content_description_location_image">Standort Foto</string>
-    <string name="dialog_order_by_name_az">Name (A-Z)</string>
-    <string name="dialog_order_by_name_za">Name (Z-A)</string>
     <string name="dialog_order_by_name">Name</string>
     <string name="dialog_order_by_id">ID / Nummer</string>
     <string name="dialog_order_by_location">Standort</string>
     <string name="dialog_order_by_status">"Status / Tags"</string>
     <string name="dialog_order_by_color">Farbmarkierung</string>
     <string name="dialog_sort_title">Sortieren Nach</string>
-    <string name="navigation_drawer_open">Drawer geöffnet</string>
-    <string name="navigation_drawer_close">Drawer geschlossen</string>
     <string name="drawer_logout">Ausloggen</string>
     <string name="drawer_settings">Einstellungen</string>
     <string name="username">Benutzername</string>
     <string name="dialog_order_by_latest">Zuletzt Hinzugefügt</string>
     <string name="dialog_order_ascending">Aufsteigend (A-Z)</string>
     <string name="dialog_order_descending">Absteigend (Z-A)</string>
+    <string name="task_cancelled">Abgebrochen</string>
+    <string name="error_store_file_in_downloads">Fehler: Datei konnte nicht gespeichert werden.</string>
 </resources>

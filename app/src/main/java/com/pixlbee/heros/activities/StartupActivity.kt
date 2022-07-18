@@ -28,8 +28,6 @@ class StartupActivity : AppCompatActivity() {
         FirebaseDatabase.getInstance().getReference("write_users").keepSynced(true)
         FirebaseDatabase.getInstance().getReference("read_users").keepSynced(true)
 
-        Log.e("Error", FirebaseAuth.getInstance().currentUser?.getUid().toString())
-
         window.navigationBarColor = SurfaceColors.SURFACE_2.getColor(this);
         val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
         if (user != null) {

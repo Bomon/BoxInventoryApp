@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.ImageView
@@ -11,9 +12,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.doOnPreDraw
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -99,17 +102,12 @@ class ItemFragment : Fragment() {
         builder.setMessage(resources.getString(R.string.dialog_delete_item_text))
 
         builder.setPositiveButton(R.string.dialog_yes) { dialog, which ->
-            Toast.makeText(requireContext(),
-                "yes", Toast.LENGTH_SHORT).show()
             deleteItem()
-
             val navController: NavController = Navigation.findNavController(view!!)
             navController.navigateUp()
         }
 
         builder.setNegativeButton(R.string.dialog_no) { dialog, which ->
-            Toast.makeText(requireContext(),
-                "no", Toast.LENGTH_SHORT).show()
         }
         builder.show()
     }
@@ -157,7 +155,6 @@ class ItemFragment : Fragment() {
 
 
     private fun updateContent(){
-        val item_id = item_model.id
         val item_name = item_model.name
         val item_description = item_model.description
         val item_tags = item_model.tags
@@ -183,11 +180,12 @@ class ItemFragment : Fragment() {
             }
         }
 
-        if (item_image != "") {
+        if (item_image == "") {
+            Glide.with(this).load(R.drawable.placeholder_with_bg_80_yellow).into(item_image_field)
+        } else {
             item_image_field.scaleType=ImageView.ScaleType.CENTER_CROP
             item_image_field.setImageBitmap(Utils.StringToBitMap(item_image))
         }
-
 
         item_image_field.setOnClickListener {
             val drawables: ArrayList<Drawable> = ArrayList()
@@ -228,7 +226,6 @@ class ItemFragment : Fragment() {
         containing_box_adapter = ContainingBoxAdapter(boxList, item_model.id)
         containing_box_adapter.setOnBoxClickListener(object: ContainingBoxAdapter.OnContainingBoxClickListener{
             override fun onContainingBoxClicked(box: BoxModel, view: View) {
-                view.transitionName = box.id
                 val extras = FragmentNavigatorExtras(
                     view to box.id
                 )
@@ -244,6 +241,8 @@ class ItemFragment : Fragment() {
 
         initFirebase()
 
+        (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.item_details_title)
+
         return v
     }
 
@@ -251,8 +250,16 @@ class ItemFragment : Fragment() {
     fun initFirebase(){
         firebase_listener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
-                boxList.clear()
+                val items = dataSnapshot.child("items")
+                for (item: DataSnapshot in items.children){
+                    if (item.child("id").value.toString() == item_model.id){
+                        item_model = Utils.readItemModelFromDataSnapshot(context, item)
+                        updateContent()
+                        break
+                    }
+                }
 
+                boxList.clear()
                 val boxes = dataSnapshot.child("boxes")
                 for (box: DataSnapshot in boxes.children){
                     for (boxContent: DataSnapshot in box.child("content").children) {
@@ -262,7 +269,7 @@ class ItemFragment : Fragment() {
                         }
                     }
                 }
-                updateContent()
+
                 containing_box_adapter.setFilter(boxList)
                 if (boxList.size == 0){
                     item_containing_boxes_empty_label.visibility = View.VISIBLE
@@ -275,6 +282,16 @@ class ItemFragment : Fragment() {
         }
         FirebaseDatabase.getInstance().reference.addValueEventListener(firebase_listener)
     }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
+
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -71,7 +71,6 @@ class BoxDividerItemDecorator (private val mDivider: Drawable) : RecyclerView.It
 
         if (saved_order_by_btn_id == R.id.radioButtonOrderLocation){
             var childPosition: Int = parent.getChildAdapterPosition(view)
-            Log.e("Error", childPosition.toString())
             if (childPosition == 0){
                 outRect.set(0, 150, 0, 0)
             } else {

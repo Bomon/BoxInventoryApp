@@ -75,6 +75,7 @@ class BoxPdfCreator {
             showExportSheet(context)
 
             var file: File? = null
+
             try {
 
                 val mHandler = Handler(Looper.getMainLooper())
@@ -111,7 +112,7 @@ class BoxPdfCreator {
 
                 bottomSheetDialog.setOnDismissListener {
                     mHandler.removeCallbacks(runnable)
-                    thread.interrupt()
+                    //thread.interrupt()
                     it.dismiss()
                     file?.delete()
                 }
@@ -172,40 +173,50 @@ class BoxPdfCreator {
                     val storageDir = Environment.getExternalStoragePublicDirectory(
                         Environment.DIRECTORY_DOWNLOADS
                     )
-                    var downloadFile = File(storageDir, box_model.id + ".pdf")
-                    var fos = FileOutputStream(downloadFile)
-                    baos.writeTo(fos)
-                    fos.close()
+                    try {
+                        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+                        val pdfFileName = box_model.id + "_" + timeStamp
+                        var downloadFile = File(storageDir, pdfFileName)
+                        var fos = FileOutputStream(downloadFile)
+                        baos.writeTo(fos)
+                        fos.close()
 
-                    val uri = FileProvider.getUriForFile(
+                        val uri = FileProvider.getUriForFile(
+                            context,
+                            BuildConfig.APPLICATION_ID + ".provider",
+                            downloadFile
+                        )
+
+
+                        Toast.makeText(
+                            context,
+                            context.resources.getString(R.string.pdf_saved_in_downloads),
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        val intent = Intent()
+                        intent.action = Intent.ACTION_VIEW
+                        intent.setDataAndType(uri, "application/pdf")
+                        intent.putExtra(
+                            Intent.EXTRA_SUBJECT,
+                            context.resources.getString(R.string.pdf_open_with)
+                        )
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        context.startActivity(intent)
+                    } catch (e: Exception) {Toast.makeText(
                         context,
-                        BuildConfig.APPLICATION_ID + ".provider",
-                        downloadFile
-                    )
+                            context.resources.getString(R.string.error_store_file_in_downloads),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
 
-                    Toast.makeText(
-                        context,
-                        context.resources.getString(R.string.pdf_saved_in_downloads),
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    val intent = Intent()
-                    intent.action = Intent.ACTION_VIEW
-                    intent.setDataAndType(uri, "application/pdf")
-                    intent.putExtra(
-                        Intent.EXTRA_SUBJECT,
-                        context.resources.getString(R.string.pdf_open_with)
-                    )
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    context.startActivity(intent)
                 }
             }
         }
     }
 
     fun prepareImage(bmp: Bitmap?): Image? {
-        Log.e("Error", "Starting prepare")
         val stream = ByteArrayOutputStream()
         if (bmp != null) {
             bmp.compress(Bitmap.CompressFormat.PNG, 80, stream)
@@ -216,7 +227,8 @@ class BoxPdfCreator {
         return null
     }
 
-    fun buildPDFcontent(context: Context, document: Document, box_model: BoxModel){
+    @Throws(InterruptedException::class)
+    private fun buildPDFcontent(context: Context, document: Document, box_model: BoxModel){
 
         val eagle: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_adler)
         //val imageEagle = prepareImage(eagle)
@@ -230,7 +242,6 @@ class BoxPdfCreator {
             R.drawable.qrcode_center_round_blue
         )
         //val qrcodeLogoImg = prepareImage(qr_logo)
-
         runBlocking {
             val job = GlobalScope.launch {
                 val logo_job = async { prepareImage(qr_logo) }

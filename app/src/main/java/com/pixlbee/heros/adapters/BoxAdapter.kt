@@ -66,7 +66,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
                 .into(holder.box_img);
         }
 
-        holder.box_img.transitionName = mBoxList[position].id
+        holder.box_container.transitionName = mBoxList[position].id
 
 
         //val img = Utils.StringToBitMap(mBoxList[position].image)
@@ -111,7 +111,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, var compactView: Boolean = fa
         override fun onClick(view: View?) {
             if(mListener != null){
                 // second argument is the element from which the transition will start
-                mListener.onBoxClicked(mBoxList[adapterPosition], box_img)
+                mListener.onBoxClicked(mBoxList[adapterPosition], box_container)
             }
             true
         }

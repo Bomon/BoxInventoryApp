@@ -1,6 +1,7 @@
 package com.pixlbee.heros.adapters
 
 import android.content.Context
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -74,13 +76,13 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
 
         //holder.item_description.text = mItemList[position].description
         if (mItemList[position].image != ""){
-            val img = Utils.StringToBitMap(mItemList[position].image)
-            if (img != null){
-                holder.item_image.setImageBitmap(img)
-            }
+            var imageByteArray = Base64.decode(mItemList[position].image, Base64.DEFAULT);
+            Glide.with(context)
+                .load(imageByteArray)
+                .into(holder.item_image);
         }
 
-        holder.item_image.transitionName = mItemList[position].id
+        holder.item_container.transitionName = mItemList[position].id
     }
 
 
@@ -102,7 +104,7 @@ class ItemAdapter(private val content: ArrayList<ItemModel>) : RecyclerView.Adap
         override fun onClick(view: View?) {
             if(mListener != null){
                 // second argument is the element from which the transition will start
-                mListener.onItemClicked(mItemList[adapterPosition], item_image)
+                mListener.onItemClicked(mItemList[adapterPosition], item_container)
             }
             true
         }

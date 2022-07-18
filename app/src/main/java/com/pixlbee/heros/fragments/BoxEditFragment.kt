@@ -8,7 +8,6 @@ import android.os.StrictMode
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.activity.addCallback
@@ -42,14 +41,13 @@ import com.pixlbee.heros.adapters.BoxItemEditAdapter
 import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ContentItem
-import com.pixlbee.heros.models.ItemModel
 import com.pixlbee.heros.utility.Utils
 import dev.sasikanth.colorsheet.ColorSheet
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
 
-class BoxEditFragment() : Fragment() {
+class BoxEditFragment : Fragment() {
 
     private lateinit var box_model: BoxModel
 
@@ -143,26 +141,24 @@ class BoxEditFragment() : Fragment() {
                             val chipString = Utils.chipListToString(box_edit_status_chips)
                             FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("status").setValue(chipString)
 
-                            var updated_image = ""
                             if (::image_bitmap.isInitialized){
-                                updated_image = Utils.getEncoded64ImageStringFromBitmap(image_bitmap)
+                                val updated_image = Utils.getEncoded64ImageStringFromBitmap(image_bitmap)
                                 FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("image").setValue(
                                     updated_image)
                             }
 
 
-                            var updated_location_image = ""
                             if (::location_image_bitmap.isInitialized){
-                                updated_location_image = Utils.getEncoded64ImageStringFromBitmap(location_image_bitmap)
+                                val updated_location_image = Utils.getEncoded64ImageStringFromBitmap(location_image_bitmap)
                                 FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("location_image").setValue(
                                     updated_location_image)
                             }
 
                             FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").removeValue()
                             val itemList = box_item_edit_adapter.getCurrentStatus()
-                            var updatedContentItems = ArrayList<ContentItem>()
+                            val updatedContentItems = ArrayList<ContentItem>()
                             for (item: BoxItemModel in itemList) {
-                                var new_item = ContentItem("", item.item_amount, item.item_id, item.item_invnum, item.item_color)
+                                val new_item = ContentItem("", item.item_amount, item.item_id, item.item_invnum, item.item_color)
                                 updatedContentItems.add(new_item)
                                 FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("content").push().setValue(new_item)
                             }
@@ -216,19 +212,14 @@ class BoxEditFragment() : Fragment() {
         builder.setTitle(resources.getString(R.string.dialog_save_title))
         builder.setMessage(R.string.dialog_save_text)
 
-        builder.setPositiveButton(resources.getString(R.string.dialog_yes)) { dialog, which ->
-            var status: Boolean = false
-            if (is_new_box){
-                status = createBox()
-            } else {
-                status = applyChanges()
-            }
+        builder.setPositiveButton(resources.getString(R.string.dialog_yes)) { _, _ ->
+            val status = applyChanges()
             if (status) {
                 navController.navigateUp()
             }
         }
 
-        builder.setNeutralButton(resources.getString(R.string.dialog_cancel)) { dialog, which ->
+        builder.setNeutralButton(resources.getString(R.string.dialog_cancel)) { _, _ ->
         }
         builder.show()
     }
@@ -239,22 +230,29 @@ class BoxEditFragment() : Fragment() {
         builder.setTitle(resources.getString(R.string.dialog_dismiss_title))
         builder.setMessage(resources.getString(R.string.dialog_dismiss_text))
 
-        builder.setPositiveButton(resources.getString(R.string.dialog_yes)) { dialog, which ->
-
+        builder.setPositiveButton(resources.getString(R.string.dialog_yes)) { _, _ ->
             navController.navigateUp()
         }
 
-        builder.setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, which ->
+        builder.setNegativeButton(resources.getString(R.string.dialog_no)) { _, _ ->
         }
         builder.show()
     }
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Log.e("Error", "Options Item")
         if (item.itemId == R.id.box_edit_btn_save) {
-            showSaveDialog()
+            if (is_new_box){
+                val status = createBox()
+                if (status) {
+                    navController.navigateUp()
+                }
+            } else {
+                showSaveDialog()
+            }
         } else if (item.itemId == R.id.box_edit_btn_cancel) {
+            showDismissDialog()
+        } else if (item.itemId == android.R.id.home) {
             showDismissDialog()
         }
         return super.onOptionsItemSelected(item)
@@ -312,7 +310,7 @@ class BoxEditFragment() : Fragment() {
 
         // Get the arguments from the caller fragment/activity
         box_model = arguments?.getSerializable("boxModel") as BoxModel
-        var itemListArray: Array<BoxItemModel> = arguments?.getSerializable("items") as Array<BoxItemModel>
+        val itemListArray: Array<BoxItemModel> = arguments?.getSerializable("items") as Array<BoxItemModel>
         itemList = itemListArray.toCollection(ArrayList())
         is_new_box = arguments?.getSerializable("isNewBox") as Boolean
 
@@ -343,7 +341,7 @@ class BoxEditFragment() : Fragment() {
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        navController = Navigation.findNavController(view!!)
+        navController = Navigation.findNavController(view)
         // Receive data from ItemAddFragment (selected Item)
         navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>("item_id")?.observe(
             viewLifecycleOwner) { result ->
@@ -419,7 +417,7 @@ class BoxEditFragment() : Fragment() {
         val fragmentManager = (context as FragmentActivity).supportFragmentManager
         val colors = (context as FragmentActivity).resources.getIntArray(R.array.picker_colors)
 
-        fun onColorClick(it: View){
+        fun onColorClick() {
             ColorSheet().colorPicker(
                 colors = colors,
                 listener = { color ->
@@ -430,10 +428,10 @@ class BoxEditFragment() : Fragment() {
         }
 
         box_edit_color_btn.setOnClickListener {
-            onColorClick(it)
+            onColorClick()
         }
         box_edit_color_preview.setOnClickListener {
-            onColorClick(it)
+            onColorClick()
         }
 
         box_edit_name_field.setText(box_model.name)
@@ -469,10 +467,10 @@ class BoxEditFragment() : Fragment() {
                     val uri: Uri = data?.data!!
                     image_bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
                     box_edit_image_field.setImageURI(uri)
-                } else if (resultCode == ImagePicker.RESULT_ERROR) {
-                    Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                //} else if (resultCode == ImagePicker.RESULT_ERROR) {
+                    //Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(context, "Task Cancelled", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, resources.getString(R.string.task_cancelled), Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -497,10 +495,10 @@ class BoxEditFragment() : Fragment() {
                     val uri: Uri = data?.data!!
                     location_image_bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
                     box_edit_location_image_field.setImageURI(uri)
-                } else if (resultCode == ImagePicker.RESULT_ERROR) {
-                    Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                //} else if (resultCode == ImagePicker.RESULT_ERROR) {
+                    //Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(context, "Task Cancelled", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, resources.getString(R.string.task_cancelled), Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -508,7 +506,7 @@ class BoxEditFragment() : Fragment() {
         box_edit_location_image_field.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 ImagePicker.with(thisFragment)
-                    .crop(4f, 3f)	    			//Crop image(Optional), Check Customization for more option
+                    .crop()	    			//Crop image(Optional), Check Customization for more option
                     .compress(1024)			//Final image size will be less than 1 MB(Optional)
                     .createIntent { intent ->
                         startForLocationImageResult.launch(intent)
@@ -532,8 +530,8 @@ class BoxEditFragment() : Fragment() {
                     box_model.color = box_edit_color
                     itemList = box_item_edit_adapter.getCurrentStatus()
 
-                    val extras = FragmentNavigatorExtras(view to "transition_box_edit_add_item")
-                    findNavController().navigate(BoxEditFragmentDirections.actionBoxEditFragmentToItemsAddFragment(), extras)
+                    val extras = FragmentNavigatorExtras(view to "transition_to_items")
+                    findNavController().navigate(BoxEditFragmentDirections.actionBoxEditFragmentToNavigationItems(returnItemInsteadOfShowDetails = true), extras)
                 }
             }
         })
@@ -543,7 +541,7 @@ class BoxEditFragment() : Fragment() {
 
 
     fun addSelectedItem(item_id: String?) {
-        var temp_key = DateTimeFormatter.ISO_INSTANT.format(Instant.now()).toString()
+        val temp_key = DateTimeFormatter.ISO_INSTANT.format(Instant.now()).toString()
         val itemsRef = FirebaseDatabase.getInstance().reference.child("items")
         itemsRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -558,7 +556,7 @@ class BoxEditFragment() : Fragment() {
                             val item_tags = item.child("tags").value.toString()
                             itemList.add(BoxItemModel(temp_key, item_id, "1", "", item_name, item_description, item_tags, ContextCompat.getColor(requireContext(), R.color.default_item_color), item_image))
                             box_item_edit_adapter.addToItemList(itemList)
-                            return@addOnCompleteListener;
+                            return@addOnCompleteListener
                         }
                     }
                 }

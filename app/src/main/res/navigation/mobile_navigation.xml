@@ -39,6 +39,10 @@
         <action
             android:id="@+id/action_navigation_items_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
+        <argument
+            android:name="return_item_instead_of_show_details"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/boxFragment"
@@ -53,9 +57,6 @@
     <fragment
         android:id="@+id/boxEditFragment"
         android:name="com.pixlbee.heros.fragments.BoxEditFragment">
-        <action
-            android:id="@+id/action_boxEditFragment_to_itemsAddFragment"
-            app:destination="@id/itemsAddFragment" />
         <argument
             android:name="boxModel"
             app:argType="com.pixlbee.heros.models.BoxModel" />
@@ -66,6 +67,9 @@
             android:name="isNewBox"
             app:argType="boolean"
             android:defaultValue="false" />
+        <action
+            android:id="@+id/action_boxEditFragment_to_navigation_items"
+            app:destination="@id/navigation_items" />
     </fragment>
     <fragment
         android:id="@+id/itemFragment"
@@ -94,12 +98,5 @@
             android:name="isBoxEditMode"
             app:argType="boolean"
             android:defaultValue="false" />
-    </fragment>
-    <fragment
-        android:id="@+id/itemsAddFragment"
-        android:name="com.pixlbee.heros.fragments.ItemsAddFragment">
-        <action
-            android:id="@+id/action_itemsAddFragment_to_itemEditFragment"
-            app:destination="@id/itemEditFragment" />
     </fragment>
 </navigation>

@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.chip.Chip
@@ -45,7 +46,6 @@ class ItemEditFragment : Fragment() {
     private lateinit var item_edit_tags_chips: ChipGroup
 
     private var is_new_item: Boolean = false
-    private var is_box_edit_mode: Boolean = false
 
     private lateinit var image_bitmap: Bitmap
 
@@ -77,7 +77,8 @@ class ItemEditFragment : Fragment() {
                             val itemKey: String = item.key.toString()
                             FirebaseDatabase.getInstance().reference.child("items").child(itemKey).child("description").setValue(item_edit_description_field.text.toString())
                             FirebaseDatabase.getInstance().reference.child("items").child(itemKey).child("name").setValue(item_edit_name_field.text.toString())
-                            FirebaseDatabase.getInstance().reference.child("items").child(itemKey).child("tags").setValue(item_edit_tags_field.text.toString())
+                            val chipString = Utils.chipListToString(item_edit_tags_chips)
+                            FirebaseDatabase.getInstance().reference.child("items").child(itemKey).child("tags").setValue(chipString)
                             if (::image_bitmap.isInitialized){
                                 FirebaseDatabase.getInstance().reference.child("items").child(itemKey).child("image").setValue(
                                     Utils.getEncoded64ImageStringFromBitmap(image_bitmap))
@@ -121,31 +122,19 @@ class ItemEditFragment : Fragment() {
         builder.setMessage(resources.getString(R.string.dialog_save_text))
 
         builder.setPositiveButton(resources.getString(R.string.dialog_yes)) { dialog, which ->
-            val navController: NavController = Navigation.findNavController(view!!)
-            if (is_new_item){
-                val status: Boolean = createItem()
-                if (status) {
-                    if (is_box_edit_mode) {
-                        navController.previousBackStackEntry?.savedStateHandle?.set(
-                            "item_id",
-                            item_model.id
-                        )
-                        navController.popBackStack()
-                    } else {
-                        navController.navigateUp()
-                    }
-                }
-            } else {
-                val status: Boolean = applyChanges()
-                if (status) {
-                    navController.navigateUp()
-                }
+            val status: Boolean = applyChanges()
+            if (status) {
+                val navController = findNavController()
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    "item",
+                    item_model
+                )
+                navController.navigateUp()
+
             }
         }
 
         builder.setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, which ->
-            Toast.makeText(requireContext(),
-                "no", Toast.LENGTH_SHORT).show()
             val navController: NavController = Navigation.findNavController(view!!)
             navController.navigateUp()
         }
@@ -173,7 +162,20 @@ class ItemEditFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.item_edit_btn_save) {
-            showSaveDialog()
+            // dont show save dialog for new items
+            if (is_new_item){
+                val status: Boolean = createItem()
+                if (status) {
+                    val navController = findNavController()
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "item",
+                        item_model
+                    )
+                    navController.popBackStack()
+                }
+            } else {
+                showSaveDialog()
+            }
         } else if (item.itemId == R.id.item_edit_btn_cancel) {
             showDismissDialog()
         }
@@ -187,7 +189,6 @@ class ItemEditFragment : Fragment() {
 
         val transformEnter = MaterialContainerTransform(requireContext(), true)
         transformEnter.scrimColor = Color.TRANSPARENT
-        transformEnter.duration = 5000
         sharedElementEnterTransition = transformEnter
 
         val transformReturn = MaterialContainerTransform(requireContext(), false)
@@ -205,7 +206,6 @@ class ItemEditFragment : Fragment() {
         // Get the arguments from the caller fragment/activity
         item_model = arguments?.getSerializable("itemModel") as ItemModel
         is_new_item = arguments?.getSerializable("isNewItem") as Boolean
-        is_box_edit_mode = arguments?.getSerializable("isBoxEditMode") as Boolean
 
         if (is_new_item){
             (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.fragment_item_edit_title)
@@ -232,7 +232,7 @@ class ItemEditFragment : Fragment() {
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(context, "Task Cancelled", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, resources.getString(R.string.task_cancelled), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -254,8 +254,9 @@ class ItemEditFragment : Fragment() {
 
         item_edit_name_field.setText(item_model.name)
         item_edit_description_field.setText(item_model.description)
+
         if (item_model.image == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(item_edit_image_field)
+            Glide.with(this).load(R.drawable.placeholder_with_bg_80_yellow).into(item_edit_image_field)
         } else {
             item_edit_image_field.setImageBitmap(Utils.StringToBitMap(item_model.image))
         }
