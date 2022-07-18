@@ -1,7 +1,7 @@
 package com.pixlbee.heros.fragments
 
-import android.app.Activity.RESULT_OK
-import android.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity.RESULT_OK
+import androidx.appcompat.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color

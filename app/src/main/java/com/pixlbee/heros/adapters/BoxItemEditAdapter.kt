@@ -1,6 +1,6 @@
 package com.pixlbee.heros.adapters
 
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
@@ -26,7 +26,7 @@ import dev.sasikanth.colorsheet.ColorSheet
 import it.sephiroth.android.library.numberpicker.NumberPicker
 import it.sephiroth.android.library.numberpicker.NumberPicker.OnNumberPickerChangeListener
 
-class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adapter<BoxItemEditAdapter.BoxItemViewHolder>() {
+class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adapter<BoxItemEditAdapter.BoxItemViewHolder>() {
 
     lateinit var context: Context
     private var mItemModel: ArrayList<BoxItemModel> = ArrayList()
@@ -125,7 +125,7 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>) : Recyc
             }
 
             item_invnum_button.setOnClickListener {
-                val builder: MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
+                val builder = MaterialAlertDialogBuilder(context)
                 builder.setTitle(context.resources.getString(R.string.dialog_add_invnr_title))
 
                 val viewInflated: View = LayoutInflater.from(context)
@@ -135,11 +135,10 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>) : Recyc
 
                 builder.setView(viewInflated)
                 builder.setPositiveButton(context.resources.getString(R.string.dialog_add), null)
-                builder.setNegativeButton(context.resources.getString(R.string.dialog_cancel),
-                    DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
+                builder.setNegativeButton(context.resources.getString(R.string.dialog_cancel)) { dialog, _ -> dialog.cancel() }
 
-                val mAlertDialog: androidx.appcompat.app.AlertDialog = builder.create();
-                mAlertDialog.setOnShowListener(DialogInterface.OnShowListener {
+                val mAlertDialog: AlertDialog = builder.create()
+                mAlertDialog.setOnShowListener {
                     val b: Button = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
                     b.setOnClickListener {
                         val inputText = input.text.toString()
@@ -149,22 +148,26 @@ class BoxItemEditAdapter(private val mDataList: ArrayList<BoxItemModel>) : Recyc
                             chip.isCloseIconVisible = true
                             chip.setOnCloseIconClickListener {
                                 item_edit_invnum.removeView(chip as View)
-                                mItemModel[adapterPosition].item_invnum = Utils.chipListToString(item_edit_invnum)
+                                mItemModel[adapterPosition].item_invnum =
+                                    Utils.chipListToString(item_edit_invnum)
                             }
                             item_edit_invnum.addView(chip)
-                            mItemModel[adapterPosition].item_invnum = Utils.chipListToString(item_edit_invnum)
+                            mItemModel[adapterPosition].item_invnum =
+                                Utils.chipListToString(item_edit_invnum)
                             mAlertDialog.dismiss()
                         } else {
-                            if (inputText == ""){
+                            if (inputText == "") {
                                 container.isErrorEnabled = true
-                                container.error = context.resources.getString(R.string.error_dialog_invnr_empty)
+                                container.error =
+                                    context.resources.getString(R.string.error_dialog_invnr_empty)
                             } else {
                                 container.isErrorEnabled = true
-                                container.error = context.resources.getString(R.string.error_dialog_invnr_invalid)
+                                container.error =
+                                    context.resources.getString(R.string.error_dialog_invnr_invalid)
                             }
                         }
                     }
-                })
+                }
                 mAlertDialog.show()
 
             }

@@ -1,6 +1,6 @@
 package com.pixlbee.heros.fragments
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -13,7 +13,6 @@ import android.widget.*
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -462,7 +461,7 @@ class BoxEditFragment : Fragment() {
                 val resultCode = result.resultCode
                 val data = result.data
 
-                if (resultCode == Activity.RESULT_OK) {
+                if (resultCode == AppCompatActivity.RESULT_OK) {
                     //Image Uri will not be null for RESULT_OK
                     val uri: Uri = data?.data!!
                     image_bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
@@ -490,7 +489,7 @@ class BoxEditFragment : Fragment() {
                 val resultCode = result.resultCode
                 val data = result.data
 
-                if (resultCode == Activity.RESULT_OK) {
+                if (resultCode == AppCompatActivity.RESULT_OK) {
                     //Image Uri will not be null for RESULT_OK
                     val uri: Uri = data?.data!!
                     location_image_bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))

@@ -31,8 +31,8 @@ class LoginActivity : AppCompatActivity() {
         window.statusBarColor = resources.getColor(R.color.status_bar_color)
 
         setContentView(R.layout.activity_login)
-        getSupportActionBar()?.hide()
-        getActionBar()?.hide()
+        supportActionBar?.hide()
+        actionBar?.hide()
 
         emailEt = findViewById(R.id.email_edt_text)
         passwordEt = findViewById(R.id.pass_edt_text)

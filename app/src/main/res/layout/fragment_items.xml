@@ -12,7 +12,7 @@
 
     <ImageView
         android:scaleType="centerCrop"
-        android:src="@drawable/background_image"
+        app:srcCompat="@drawable/background_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

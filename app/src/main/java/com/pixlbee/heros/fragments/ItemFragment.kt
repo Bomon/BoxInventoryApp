@@ -1,22 +1,19 @@
 package com.pixlbee.heros.fragments
 
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.doOnPreDraw
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -26,9 +23,7 @@ import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.*
 import com.stfalcon.imageviewer.StfalconImageViewer
-import com.pixlbee.heros.*
 import com.pixlbee.heros.R
-import com.pixlbee.heros.adapters.BoxAdapter
 import com.pixlbee.heros.adapters.ContainingBoxAdapter
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ItemModel

@@ -46,7 +46,7 @@
                     android:layout_height="194dp"
                     android:background="#90000000"
                     android:padding="50dp"
-                    android:src="@drawable/ic_baseline_edit_24"
+                    app:srcCompat="@drawable/ic_baseline_edit_24"
                     app:layout_constraintTop_toTopOf="@+id/box_edit_image"
                     app:layout_constraintEnd_toEndOf="@+id/box_edit_image"
                     app:tint="#90FFFFFF" />

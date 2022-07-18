@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.SharedElementCallback
 import androidx.core.view.MenuItemCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
@@ -23,12 +22,6 @@ import com.pixlbee.heros.adapters.ItemAdapter
 import com.pixlbee.heros.models.ItemModel
 import com.pixlbee.heros.utility.Utils
 import java.util.*
-import androidx.core.view.ViewPropertyAnimatorListenerAdapter
-
-import androidx.core.view.ViewCompat
-
-
-
 
 
 class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -46,7 +39,8 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         val itemBtn = menu.findItem(R.id.items_btn_search)
         val searchView: SearchView = MenuItemCompat.getActionView(itemBtn) as SearchView
         searchView.setOnQueryTextListener(this)
-        itemBtn.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+        itemBtn.setOnActionExpandListener(object :
+            MenuItem.OnActionExpandListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 // Do something when collapsed
                 searchQueryText = ""

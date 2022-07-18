@@ -1,13 +1,10 @@
 package com.pixlbee.heros.fragments
 
 import android.content.Context.MODE_PRIVATE
-import android.content.Intent
 import android.graphics.Canvas
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.*
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -59,7 +56,8 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
         val searchView: SearchView = MenuItemCompat.getActionView(searchBtn) as SearchView
         searchView.setOnQueryTextListener(this)
-        searchBtn.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+        searchBtn.setOnActionExpandListener(object :
+            MenuItem.OnActionExpandListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 // Do something when collapsed
                 searchQueryText = ""
