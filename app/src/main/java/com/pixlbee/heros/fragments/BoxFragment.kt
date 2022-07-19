@@ -2,7 +2,6 @@ package com.pixlbee.heros.fragments
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import androidx.appcompat.app.AlertDialog
 import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.Color
@@ -12,6 +11,7 @@ import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -30,7 +30,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.pixlbee.heros.*
+import com.pixlbee.heros.R
 import com.pixlbee.heros.adapters.BoxItemAdapter
 import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.BoxModel
@@ -42,19 +42,19 @@ import com.stfalcon.imageviewer.StfalconImageViewer
 
 class BoxFragment : Fragment(){
 
-    private lateinit var box_model: BoxModel
-    lateinit var box_item_adapter: BoxItemAdapter
-    private lateinit var firebase_listener: ValueEventListener
-    var itemList: ArrayList<BoxItemModel> = ArrayList()
+    private lateinit var mBoxModel: BoxModel
+    lateinit var mBoxItemAdapter: BoxItemAdapter
+    private lateinit var mFirebaseListener: ValueEventListener
+    var mItemList: ArrayList<BoxItemModel> = ArrayList()
 
-    private lateinit var box_name_field: TextView
-    private lateinit var box_description_field: TextView
-    private lateinit var box_location_field: TextView
-    private lateinit var box_status_field: ChipGroup
-    private lateinit var box_color_field: View
+    private lateinit var boxNameField: TextView
+    private lateinit var boxDescriptionField: TextView
+    private lateinit var boxLocationField: TextView
+    private lateinit var boxStatusField: ChipGroup
+    private lateinit var boxColorField: View
 
-    private lateinit var box_summary_image_field: ImageView
-    private lateinit var box_location_image_field: ImageView
+    private lateinit var boxSummaryImageField: ImageView
+    private lateinit var boxLocationImageField: ImageView
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -72,8 +72,8 @@ class BoxFragment : Fragment(){
                     for (box: DataSnapshot in boxes.children) {
                         val id = box.child("id").value.toString()
                         val boxKey = box.key.toString()
-                        if (id == box_model.id) {
-                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).removeValue()
+                        if (id == mBoxModel.id) {
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).removeValue()
                             break
                         }
                     }
@@ -106,8 +106,8 @@ class BoxFragment : Fragment(){
                 if (Utils.checkHasWritePermission(context)) {
                     if (view != null) {
                         val bundle = Bundle()
-                        bundle.putSerializable("boxModel", box_model)
-                        bundle.putSerializable("items", itemList.toTypedArray())
+                        bundle.putSerializable("boxModel", mBoxModel)
+                        bundle.putSerializable("items", mItemList.toTypedArray())
                         bundle.putSerializable("isNewBox", false)
                         val navController: NavController = Navigation.findNavController(view!!)
                         navController.navigate(R.id.action_boxFragment_to_boxEditFragment, bundle)
@@ -124,7 +124,7 @@ class BoxFragment : Fragment(){
             R.id.box_btn_print -> {
                 if (checkPermission()) {
                     val creator = BoxPdfCreator()
-                    creator.createPdf(context, box_model, viewLifecycleOwner)
+                    creator.createPdf(context, mBoxModel, viewLifecycleOwner)
                 } else {
                     requestPermission()
                 }
@@ -175,64 +175,64 @@ class BoxFragment : Fragment(){
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
 
         // Get the arguments from the caller fragment/activity
-        box_model = arguments?.getSerializable("boxModel") as BoxModel
+        mBoxModel = arguments?.getSerializable("boxModel") as BoxModel
     }
 
 
     private fun updateContent(){
-        val box_id = box_model.id
-        val box_content = box_model.content
-        val box_location = box_model.location
-        val box_name = box_model.name
-        val box_img: String = box_model.image
-        val box_description = box_model.description
-        val box_status = box_model.status
-        val box_color = box_model.color
-        val box_location_img = box_model.location_image
+        val boxId = mBoxModel.id
+        val boxContent = mBoxModel.content
+        val boxLocation = mBoxModel.location
+        val boxName = mBoxModel.name
+        val boxImg: String = mBoxModel.image
+        val boxDescription = mBoxModel.description
+        val boxStatus = mBoxModel.status
+        val boxColor = mBoxModel.color
+        val boxLocationImg = mBoxModel.location_image
 
         //box_id_field.text = box_id
-        box_name_field.text = box_name
-        box_description_field.text = box_description
-        box_color_field.background.setTint(box_color)
+        boxNameField.text = boxName
+        boxDescriptionField.text = boxDescription
+        boxColorField.background.setTint(boxColor)
 
-        if(box_description == "")
-            box_description_field.visibility = View.GONE
+        if(boxDescription == "")
+            boxDescriptionField.visibility = View.GONE
         else
-            box_description_field.visibility = View.VISIBLE
+            boxDescriptionField.visibility = View.VISIBLE
 
-        if(box_status == "")
-            box_status_field.visibility = View.GONE
+        if(boxStatus == "")
+            boxStatusField.visibility = View.GONE
         else
-            box_status_field.visibility = View.VISIBLE
+            boxStatusField.visibility = View.VISIBLE
 
         //box_notes_field.text = box_notes
-        box_location_field.text = box_location
+        boxLocationField.text = boxLocation
 
-        box_status_field.removeAllViews()
-        for (tag in box_status.split(";")){
+        boxStatusField.removeAllViews()
+        for (tag in boxStatus.split(";")){
             if (tag != ""){
                 val chip = Chip(context)
                 chip.text = tag
                 chip.setTextAppearance(R.style.BoxStatusChip)
-                box_status_field.addView(chip)
+                boxStatusField.addView(chip)
             }
         }
 
-        if (box_img == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(box_summary_image_field)
+        if (boxImg == "") {
+            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(boxSummaryImageField)
         } else {
-            box_summary_image_field.scaleType=ImageView.ScaleType.CENTER_CROP
-            box_summary_image_field.setImageBitmap(Utils.StringToBitMap(box_img))
+            boxSummaryImageField.scaleType=ImageView.ScaleType.CENTER_CROP
+            boxSummaryImageField.setImageBitmap(Utils.stringToBitMap(boxImg))
         }
 
-        if (box_location_img == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(box_location_image_field)
+        if (boxLocationImg == "") {
+            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(boxLocationImageField)
         } else {
-            box_location_image_field.scaleType=ImageView.ScaleType.CENTER_CROP
-            box_location_image_field.setImageBitmap(Utils.StringToBitMap(box_location_img))
+            boxLocationImageField.scaleType=ImageView.ScaleType.CENTER_CROP
+            boxLocationImageField.setImageBitmap(Utils.stringToBitMap(boxLocationImg))
         }
 
-        (activity as AppCompatActivity).supportActionBar?.title = box_id
+        (activity as AppCompatActivity).supportActionBar?.title = boxId
     }
 
 
@@ -245,49 +245,49 @@ class BoxFragment : Fragment(){
 
         // Get the activity and widget
         //box_id_field = v.findViewById(R.id.box_summary_id)
-        box_name_field = v.findViewById(R.id.box_summary_name)
-        box_description_field = v.findViewById(R.id.box_summary_description)
+        boxNameField = v.findViewById(R.id.box_summary_name)
+        boxDescriptionField = v.findViewById(R.id.box_summary_description)
         //box_notes_field = v.findViewById(R.id.box_summary_notes)
-        box_location_field = v.findViewById(R.id.box_location_name)
-        box_status_field = v.findViewById(R.id.box_summary_status)
-        box_summary_image_field = v.findViewById(R.id.box_summary_image)
-        box_location_image_field = v.findViewById(R.id.box_location_image)
-        box_color_field = v.findViewById(R.id.box_summary_color)
-        val box_container: View = v.findViewById(R.id.box_fragment_container)
+        boxLocationField = v.findViewById(R.id.box_location_name)
+        boxStatusField = v.findViewById(R.id.box_summary_status)
+        boxSummaryImageField = v.findViewById(R.id.box_summary_image)
+        boxLocationImageField = v.findViewById(R.id.box_location_image)
+        boxColorField = v.findViewById(R.id.box_summary_color)
+        val boxContainer: View = v.findViewById(R.id.box_fragment_container)
 
         // Transition taget element
-        box_container.transitionName = box_model.id
+        boxContainer.transitionName = mBoxModel.id
 
         updateContent()
 
         //Init Image Fullscreen on click
-        box_summary_image_field.setOnClickListener {
+        boxSummaryImageField.setOnClickListener {
             val drawables: ArrayList<Drawable> = ArrayList()
-            drawables.add(box_summary_image_field.drawable)
+            drawables.add(boxSummaryImageField.drawable)
 
             StfalconImageViewer.Builder(
                 context, drawables
             ) { imageView, image -> Glide.with(it.context).load(image).into(imageView) }
-                .withTransitionFrom(box_summary_image_field)
+                .withTransitionFrom(boxSummaryImageField)
                 .show(true)
         }
 
-        box_location_image_field.setOnClickListener {
+        boxLocationImageField.setOnClickListener {
             val drawables: ArrayList<Drawable> = ArrayList()
-            drawables.add(box_location_image_field.drawable)
+            drawables.add(boxLocationImageField.drawable)
 
             StfalconImageViewer.Builder(
                 context, drawables
             ) { imageView, image -> Glide.with(it.context).load(image).into(imageView) }
-                .withTransitionFrom(box_location_image_field)
+                .withTransitionFrom(boxLocationImageField)
                 .show(true)
         }
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.box_summary_content) as RecyclerView
-        box_item_adapter = BoxItemAdapter(box_model.id)
+        mBoxItemAdapter = BoxItemAdapter(mBoxModel.id)
         recyclerview.layoutManager = LinearLayoutManager(activity)
-        recyclerview.adapter = box_item_adapter
+        recyclerview.adapter = mBoxItemAdapter
 
         // Swipe functionality
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT + ItemTouchHelper.LEFT) {
@@ -333,7 +333,7 @@ class BoxFragment : Fragment(){
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 if (Utils.checkHasWritePermission(context, false)){
-                    val oldBoxModel: BoxItemModel = itemList[viewHolder.adapterPosition]
+                    val oldBoxModel: BoxItemModel = mItemList[viewHolder.adapterPosition]
                     val position = viewHolder.adapterPosition
                     //boxList.removeAt(viewHolder.adapterPosition)
 
@@ -343,12 +343,12 @@ class BoxFragment : Fragment(){
                     }
                     oldBoxModel.item_color = color
 
-                    box_item_adapter.updateColorInFirebase(position)
+                    mBoxItemAdapter.updateColorInFirebase(position)
                 }
             }
         }).attachToRecyclerView(recyclerview)
 
-        (activity as AppCompatActivity).supportActionBar?.title = box_model.id
+        (activity as AppCompatActivity).supportActionBar?.title = mBoxModel.id
 
         initFirebase()
 
@@ -357,20 +357,20 @@ class BoxFragment : Fragment(){
 
 
     private fun initFirebase(){
-        firebase_listener = object : ValueEventListener {
+        mFirebaseListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
-                val boxes = dataSnapshot.child("boxes")
+                val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                 for (box: DataSnapshot in boxes.children){
-                    if (box.child("id").value.toString() == box_model.id){
-                        box_model = Utils.readBoxModelFromDataSnapshot(context, box)
+                    if (box.child("id").value.toString() == mBoxModel.id){
+                        mBoxModel = Utils.readBoxModelFromDataSnapshot(context, box)
                         updateContent()
                         break
                     }
                 }
 
-                itemList.clear()
-                val items = dataSnapshot.child("items")
-                for (contentItem: ContentItem in box_model.content){
+                mItemList.clear()
+                val items = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("items")
+                for (contentItem: ContentItem in mBoxModel.content){
                     for (item: DataSnapshot in items.children){
                         val image = item.child("image").value.toString()
                         val name = item.child("name").value.toString()
@@ -378,7 +378,7 @@ class BoxFragment : Fragment(){
                         val tags = item.child("tags").value.toString()
                         val itemId = item.child("id").value.toString()
                         if (itemId == contentItem.id) {
-                            itemList.add(BoxItemModel(
+                            mItemList.add(BoxItemModel(
                                 contentItem.id,
                                 contentItem.amount,
                                 contentItem.invnum,
@@ -389,19 +389,19 @@ class BoxFragment : Fragment(){
                         }
                     }
                 }
-                box_item_adapter.setFilter(itemList)
+                mBoxItemAdapter.setFilter(mItemList)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}
         }
-        FirebaseDatabase.getInstance().reference.addValueEventListener(firebase_listener)
+        FirebaseDatabase.getInstance().reference.addValueEventListener(mFirebaseListener)
     }
 
 
     override fun onDestroyView() {
         Log.w("box","destroy")
         super.onDestroyView()
-        FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
+        FirebaseDatabase.getInstance().reference.removeEventListener(mFirebaseListener)
     }
 
 

@@ -2,12 +2,12 @@ package com.pixlbee.heros.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -23,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var emailEtContainer: TextInputLayout
     private lateinit var passwordEtContainer: TextInputLayout
     private lateinit var loginBtn: Button
+    private lateinit var demoBtn: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,14 +42,7 @@ class LoginActivity : AppCompatActivity() {
         passwordEtContainer = findViewById(R.id.pass_edt_text_container)
 
         loginBtn = findViewById(R.id.login_btn)
-
-        //User Read:
-        //Name: thwobernburg
-        //PW: thw-her0s-2022
-
-        //User Edit
-        //Name: thwobernburg_admin
-        //PW: thw-her0s-1307
+        demoBtn = findViewById(R.id.demo_btn)
 
         loginBtn.setOnClickListener {
             var email: String = emailEt.text.toString()
@@ -92,6 +86,28 @@ class LoginActivity : AppCompatActivity() {
                         }
                     }
             }
+        }
+
+        demoBtn.setOnClickListener {
+            var email = "demo@thw.thw"
+            val password = "demodemo123"
+            auth = Firebase.auth
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        val sharedPreferences: SharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+                        editor.putString("current_user", "Demo")
+                        editor.commit()
+
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this, resources.getString(R.string.error_demo_failed), Toast.LENGTH_LONG).show()
+                    }
+                }
+
         }
     }
 }

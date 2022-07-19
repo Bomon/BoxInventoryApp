@@ -56,21 +56,20 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         this.holder = holder
-        holder.item_name.text = mItemList[holder.adapterPosition].name
-        //holder.item_tags.description = mItemList[position].description
+        holder.itemName.text = mItemList[position].name
 
-        holder.item_tags.removeAllViews()
+        holder.itemTags.removeAllViews()
         if(mItemList[position].tags != ""){
-            holder.item_tags_container.visibility = View.VISIBLE
+            holder.itemTagsContainer.visibility = View.VISIBLE
             for (tag in mItemList[position].tags.split(";")){
                 if (tag != ""){
                     val chip = Chip(context)
                     chip.text = tag
-                    holder.item_tags.addView(chip)
+                    holder.itemTags.addView(chip)
                 }
             }
         } else {
-            holder.item_tags_container.visibility = View.GONE
+            holder.itemTagsContainer.visibility = View.GONE
         }
 
         //holder.item_description.text = mItemList[position].description
@@ -78,21 +77,20 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
             val imageByteArray = Base64.decode(mItemList[position].image, Base64.DEFAULT)
             Glide.with(context)
                 .load(imageByteArray)
-                .into(holder.item_image)
+                .into(holder.itemImage)
         }
 
-        holder.item_container.transitionName = mItemList[position].id
+        holder.itemContainer.transitionName = mItemList[position].id
     }
 
 
     inner class ItemViewHolder(itemView: View, private var mListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
-        var item_name: TextView = itemView.findViewById(R.id.card_item_name)
-        //var item_description: TextView = itemView.findViewById<TextView>(R.id.item_description)
-        var item_image: ImageView = itemView.findViewById(R.id.card_item_img)
-        val item_tags: ChipGroup = itemView.findViewById(R.id.card_item_tags)
-        val item_tags_container: LinearLayout = itemView.findViewById(R.id.card_item_tags_container)
-        val item_container: MaterialCardView = itemView.findViewById(R.id.card_item_small)
+        var itemName: TextView = itemView.findViewById(R.id.card_item_name)
+        var itemImage: ImageView = itemView.findViewById(R.id.card_item_img)
+        val itemTags: ChipGroup = itemView.findViewById(R.id.card_item_tags)
+        val itemTagsContainer: LinearLayout = itemView.findViewById(R.id.card_item_tags_container)
+        val itemContainer: MaterialCardView = itemView.findViewById(R.id.card_item_small)
 
         init {
             itemView.setOnClickListener(this)
@@ -103,7 +101,7 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
         override fun onClick(view: View?) {
             if(mListener != null){
                 // second argument is the element from which the transition will start
-                mListener.onItemClicked(mItemList[adapterPosition], item_container)
+                mListener.onItemClicked(mItemList[adapterPosition], itemContainer)
             }
             true
         }

@@ -1,16 +1,16 @@
 package com.pixlbee.heros.fragments
 
-import androidx.appcompat.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.doOnPreDraw
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -21,26 +21,29 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialSharedAxis
-import com.google.firebase.database.*
-import com.stfalcon.imageviewer.StfalconImageViewer
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.pixlbee.heros.R
 import com.pixlbee.heros.adapters.ContainingBoxAdapter
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ItemModel
 import com.pixlbee.heros.utility.Utils
+import com.stfalcon.imageviewer.StfalconImageViewer
 
 
 class ItemFragment : Fragment() {
-    private lateinit var item_model: ItemModel
-    lateinit var containing_box_adapter: ContainingBoxAdapter
-    private lateinit var firebase_listener: ValueEventListener
-    var boxList: ArrayList<BoxModel> = ArrayList()
+    private lateinit var mItemModel: ItemModel
+    lateinit var mAdapter: ContainingBoxAdapter
+    private lateinit var mFirebaseListener: ValueEventListener
+    var mBoxList: ArrayList<BoxModel> = ArrayList()
 
-    private lateinit var item_name_field: TextView
-    private lateinit var item_description_field: TextView
-    private lateinit var item_tags_field: ChipGroup
-    private lateinit var item_image_field: ImageView
-    lateinit var item_containing_boxes_empty_label: TextView
+    private lateinit var itemNameField: TextView
+    private lateinit var itemDescriptionField: TextView
+    private lateinit var itemTagsField: ChipGroup
+    private lateinit var itemImageField: ImageView
+    lateinit var itemContainingBoxesEmptyLabel: TextView
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -51,18 +54,18 @@ class ItemFragment : Fragment() {
 
     private fun deleteItem() {
         // remove from boxes
-        val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
+        val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val boxes: DataSnapshot? = task.result
                 if (boxes != null) {
                     for (box: DataSnapshot in boxes.children) {
                         for (boxContent: DataSnapshot in box.child("content").children) {
-                            val content_item_id = boxContent.child("id").value.toString()
-                            if (content_item_id == item_model.id) {
+                            val contentItemId = boxContent.child("id").value.toString()
+                            if (contentItemId == mItemModel.id) {
                                 val boxKey = box.key.toString()
                                 val contentKey = boxContent.key.toString()
-                                FirebaseDatabase.getInstance().reference.child("boxes")
+                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                                     .child(boxKey).child("content").child(contentKey)
                                     .removeValue()
                             }
@@ -72,7 +75,7 @@ class ItemFragment : Fragment() {
             }
         }
 
-        val itemsRef = FirebaseDatabase.getInstance().reference.child("items")
+        val itemsRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items")
         itemsRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val items: DataSnapshot? = task.result
@@ -80,8 +83,8 @@ class ItemFragment : Fragment() {
                     for (item: DataSnapshot in items.children) {
                         val id = item.child("id").value.toString()
                         val itemKey = item.key.toString()
-                        if (id == item_model.id) {
-                            FirebaseDatabase.getInstance().reference.child("items").child(itemKey).removeValue()
+                        if (id == mItemModel.id) {
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).removeValue()
                             break
                         }
                     }
@@ -113,7 +116,7 @@ class ItemFragment : Fragment() {
             if(Utils.checkHasWritePermission(context)) {
                 if (view != null) {
                     val bundle = Bundle()
-                    bundle.putSerializable("itemModel", item_model)
+                    bundle.putSerializable("itemModel", mItemModel)
                     bundle.putSerializable("isNewItem", false)
                     val navController: NavController = Navigation.findNavController(view!!)
                     navController.navigate(R.id.action_itemFragment_to_itemEditFragment, bundle)
@@ -145,51 +148,51 @@ class ItemFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.item_details_title)
 
         // Get the arguments from the caller fragment/activity
-        item_model = arguments?.getSerializable("itemModel") as ItemModel
+        mItemModel = arguments?.getSerializable("itemModel") as ItemModel
     }
 
 
     private fun updateContent(){
-        val item_name = item_model.name
-        val item_description = item_model.description
-        val item_tags = item_model.tags
-        val item_image = item_model.image
+        val itemName = mItemModel.name
+        val itemDescription = mItemModel.description
+        val itemTags = mItemModel.tags
+        val itemImage = mItemModel.image
 
-        if (item_description == ""){
-            item_description_field.visibility = View.GONE
+        if (itemDescription == ""){
+            itemDescriptionField.visibility = View.GONE
         } else {
-            item_description_field.visibility = View.VISIBLE
+            itemDescriptionField.visibility = View.VISIBLE
         }
 
-        item_name_field.text = item_name
-        item_description_field.text = item_description
+        itemNameField.text = itemName
+        itemDescriptionField.text = itemDescription
 
-        item_tags_field.removeAllViews()
-        if(item_tags != ""){
-            for (tag in item_tags.split(";")){
+        itemTagsField.removeAllViews()
+        if(itemTags != ""){
+            for (tag in itemTags.split(";")){
                 if (tag != ""){
                     val chip = Chip(context)
                     chip.text = tag
-                    item_tags_field.addView(chip)
+                    itemTagsField.addView(chip)
                 }
             }
         }
 
-        if (item_image == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg_80_yellow).into(item_image_field)
+        if (itemImage == "") {
+            Glide.with(this).load(R.drawable.placeholder_with_bg_80_yellow).into(itemImageField)
         } else {
-            item_image_field.scaleType=ImageView.ScaleType.CENTER_CROP
-            item_image_field.setImageBitmap(Utils.StringToBitMap(item_image))
+            itemImageField.scaleType=ImageView.ScaleType.CENTER_CROP
+            itemImageField.setImageBitmap(Utils.stringToBitMap(itemImage))
         }
 
-        item_image_field.setOnClickListener {
+        itemImageField.setOnClickListener {
             val drawables: ArrayList<Drawable> = ArrayList()
-            drawables.add(item_image_field.drawable)
+            drawables.add(itemImageField.drawable)
 
             StfalconImageViewer.Builder(
                 context, drawables
             ) { imageView, image -> Glide.with(it.context).load(image).into(imageView) }
-                .withTransitionFrom(item_image_field)
+                .withTransitionFrom(itemImageField)
                 .show(true)
         }
     }
@@ -203,23 +206,23 @@ class ItemFragment : Fragment() {
         val v =  inflater.inflate(R.layout.fragment_item_details, container, false)
 
         // Get the activity and widget
-        item_name_field = v.findViewById(R.id.item_summary_name)
-        item_tags_field = v.findViewById(R.id.item_summary_tags)
-        item_description_field = v.findViewById(R.id.item_summary_description)
-        item_image_field = v.findViewById(R.id.item_summary_image)
-        item_containing_boxes_empty_label = v.findViewById(R.id.item_summary_content_empty_label)
+        itemNameField = v.findViewById(R.id.item_summary_name)
+        itemTagsField = v.findViewById(R.id.item_summary_tags)
+        itemDescriptionField = v.findViewById(R.id.item_summary_description)
+        itemImageField = v.findViewById(R.id.item_summary_image)
+        itemContainingBoxesEmptyLabel = v.findViewById(R.id.item_summary_content_empty_label)
 
-        val item_container: ConstraintLayout = v.findViewById(R.id.item_fragment_container)
+        val itemContainer: ConstraintLayout = v.findViewById(R.id.item_fragment_container)
 
         // Transition taget element
-        item_container.transitionName = item_model.id
+        itemContainer.transitionName = mItemModel.id
 
         updateContent()
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.item_summary_containing_boxes) as RecyclerView
-        containing_box_adapter = ContainingBoxAdapter(boxList, item_model.id)
-        containing_box_adapter.setOnBoxClickListener(object: ContainingBoxAdapter.OnContainingBoxClickListener{
+        mAdapter = ContainingBoxAdapter(mBoxList, mItemModel.id)
+        mAdapter.setOnBoxClickListener(object: ContainingBoxAdapter.OnContainingBoxClickListener{
             override fun onContainingBoxClicked(box: BoxModel, view: View) {
                 val extras = FragmentNavigatorExtras(
                     view to box.id
@@ -232,7 +235,7 @@ class ItemFragment : Fragment() {
 
 
         recyclerview.layoutManager = LinearLayoutManager(activity)
-        recyclerview.adapter = containing_box_adapter
+        recyclerview.adapter = mAdapter
 
         initFirebase()
 
@@ -243,39 +246,39 @@ class ItemFragment : Fragment() {
 
 
     private fun initFirebase(){
-        firebase_listener = object : ValueEventListener {
+        mFirebaseListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
-                val items = dataSnapshot.child("items")
+                val items = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("items")
                 for (item: DataSnapshot in items.children){
-                    if (item.child("id").value.toString() == item_model.id){
-                        item_model = Utils.readItemModelFromDataSnapshot(context, item)
+                    if (item.child("id").value.toString() == mItemModel.id){
+                        mItemModel = Utils.readItemModelFromDataSnapshot(context, item)
                         updateContent()
                         break
                     }
                 }
 
-                boxList.clear()
-                val boxes = dataSnapshot.child("boxes")
+                mBoxList.clear()
+                val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                 for (box: DataSnapshot in boxes.children){
                     for (boxContent: DataSnapshot in box.child("content").children) {
-                        if (boxContent.child("id").value.toString() == item_model.id) {
+                        if (boxContent.child("id").value.toString() == mItemModel.id) {
                             val boxModel = Utils.readBoxModelFromDataSnapshot(context, box)
-                            boxList.add(boxModel)
+                            mBoxList.add(boxModel)
                         }
                     }
                 }
 
-                containing_box_adapter.setFilter(boxList)
-                if (boxList.size == 0){
-                    item_containing_boxes_empty_label.visibility = View.VISIBLE
+                mAdapter.setFilter(mBoxList)
+                if (mBoxList.size == 0){
+                    itemContainingBoxesEmptyLabel.visibility = View.VISIBLE
                 } else {
-                    item_containing_boxes_empty_label.visibility = View.GONE
+                    itemContainingBoxesEmptyLabel.visibility = View.GONE
                 }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}
         }
-        FirebaseDatabase.getInstance().reference.addValueEventListener(firebase_listener)
+        FirebaseDatabase.getInstance().reference.addValueEventListener(mFirebaseListener)
     }
 
 
@@ -290,7 +293,7 @@ class ItemFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
+        FirebaseDatabase.getInstance().reference.removeEventListener(mFirebaseListener)
     }
 
 

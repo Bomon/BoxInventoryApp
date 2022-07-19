@@ -45,8 +45,8 @@ class BoxPdfCreator {
 
     private lateinit var loadingView: ConstraintLayout
     private lateinit var doneView: ConstraintLayout
-    private lateinit var share_btn: MaterialButton
-    private lateinit var download_btn: MaterialButton
+    private lateinit var shareBtn: MaterialButton
+    private lateinit var downloadBtn: MaterialButton
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var imageDoneView: ShapeableImageView
     private lateinit var sheetContainer: FrameLayout
@@ -57,8 +57,8 @@ class BoxPdfCreator {
 
         loadingView = bottomSheetDialog.findViewById(R.id.sheet_export_loading_container)!!
         doneView = bottomSheetDialog.findViewById(R.id.sheet_export_loading_done_container)!!
-        share_btn = bottomSheetDialog.findViewById(R.id.sheet_export_share_btn)!!
-        download_btn = bottomSheetDialog.findViewById(R.id.sheet_export_save_btn)!!
+        shareBtn = bottomSheetDialog.findViewById(R.id.sheet_export_share_btn)!!
+        downloadBtn = bottomSheetDialog.findViewById(R.id.sheet_export_save_btn)!!
         imageDoneView = bottomSheetDialog.findViewById(R.id.loading_done)!!
         sheetContainer = bottomSheetDialog.findViewById(R.id.standard_bottom_sheet)!!
 
@@ -95,7 +95,7 @@ class BoxPdfCreator {
                     buildPDFcontent(context, document, box_model)
                     document.close()
 
-                    mHandler.post({
+                    mHandler.post {
                         val transition = LayoutTransition()
                         transition.setAnimateParentHierarchy(false)
                         sheetContainer.layoutTransition = transition
@@ -103,7 +103,7 @@ class BoxPdfCreator {
                         loadingView.visibility = View.GONE
                         //TransitionManager.beginDelayedTransition(sheetContainer);
                         doneView.visibility = View.VISIBLE
-                    })
+                    }
                 }
 
                 val thread = Thread(runnable)
@@ -122,7 +122,7 @@ class BoxPdfCreator {
                 System.err.println(ioe.message)
             }
 
-            share_btn.setOnClickListener {
+            shareBtn.setOnClickListener {
                 if (file != null){
                     val intentShareFile = Intent(Intent.ACTION_SEND)
 
@@ -156,7 +156,7 @@ class BoxPdfCreator {
 
             }
 
-            download_btn.setOnClickListener {
+            downloadBtn.setOnClickListener {
                 if (file != null) {
 
                     val fis = FileInputStream(file)
@@ -237,19 +237,23 @@ class BoxPdfCreator {
         //val imageThw = prepareImage(pixlbee)
         val qrcode: Bitmap? = encodeAsBitmap(box_model.qrcode, BarcodeFormat.QR_CODE, 512, 512)
         //val qrcodeImg = prepareImage(bmp)
-        val qr_logo: Bitmap = BitmapFactory.decodeResource(context.resources,
+        val qrLogo: Bitmap = BitmapFactory.decodeResource(context.resources,
             R.drawable.qrcode_center_round_blue
         )
         //val qrcodeLogoImg = prepareImage(qr_logo)
         runBlocking {
             val job = GlobalScope.launch {
-                val logo_job = async { prepareImage(qr_logo) }
-                val qrcode_job = async { prepareImage(qrcode) }
-                val thw_job = async { prepareImage(thw) }
-                val oel_job = async { prepareImage(oel) }
-                val eagle_job = async { prepareImage(eagle) }
+                val logoJob = async { prepareImage(qrLogo) }
+                val qrcodeJob = async { prepareImage(qrcode) }
+                val thwJob = async { prepareImage(thw) }
+                val oelJob = async { prepareImage(oel) }
+                val eagleJob = async { prepareImage(eagle) }
 
-                val (qrcodeLogoImg, qrcodeImg, imageThw, imageOel, imageEagle) = awaitAll(logo_job, qrcode_job, thw_job, oel_job, eagle_job)
+                val (qrcodeLogoImg, qrcodeImg, imageThw, imageOel, imageEagle) = awaitAll(logoJob, qrcodeJob, thwJob, oelJob, eagleJob)
+
+                val sharedPreferences: SharedPreferences = context.getSharedPreferences("AppPreferences",
+                    AppCompatActivity.MODE_PRIVATE
+                )
 
                 document.setMargins(10f, 10f, 16f, 10f)
                 // Create Header
@@ -260,16 +264,14 @@ class BoxPdfCreator {
                 headerTable.widthPercentage = 95f
                 val widths = floatArrayOf(8f, 72f, 10f, 10f)
                 headerTable.setWidths(widths)
-                if (imageEagle != null) {
+                if (imageEagle != null && sharedPreferences.getString("pdf_title", "TITLE").toString().contains("Technisches Hilfswerk")) {
                     imageEagle.scaleAbsolute(50f, 50f)
                     val cell = PdfPCell(imageEagle)
                     cell.border = Rectangle.NO_BORDER
                     headerTable.addCell(cell)
+                } else {
+                    headerTable.addCell(PdfPCell(Paragraph("")))
                 }
-
-                val sharedPreferences: SharedPreferences = context.getSharedPreferences("AppPreferences",
-                    AppCompatActivity.MODE_PRIVATE
-                )
 
                 val textTable = PdfPTable(1)
                 val cell2 = PdfPCell(Phrase(sharedPreferences.getString("pdf_title", "TITLE"),
@@ -286,18 +288,22 @@ class BoxPdfCreator {
                 cell1.border = Rectangle.NO_BORDER
                 headerTable.addCell(cell1)
 
-                if (imageOel != null) {
+                if (imageOel != null && sharedPreferences.getString("pdf_title", "TITLE").toString().contains("Technisches Hilfswerk")) {
                     imageOel.scaleAbsolute(50f, 50f)
                     val cell = PdfPCell(imageOel)
                     cell.border = Rectangle.NO_BORDER
                     headerTable.addCell(cell)
+                } else {
+                    headerTable.addCell(PdfPCell(Paragraph("")))
                 }
 
-                if (imageThw != null) {
+                if (imageThw != null && sharedPreferences.getString("pdf_title", "TITLE").toString().contains("Technisches Hilfswerk")) {
                     imageThw.scaleAbsolute(50f, 50f)
                     val cell = PdfPCell(imageThw)
                     cell.border = Rectangle.NO_BORDER
                     headerTable.addCell(cell)
+                } else {
+                    headerTable.addCell(PdfPCell(Paragraph("")))
                 }
 
                 headerParagraph.add(headerPlaceholder)
@@ -383,7 +389,7 @@ class BoxPdfCreator {
                 cellTitle3.paddingBottom = 4f
                 contentTable.addCell(cellTitle3)
 
-                val itemNames = Utils.getAllItemNames()
+                val itemNames = Utils.getAllItemNames(context)
 
                 for (contentItem in box_model.content) {
                     val cellTitle0 = PdfPCell(Phrase(""))
@@ -459,17 +465,17 @@ class BoxPdfCreator {
         desiredWidth: Int,
         desiredHeight: Int
     ): Bitmap? {
-        val qr_code_contents =
+        val qrCodeContents =
             "https://play.google.com/store/apps/details?id=com.pixlbee.heros&box=$contents"
 
         val hints: HashMap<EncodeHintType, Any> = HashMap<EncodeHintType, Any>()
         hints[EncodeHintType.ERROR_CORRECTION] = ErrorCorrectionLevel.M
-        val encoding: String? = guessAppropriateEncoding(qr_code_contents)
+        val encoding: String? = guessAppropriateEncoding(qrCodeContents)
         if (encoding != null) {
             hints[EncodeHintType.CHARACTER_SET] = encoding
         }
         val writer = MultiFormatWriter()
-        val result = writer.encode(qr_code_contents, format, desiredWidth, desiredHeight, hints)
+        val result = writer.encode(qrCodeContents, format, desiredWidth, desiredHeight, hints)
         val width = result.width
         val height = result.height
         val pixels = IntArray(width * height)

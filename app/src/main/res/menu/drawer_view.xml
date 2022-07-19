@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/drawerGroupStatic"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_baseline_logout_24"
@@ -12,4 +13,13 @@
             android:enabled="false"
             android:title="@string/drawer_settings" />
     </group>
+    <item android:title="@string/drawer_organizations_title">
+        <menu>
+            <group
+                android:id="@+id/drawer_group_organizations"
+                android:checkableBehavior="single">
+            </group>
+        </menu>
+    </item>
+
 </menu>

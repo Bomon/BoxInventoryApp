@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -31,16 +31,20 @@ import com.pixlbee.heros.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
+    private var mOrganizationItemIds: ArrayList<Int> = ArrayList()
+
+    //private lateinit var mNavViewDrawer: NavigationView
     private lateinit var mDrawer: DrawerLayout
     private lateinit var binding: ActivityMainBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        //init firebase
-        initFirebaseListener(this)
-        initDefaultSettings()
+        try {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+        } catch (e: Exception){
+            Log.e("Error", "Persistence cannot be enabled")
+        }
 
         // Color the status bar
         window.statusBarColor = resources.getColor(R.color.status_bar_color)
@@ -78,19 +82,11 @@ class MainActivity : AppCompatActivity() {
             return@setOnItemSelectedListener true
         }
 
-        val nvDrawer: NavigationView = findViewById(R.id.nav_view_drawer)
-        setupDrawerContent(nvDrawer)
+        val mNavViewDrawer: NavigationView = findViewById(R.id.nav_view_drawer)
+        setupDrawerContent(mNavViewDrawer)
 
-    }
-
-
-    private fun initDefaultSettings() {
-        val sharedPreferences: SharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("pdf_title", resources.getString(R.string.pdf_title))
-        editor.putString("pdf_subtitle", resources.getString(R.string.pdf_subtitle))
-        editor.putString("pdf_address", resources.getString(R.string.pdf_address))
-        editor.commit()
+        //init firebase
+        initFirebaseListener(this, mNavViewDrawer)
     }
 
 
@@ -117,27 +113,120 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun initFirebaseListener(context: Context) {
+    private fun initFirebaseListener(context: Context, navViewDrawer: NavigationView) {
         val firebaseListener: ValueEventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val userId = FirebaseAuth.getInstance().currentUser?.uid.toString()
                 val sharedPreferences: SharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
                 val editor = sharedPreferences.edit()
 
-                val userId = FirebaseAuth.getInstance().currentUser?.uid.toString()
-                val write_users = dataSnapshot.child("write_users").value.toString()
-                val read_users = dataSnapshot.child("write_users").value.toString()
+                val menu: Menu = navViewDrawer.menu
 
-                if (write_users.contains(userId)) {
-                    editor.putBoolean("write_permission", true)
-                } else {
-                    editor.putBoolean("write_permission", false)
+                // remove previous org items
+                for (oldItemId in mOrganizationItemIds){
+                    menu.removeItem(oldItemId)
                 }
 
-                if (read_users.contains(userId)) {
-                    editor.putBoolean("read_permission", true)
-                } else {
-                    editor.putBoolean("read_permission", false)
+                // find all orgs that the user is allowed to read
+                val organizationIds = ArrayList<String>()
+                val newItemIds = ArrayList<Int>()
+                val newItems = ArrayList<MenuItem>()
+                val itemNameIdLookup: HashMap<String, String> = HashMap()
+                for (org in dataSnapshot.child("read_permissions").children){
+                    val orgId: String = org.key.toString()
+                    val orgName = dataSnapshot.child(orgId).child("name").value.toString()
+                    val orgReadPermissions = org.value.toString()
+
+                    //FirebaseDatabase.getInstance().reference.keepSynced(false)
+                    //FirebaseDatabase.getInstance().getReference(orgId).keepSynced(true)
+                    //FirebaseDatabase.getInstance().getReference("read_permissions").keepSynced(true)
+                    //FirebaseDatabase.getInstance().getReference("write_permissions").keepSynced(true)
+
+                    // add these to the drawer
+                    if (orgReadPermissions.contains(userId)) {
+                        itemNameIdLookup[orgName] = orgId
+                        // ensure that a new item has a unique id
+                        var newItemId = (Int.MIN_VALUE..Int.MAX_VALUE).random()
+                        while(newItemId in newItemIds){
+                            newItemId = (Int.MIN_VALUE..Int.MAX_VALUE).random()
+                        }
+
+                        // create new item
+                        val addedMenuItem: MenuItem = menu.add(
+                            R.id.drawer_group_organizations,
+                            newItemId,
+                            Menu.NONE,
+                            orgName
+                        )
+                        addedMenuItem.isCheckable = true
+                        addedMenuItem.setOnMenuItemClickListener {
+                            val sharedPreferences: SharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
+                            val editor = sharedPreferences.edit()
+                            val currentlySelectedOrg: String = itemNameIdLookup[it.title.toString()].toString()
+                            editor.putString("selected_organization", currentlySelectedOrg)
+                            editor.commit()
+                            it.isChecked = true
+                            mDrawer.closeDrawers()
+                            // restart activity to load new org content
+                            startActivity(intent)
+                            finish()
+                            overridePendingTransition(0, 0)
+                            true
+                        }
+
+                        // add icon to org that indicates write or read permissions
+                        val writeUsers = dataSnapshot.child("write_permissions").child(orgId).value.toString()
+                        if (writeUsers.contains(userId)) {
+                            addedMenuItem.icon = resources.getDrawable(R.drawable.ic_baseline_edit_24)
+                        } else {
+                            addedMenuItem.icon = resources.getDrawable(R.drawable.ic_baseline_remove_red_eye_24)
+                        }
+
+                        // store info about new item
+                        newItems.add(addedMenuItem)
+                        organizationIds.add(orgId)
+                        newItemIds.add(newItemId)
+                    }
                 }
+                mOrganizationItemIds = newItemIds
+
+                // Get selected org from settings
+                var selectedOrg: String = sharedPreferences.getString("selected_organization", "").toString()
+                // If the selected org is not inside the orgs the user is allowed to read
+                if (selectedOrg !in organizationIds){
+                    // If user has read access to at least one org
+                    if (organizationIds.size != 0) {
+                        // set the first org as current org
+                        selectedOrg = organizationIds[0]
+                        editor.putString("selected_organization", organizationIds[0])
+                        newItems[0].isChecked = true
+                        // get write permission status for this org
+                        val writeUsers = dataSnapshot.child("write_permissions").child(selectedOrg).value.toString()
+                        if (writeUsers.contains(userId)) {
+                            editor.putBoolean("write_permission", true)
+                        } else {
+                            editor.putBoolean("write_permission", false)
+                        }
+                    }
+                // else if the selected org is inside the available orgs
+                } else {
+                    newItems[organizationIds.indexOf(selectedOrg)].isChecked = true
+                    // get write permissions
+                    val writeUsers = dataSnapshot.child("write_permissions").child(selectedOrg).value.toString()
+                    if (writeUsers.contains(userId)) {
+                        editor.putBoolean("write_permission", true)
+                    } else {
+                        editor.putBoolean("write_permission", false)
+                    }
+                }
+
+                // Put PDF settings into SharedSettings
+                val pdfAddress = dataSnapshot.child(selectedOrg).child("pdf_address").value.toString()
+                val pdfTitle = dataSnapshot.child(selectedOrg).child("pdf_title").value.toString()
+                val pdfSubtitle = dataSnapshot.child(selectedOrg).child("pdf_subtitle").value.toString()
+                editor.putString("pdf_title", pdfTitle)
+                editor.putString("pdf_subtitle", pdfSubtitle)
+                editor.putString("pdf_address", pdfAddress)
 
                 editor.commit()
             }

@@ -3,27 +3,25 @@ package com.pixlbee.heros.activities
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.elevation.SurfaceColors
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.FirebaseDatabase
 
 
 class StartupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        try {
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true)
-        } catch (e: Exception){
-            Log.e("Error", "Persistence cannot be enabled")
-        }
+        //try {
+        //    FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+        //} catch (e: Exception){
+        //    Log.e("Error", "Persistence cannot be enabled")
+        //}
 
-        FirebaseDatabase.getInstance().getReference("boxes").keepSynced(true)
-        FirebaseDatabase.getInstance().getReference("items").keepSynced(true)
-        FirebaseDatabase.getInstance().getReference("write_users").keepSynced(true)
-        FirebaseDatabase.getInstance().getReference("read_users").keepSynced(true)
+        //FirebaseDatabase.getInstance().getReference("boxes").keepSynced(true)
+        //FirebaseDatabase.getInstance().getReference("items").keepSynced(true)
+        //FirebaseDatabase.getInstance().getReference("write_users").keepSynced(true)
+        //FirebaseDatabase.getInstance().getReference("read_users").keepSynced(true)
 
         window.navigationBarColor = SurfaceColors.SURFACE_2.getColor(this)
         val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser

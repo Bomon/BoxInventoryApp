@@ -20,8 +20,8 @@ class ContainingBoxAdapter(
     item_id: String,
 ) : RecyclerView.Adapter<ContainingBoxAdapter.ContainingBoxViewHolder>() {
 
-    lateinit var context: Context
-    lateinit var item_id: String
+    lateinit var mContext: Context
+    lateinit var mItemId: String
     private var mBoxList: ArrayList<BoxModel> = ArrayList()
 
 
@@ -30,12 +30,12 @@ class ContainingBoxAdapter(
 
     init {
         setFilter(mDataList)
-        this.item_id = item_id
+        this.mItemId = item_id
     }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContainingBoxViewHolder {
-        context = parent.context
+        mContext = parent.context
         val layoutInflater = LayoutInflater.from(parent.context)
         return ContainingBoxViewHolder(layoutInflater.inflate(R.layout.card_box_with_inv, parent, false))
     }
@@ -53,48 +53,48 @@ class ContainingBoxAdapter(
 
     inner class ContainingBoxViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
-        private var box_id: TextView = itemView.findViewById(R.id.box_inv_id)
-        private var box_name: TextView = itemView.findViewById(R.id.box_inv_name)
-        private var box_location: TextView = itemView.findViewById(R.id.box_inv_location)
-        private var box_image: ImageView = itemView.findViewById(R.id.box_inv_img)
-        private var box_inv_label: TextView = itemView.findViewById(R.id.box_inv_label)
-        private var box_invnums: ChipGroup = itemView.findViewById(R.id.box_inv_invnums)
-        private var box_status: ChipGroup = itemView.findViewById(R.id.box_inv_status)
-        private var box_color: View = itemView.findViewById(R.id.box_inv_color)
-        private var box_container: MaterialCardView = itemView.findViewById(R.id.box_inv_card_small)
+        private var boxId: TextView = itemView.findViewById(R.id.box_inv_id)
+        private var boxName: TextView = itemView.findViewById(R.id.box_inv_name)
+        private var boxLocation: TextView = itemView.findViewById(R.id.box_inv_location)
+        private var boxImage: ImageView = itemView.findViewById(R.id.box_inv_img)
+        private var boxInvLabel: TextView = itemView.findViewById(R.id.box_inv_label)
+        private var boxInvnums: ChipGroup = itemView.findViewById(R.id.box_inv_invnums)
+        private var boxStatus: ChipGroup = itemView.findViewById(R.id.box_inv_status)
+        private var boxColor: View = itemView.findViewById(R.id.box_inv_color)
+        private var boxContainer: MaterialCardView = itemView.findViewById(R.id.box_inv_card_small)
 
         init {
             itemView.setOnClickListener(this)
         }
 
-        fun bind(model: BoxModel): Unit {
-            box_id.text = model.id
-            box_name.text = model.name
-            box_location.text = model.location
-            box_color.background.setTint(model.color)
+        fun bind(model: BoxModel) {
+            boxId.text = model.id
+            boxName.text = model.name
+            boxLocation.text = model.location
+            boxColor.background.setTint(model.color)
 
-            val img = Utils.StringToBitMap(model.image)
+            val img = Utils.stringToBitMap(model.image)
             if (img != null){
-                box_image.setImageBitmap(img)
+                boxImage.setImageBitmap(img)
             }
 
-            box_status.removeAllViews()
+            boxStatus.removeAllViews()
             if(model.status != ""){
                 for (tag in model.status.split(";")){
                     if (tag != ""){
-                        val chip = Chip(context)
+                        val chip = Chip(mContext)
                         chip.text = tag
                         chip.minHeight = 1
                         chip.setTextAppearance(R.style.BoxStatusChip)
-                        box_status.addView(chip)
+                        boxStatus.addView(chip)
                     }
                 }
             }
 
-            if (box_inv_label != null && box_invnums != null) {
+            if (boxInvLabel != null && boxInvnums != null) {
                 val invnums = ArrayList<String>()
                 for (ci in model.content){
-                    if (ci.id == item_id){
+                    if (ci.id == mItemId){
                         if (ci.invnum != ""){
                             invnums.add(ci.invnum)
                         }
@@ -102,29 +102,29 @@ class ContainingBoxAdapter(
                 }
 
                 if (invnums.size > 0){
-                    box_inv_label.visibility = View.VISIBLE
-                    box_invnums.visibility = View.VISIBLE
-                    box_invnums.removeAllViews()
+                    boxInvLabel.visibility = View.VISIBLE
+                    boxInvnums.visibility = View.VISIBLE
+                    boxInvnums.removeAllViews()
                     for (invnum in invnums){
                         if (invnum != ""){
-                            val chip = Chip(context)
+                            val chip = Chip(mContext)
                             chip.setTextAppearance(android.R.style.TextAppearance_Material_Small)
                             chip.text = invnum
-                            box_invnums.addView(chip)
+                            boxInvnums.addView(chip)
                         }
                     }
                 } else {
-                    box_inv_label.visibility = View.GONE
-                    box_invnums.visibility = View.GONE
+                    boxInvLabel.visibility = View.GONE
+                    boxInvnums.visibility = View.GONE
                 }
             }
-            box_container.transitionName = model.id
+            boxContainer.transitionName = model.id
         }
 
         override fun onClick(view: View?) {
             if(mListener != null){
                 // second argument is the element from which the transition will start
-                mListener.onContainingBoxClicked(mBoxList[adapterPosition], box_container)
+                mListener.onContainingBoxClicked(mBoxList[adapterPosition], boxContainer)
             }
             true
         }

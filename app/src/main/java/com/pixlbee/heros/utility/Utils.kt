@@ -2,6 +2,7 @@ package com.pixlbee.heros.utility
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.ArrayMap
@@ -26,7 +27,7 @@ import java.util.concurrent.ExecutionException
 class Utils {
 
     companion object {
-        fun StringToBitMap(encodedString: String?): Bitmap? {
+        fun stringToBitMap(encodedString: String?): Bitmap? {
             return try {
                 val encodeByte: ByteArray = Base64.decode(encodedString, Base64.DEFAULT)
                 BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
@@ -46,12 +47,19 @@ class Utils {
         }
 
 
+        fun getCurrentlySelectedOrg(context: Context): String {
+            val sharedPreferences: SharedPreferences =
+                context.getSharedPreferences("AppPreferences", MODE_PRIVATE)
+            return sharedPreferences.getString("selected_organization", "").toString()
+        }
+
+
         fun readBoxModelFromDataSnapshot(context: Context?, box: DataSnapshot): BoxModel {
             val image = box.child("image").value.toString()
-            val location_image = box.child("location_image").value.toString()
+            val locationImage = box.child("location_image").value.toString()
             val location = box.child("location").value.toString()
             val id = box.child("id").value.toString()
-            val numeric_id = box.child("numeric_id").value.toString().toLong()
+            val numericId = box.child("numeric_id").value.toString().toLong()
             val name = box.child("name").value.toString()
             val description = box.child("description").value.toString()
             val qrcode = box.child("qrcode").value.toString()
@@ -83,14 +91,14 @@ class Utils {
                 contentList.add(ContentItem(c.key.toString(), itemAmount, itemId, itemInvNum, itemColor))
             }
             return BoxModel(
-                numeric_id,
+                numericId,
                 id,
                 name,
                 description,
                 qrcode,
                 location,
                 image,
-                location_image,
+                locationImage,
                 color,
                 status,
                 contentList
@@ -123,10 +131,10 @@ class Utils {
         }
 
 
-        fun getAllItemNames(): ArrayMap<String, String> {
+        fun getAllItemNames(context: Context): ArrayMap<String, String> {
             val itemsMap: ArrayMap<String, String> = ArrayMap<String, String>()
             val itemsRef = FirebaseDatabase.getInstance().reference
-            val task: Task<DataSnapshot> = itemsRef.child("items").get()
+            val task: Task<DataSnapshot> = itemsRef.child(getCurrentlySelectedOrg(context)).child("items").get()
 
             itemsRef.get().addOnCompleteListener { task ->
 

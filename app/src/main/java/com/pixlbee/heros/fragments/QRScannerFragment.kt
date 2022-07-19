@@ -30,13 +30,12 @@ class QRScannerFragment : Fragment() {
 
     //private var _binding: FragmentQRscannerBinding? = null
     private lateinit var codeScanner: CodeScanner
-    var boxList: ArrayList<BoxModel> = ArrayList()
-    lateinit var adapter: BoxAdapter
-    lateinit var rv: RecyclerView
+    var mBoxList: ArrayList<BoxModel> = ArrayList()
+    lateinit var mAdapter: BoxAdapter
 
-    private var qr_content: String = ""
+    private var qrContent: String = ""
     private var toast: Toast? = null
-    private lateinit var firebase_listener: ValueEventListener
+    private lateinit var mFirebaseListener: ValueEventListener
 
 
     private val requestPermission =
@@ -72,8 +71,8 @@ class QRScannerFragment : Fragment() {
 
         val view: View = inflater.inflate(R.layout.fragment_qrscanner, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_qr) as RecyclerView
-        adapter = BoxAdapter(boxList, false)
-        adapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
+        mAdapter = BoxAdapter(mBoxList, false)
+        mAdapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
             override fun onBoxClicked(box: BoxModel, view: View) {
                 val navController: NavController = Navigation.findNavController(view)
                 val bundle = Bundle()
@@ -83,7 +82,7 @@ class QRScannerFragment : Fragment() {
         })
 
         recyclerview.layoutManager = LinearLayoutManager(activity)
-        recyclerview.adapter = adapter
+        recyclerview.adapter = mAdapter
 
         return view
     }
@@ -105,11 +104,11 @@ class QRScannerFragment : Fragment() {
 
         // Callbacks
         codeScanner.decodeCallback = DecodeCallback {
-            if (qr_content != it.text) {
-                firebase_listener = object : ValueEventListener {
+            if (qrContent != it.text) {
+                mFirebaseListener = object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                        val boxes = dataSnapshot.child("boxes")
+                        val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                         for (box: DataSnapshot in boxes.children){
                             val qrcode = box.child("qrcode").value.toString()
                             val urlSplit = it.text.split("&")
@@ -121,26 +120,26 @@ class QRScannerFragment : Fragment() {
                                 urlSplit[1].replace("box=", "")
                             }
                             if (qrcode.lowercase() == scannedCode.lowercase()){
-                                boxList.clear()
+                                mBoxList.clear()
                                 val boxModel = Utils.readBoxModelFromDataSnapshot(context, box)
-                                boxList.add(boxModel)
-                                qr_content = it.text
+                                mBoxList.add(boxModel)
+                                qrContent = it.text
                                 toast?.cancel()
-                                adapter.setFilter(boxList)
+                                mAdapter.setFilter(mBoxList)
                                 return
                             }
                         }
                         // if we end up here: code is invalid
                         showToast(resources.getString(R.string.error_qrcode_invalid), Toast.LENGTH_SHORT)
-                        boxList.clear()
-                        adapter.setFilter(boxList)
+                        mBoxList.clear()
+                        mAdapter.setFilter(mBoxList)
                     }
 
                     override fun onCancelled(databaseError: DatabaseError) {
                     }
                 }
 
-                FirebaseDatabase.getInstance().reference.addValueEventListener(firebase_listener)
+                FirebaseDatabase.getInstance().reference.addValueEventListener(mFirebaseListener)
             }
 
         }
@@ -172,8 +171,8 @@ class QRScannerFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if (::firebase_listener.isInitialized) {
-            FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
+        if (::mFirebaseListener.isInitialized) {
+            FirebaseDatabase.getInstance().reference.removeEventListener(mFirebaseListener)
         }
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
     }

@@ -1,7 +1,6 @@
 package com.pixlbee.heros.fragments
 
 import android.content.Context.MODE_PRIVATE
-import android.graphics.Canvas
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,7 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -41,10 +39,10 @@ import java.util.*
 class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private var viewGroup: ViewGroup? = null
-    var boxList: ArrayList<BoxModel> = ArrayList<BoxModel>()
-    lateinit var adapter: BoxAdapter
-    lateinit var rv: RecyclerView
-    private lateinit var firebase_listener: ValueEventListener
+    var mBoxList: ArrayList<BoxModel> = ArrayList<BoxModel>()
+    lateinit var mAdapter: BoxAdapter
+    private lateinit var mFirebaseListener: ValueEventListener
+
     private var doubleBackToExitPressedOnce: Boolean = false
     private lateinit var exitToast: Toast
     private var searchQueryText: String = ""
@@ -61,7 +59,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 // Do something when collapsed
                 searchQueryText = ""
-                adapter.setFilter(filterAndSort(boxList))
+                mAdapter.setFilter(filterAndSort(mBoxList))
                 return true // Return true to collapse action view
             }
 
@@ -75,7 +73,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextChange(newText: String): Boolean {
         searchQueryText = newText
-        adapter.setFilter(filterAndSort(boxList))
+        mAdapter.setFilter(filterAndSort(mBoxList))
         //activity?.runOnUiThread {
         //    adapter.notifyDataSetChanged()
         //}
@@ -131,11 +129,11 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
                     // Set button checked that is stored in settings
                     val sharedPreferences = context!!.getSharedPreferences("AppPreferences", MODE_PRIVATE)
-                    val saved_order_by_btn_id: Int = Utils.getButtonForSortSetting(sharedPreferences.getString("settings_box_order_by", "order_by_id"))
-                    val saved_order_asc_desc_btn_id: Int = Utils.getButtonForSortSettingAscDesc(sharedPreferences.getString("settings_box_order_asc_desc", "order_asc"))
+                    val savedOrderByBtnId: Int = Utils.getButtonForSortSetting(sharedPreferences.getString("settings_box_order_by", "order_by_id"))
+                    val savedOrderAscDescBtnId: Int = Utils.getButtonForSortSettingAscDesc(sharedPreferences.getString("settings_box_order_asc_desc", "order_asc"))
 
-                    radioGroup.findViewById<RadioButton>(saved_order_by_btn_id).isChecked = true
-                    radioGroupAscDesc.findViewById<RadioButton>(saved_order_asc_desc_btn_id).isChecked = true
+                    radioGroup.findViewById<RadioButton>(savedOrderByBtnId).isChecked = true
+                    radioGroupAscDesc.findViewById<RadioButton>(savedOrderAscDescBtnId).isChecked = true
 
                     // Build dialog
                     builder.setPositiveButton(R.string.btn_save) { dialog, which ->
@@ -144,7 +142,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                         editor.putString("settings_box_order_by", Utils.getSortSettingForButton( radioGroup.checkedRadioButtonId ))
                         editor.commit()
 
-                        adapter.setFilter(filterAndSort(boxList))
+                        mAdapter.setFilter(filterAndSort(mBoxList))
                         dialog.dismiss()
                     }
 
@@ -196,9 +194,9 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         val view: View = inflater.inflate(R.layout.fragment_home, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_home) as RecyclerView
 
-        adapter = BoxAdapter(boxList)
-        adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-        adapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
+        mAdapter = BoxAdapter(mBoxList)
+        mAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        mAdapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
             override fun onBoxClicked(box: BoxModel, view: View) {
                 exitTransition = Hold()
                 val extras = FragmentNavigatorExtras(
@@ -210,18 +208,18 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         })
 
         recyclerview.layoutManager = LinearLayoutManager(activity)
-        recyclerview.adapter = adapter
+        recyclerview.adapter = mAdapter
 
         // Item decorators for inserting dividers into RecyclerView
-        //val dividerItemDecoration: ItemDecoration = BoxDividerItemDecorator(
-        //    ContextCompat.getDrawable(
-        //        context!!, R.drawable.rv_divider
-        //    )!!
-        //)
-        //recyclerview.addItemDecoration(dividerItemDecoration)
+        /*val dividerItemDecoration: ItemDecoration = BoxDividerItemDecorator(
+            ContextCompat.getDrawable(
+                context!!, R.drawable.rv_divider
+            )!!
+        )
+        recyclerview.addItemDecoration(dividerItemDecoration)*/
 
         // Swipe functionality
-        ItemTouchHelper(object :
+        /*ItemTouchHelper(object :
             ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT + ItemTouchHelper.LEFT) {
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -265,7 +263,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 if (Utils.checkHasWritePermission(context, false)) {
-                    val oldBoxModel: BoxModel = boxList[viewHolder.adapterPosition]
+                    val oldBoxModel: BoxModel = mBoxList[viewHolder.adapterPosition]
                     val position = viewHolder.adapterPosition
                     //boxList.removeAt(viewHolder.adapterPosition)
 
@@ -275,10 +273,10 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                     }
                     oldBoxModel.color = color
 
-                    adapter.updateColorInFirebase(position)
+                    mAdapter.updateColorInFirebase(position)
                 }
             }
-        }).attachToRecyclerView(recyclerview)
+        }).attachToRecyclerView(recyclerview)*/
 
         initFirebase()
 
@@ -296,19 +294,19 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
 
     private fun initFirebase() {
-        firebase_listener = object : ValueEventListener {
+        mFirebaseListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
-                boxList.clear()
-                val boxes = dataSnapshot.child("boxes")
+                mBoxList.clear()
+                val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                 for (box: DataSnapshot in boxes.children){
                     val boxModel = Utils.readBoxModelFromDataSnapshot(context, box)
-                    boxList.add(boxModel)
+                    mBoxList.add(boxModel)
                 }
-                adapter.setFilter(filterAndSort(boxList))
+                mAdapter.setFilter(filterAndSort(mBoxList))
             }
             override fun onCancelled(databaseError: DatabaseError) {}
         }
-        FirebaseDatabase.getInstance().reference.addValueEventListener(firebase_listener)
+        FirebaseDatabase.getInstance().reference.addValueEventListener(mFirebaseListener)
     }
 
 
@@ -341,13 +339,13 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         }
         val sharedPreferences = context!!.getSharedPreferences("AppPreferences", MODE_PRIVATE)
-        val saved_order_by_btn_id = Utils.getButtonForSortSetting(sharedPreferences.getString("settings_box_order_by", "order_by_id"))
-        val saved_order_asc_desc_btn_id = Utils.getButtonForSortSettingAscDesc(sharedPreferences.getString("settings_box_order_asc_desc", "order_asc"))
+        val savedOrderByBtnId = Utils.getButtonForSortSetting(sharedPreferences.getString("settings_box_order_by", "order_by_id"))
+        val savedOrderAscDescBtnId = Utils.getButtonForSortSettingAscDesc(sharedPreferences.getString("settings_box_order_asc_desc", "order_asc"))
 
         // Sort list according to settings
-        when (saved_order_by_btn_id) {
+        when (savedOrderByBtnId) {
             R.id.radioButtonOrderLatest -> {
-                if (saved_order_asc_desc_btn_id == R.id.radioButtonOrderAscending)
+                if (savedOrderAscDescBtnId == R.id.radioButtonOrderAscending)
                     filteredModelList.reverse()
                 true
             }
@@ -355,7 +353,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                 filteredModelList.sortWith(
                     compareBy(String.CASE_INSENSITIVE_ORDER) { replaceUmlauteForSorting(it.id) }
                 )
-                if (saved_order_asc_desc_btn_id == R.id.radioButtonOrderDescending)
+                if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
                 true
             }
@@ -363,7 +361,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                 filteredModelList.sortWith(
                     compareBy(String.CASE_INSENSITIVE_ORDER) { replaceUmlauteForSorting(it.name) }
                 )
-                if (saved_order_asc_desc_btn_id == R.id.radioButtonOrderDescending)
+                if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
                 true
             }
@@ -371,7 +369,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                 filteredModelList.sortWith(
                     compareBy(String.CASE_INSENSITIVE_ORDER) { replaceUmlauteForSorting(it.location) }
                 )
-                if (saved_order_asc_desc_btn_id == R.id.radioButtonOrderDescending)
+                if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
                 true
             }
@@ -379,13 +377,13 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                 filteredModelList.sortWith(
                     compareBy(String.CASE_INSENSITIVE_ORDER) { replaceUmlauteForSorting(it.status) }
                 )
-                if (saved_order_asc_desc_btn_id == R.id.radioButtonOrderDescending)
+                if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
                 true
             }
             R.id.radioButtonOrderColor -> {
                 filteredModelList.sortBy { it.color }
-                if (saved_order_asc_desc_btn_id == R.id.radioButtonOrderDescending)
+                if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
                 true
             }
@@ -405,7 +403,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
+        FirebaseDatabase.getInstance().reference.removeEventListener(mFirebaseListener)
     }
 
     

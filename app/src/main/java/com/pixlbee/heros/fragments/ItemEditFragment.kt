@@ -1,7 +1,5 @@
 package com.pixlbee.heros.fragments
 
-import androidx.appcompat.app.AppCompatActivity.RESULT_OK
-import androidx.appcompat.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -12,9 +10,13 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
-import android.widget.*
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -28,7 +30,7 @@ import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
-import com.pixlbee.heros.*
+import com.pixlbee.heros.R
 import com.pixlbee.heros.models.ItemModel
 import com.pixlbee.heros.utility.Utils
 import java.time.Instant
@@ -36,25 +38,25 @@ import java.time.format.DateTimeFormatter
 
 class ItemEditFragment : Fragment() {
 
-    private lateinit var item_model: ItemModel
+    private lateinit var mItemModel: ItemModel
 
-    private lateinit var item_edit_image_field: ImageView
-    private lateinit var item_edit_name_field: EditText
-    private lateinit var item_edit_name_label: TextInputLayout
-    private lateinit var item_edit_description_field: EditText
-    private lateinit var item_edit_tags_field: EditText
-    private lateinit var item_edit_tags_chips: ChipGroup
+    private lateinit var itemEditImageField: ImageView
+    private lateinit var itemEditNameField: EditText
+    private lateinit var itemEditNameLabel: TextInputLayout
+    private lateinit var itemEditDescriptionField: EditText
+    private lateinit var itemEditTagsField: EditText
+    private lateinit var itemEditTagsChips: ChipGroup
 
-    private var is_new_item: Boolean = false
+    private var isNewItem: Boolean = false
 
-    private lateinit var image_bitmap: Bitmap
+    private lateinit var imageBitmap: Bitmap
 
 
     private fun checkFields(): Boolean {
         var status = true
-        if (item_edit_name_field.text.toString() == "") {
-            item_edit_name_label.isErrorEnabled = true
-            item_edit_name_label.error = resources.getString(R.string.error_field_empty)
+        if (itemEditNameField.text.toString() == "") {
+            itemEditNameLabel.isErrorEnabled = true
+            itemEditNameLabel.error = resources.getString(R.string.error_field_empty)
             status = false
         }
 
@@ -66,22 +68,22 @@ class ItemEditFragment : Fragment() {
         val fieldsOk: Boolean = checkFields()
         if (!fieldsOk) return false
 
-        val itemsRef = FirebaseDatabase.getInstance().reference.child("items")
+        val itemsRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items")
         itemsRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val items: DataSnapshot? = task.result
                 if (items != null) {
                     for (item: DataSnapshot in items.children) {
                         val id = item.child("id").value.toString()
-                        if (id == item_model.id) {
+                        if (id == mItemModel.id) {
                             val itemKey: String = item.key.toString()
-                            FirebaseDatabase.getInstance().reference.child("items").child(itemKey).child("description").setValue(item_edit_description_field.text.toString())
-                            FirebaseDatabase.getInstance().reference.child("items").child(itemKey).child("name").setValue(item_edit_name_field.text.toString())
-                            val chipString = Utils.chipListToString(item_edit_tags_chips)
-                            FirebaseDatabase.getInstance().reference.child("items").child(itemKey).child("tags").setValue(chipString)
-                            if (::image_bitmap.isInitialized){
-                                FirebaseDatabase.getInstance().reference.child("items").child(itemKey).child("image").setValue(
-                                    Utils.getEncoded64ImageStringFromBitmap(image_bitmap))
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("description").setValue(itemEditDescriptionField.text.toString())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("name").setValue(itemEditNameField.text.toString())
+                            val chipString = Utils.chipListToString(itemEditTagsChips)
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("tags").setValue(chipString)
+                            if (::imageBitmap.isInitialized){
+                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("image").setValue(
+                                    Utils.getEncoded64ImageStringFromBitmap(imageBitmap))
                             }
                         }
                     }
@@ -96,16 +98,16 @@ class ItemEditFragment : Fragment() {
         val fieldsOk: Boolean = checkFields()
         if (!fieldsOk) return false
 
-        val item_date_key = DateTimeFormatter.ISO_INSTANT.format(Instant.now()).toString()
-        item_model.id = item_date_key
-        item_model.name = item_edit_name_field.text.toString()
-        item_model.description = item_edit_description_field.text.toString()
-        item_model.tags = item_edit_tags_field.text.toString()
-        item_model.image = ""
-        if (::image_bitmap.isInitialized){
-            item_model.image = Utils.getEncoded64ImageStringFromBitmap(image_bitmap)
+        val itemDateKey = DateTimeFormatter.ISO_INSTANT.format(Instant.now()).toString()
+        mItemModel.id = itemDateKey
+        mItemModel.name = itemEditNameField.text.toString()
+        mItemModel.description = itemEditDescriptionField.text.toString()
+        mItemModel.tags = itemEditTagsField.text.toString()
+        mItemModel.image = ""
+        if (::imageBitmap.isInitialized){
+            mItemModel.image = Utils.getEncoded64ImageStringFromBitmap(imageBitmap)
         }
-        FirebaseDatabase.getInstance().reference.child("items").push().setValue(item_model)
+        FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").push().setValue(mItemModel)
         return true
     }
 
@@ -127,7 +129,7 @@ class ItemEditFragment : Fragment() {
                 val navController = findNavController()
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     "item",
-                    item_model
+                    mItemModel
                 )
                 navController.navigateUp()
 
@@ -163,13 +165,13 @@ class ItemEditFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.item_edit_btn_save) {
             // do not show save dialog for new items
-            if (is_new_item){
+            if (isNewItem){
                 val status: Boolean = createItem()
                 if (status) {
                     val navController = findNavController()
                     navController.previousBackStackEntry?.savedStateHandle?.set(
                         "item",
-                        item_model
+                        mItemModel
                     )
                     navController.popBackStack()
                 }
@@ -204,10 +206,10 @@ class ItemEditFragment : Fragment() {
         }
 
         // Get the arguments from the caller fragment/activity
-        item_model = arguments?.getSerializable("itemModel") as ItemModel
-        is_new_item = arguments?.getSerializable("isNewItem") as Boolean
+        mItemModel = arguments?.getSerializable("itemModel") as ItemModel
+        isNewItem = arguments?.getSerializable("isNewItem") as Boolean
 
-        if (is_new_item){
+        if (isNewItem){
             (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.fragment_item_edit_title)
         } else {
             (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.fragment_item_edit_title_new)
@@ -226,9 +228,9 @@ class ItemEditFragment : Fragment() {
         if (resultCode === RESULT_OK) {
             //Image Uri will not be null for RESULT_OK
             val uri: Uri = data?.data!!
-            image_bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
+            imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
             // Use Uri object instead of File to avoid storage permissions
-            item_edit_image_field.setImageURI(uri)
+            itemEditImageField.setImageURI(uri)
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
         } else {
@@ -245,23 +247,23 @@ class ItemEditFragment : Fragment() {
         val v =  inflater.inflate(R.layout.fragment_item_edit, container, false)
 
         // Get the activity and widget
-        item_edit_name_field = v.findViewById(R.id.item_edit_name)
-        item_edit_name_label = v.findViewById(R.id.item_edit_name_label)
-        item_edit_description_field = v.findViewById(R.id.item_edit_description)
-        item_edit_tags_field = v.findViewById(R.id.item_edit_tags)
-        item_edit_image_field = v.findViewById(R.id.item_edit_image)
-        item_edit_tags_chips = v.findViewById(R.id.item_edit_tags_chips)
+        itemEditNameField = v.findViewById(R.id.item_edit_name)
+        itemEditNameLabel = v.findViewById(R.id.item_edit_name_label)
+        itemEditDescriptionField = v.findViewById(R.id.item_edit_description)
+        itemEditTagsField = v.findViewById(R.id.item_edit_tags)
+        itemEditImageField = v.findViewById(R.id.item_edit_image)
+        itemEditTagsChips = v.findViewById(R.id.item_edit_tags_chips)
 
-        item_edit_name_field.setText(item_model.name)
-        item_edit_description_field.setText(item_model.description)
+        itemEditNameField.setText(mItemModel.name)
+        itemEditDescriptionField.setText(mItemModel.description)
 
-        if (item_model.image == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg_80_yellow).into(item_edit_image_field)
+        if (mItemModel.image == "") {
+            Glide.with(this).load(R.drawable.placeholder_with_bg_80_yellow).into(itemEditImageField)
         } else {
-            item_edit_image_field.setImageBitmap(Utils.StringToBitMap(item_model.image))
+            itemEditImageField.setImageBitmap(Utils.stringToBitMap(mItemModel.image))
         }
 
-        for (chip in item_model.tags.split(";")){
+        for (chip in mItemModel.tags.split(";")){
             if (chip != ""){
                 addChipToGroup(chip)
             }
@@ -270,11 +272,11 @@ class ItemEditFragment : Fragment() {
         val thisFragment = this
 
         val confirmationChars = listOf(";", "\n")
-        item_edit_tags_field.addTextChangedListener(object : TextWatcher {
+        itemEditTagsField.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val text = s.toString()
                 if (text.isNotEmpty() && (text.last().toString() in confirmationChars))
-                    item_edit_tags_field.setText("")
+                    itemEditTagsField.setText("")
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -288,13 +290,13 @@ class ItemEditFragment : Fragment() {
                             text = text.replace(cf, "")
                         }
                         addChipToGroup(text)
-                        item_edit_tags_field.setText("")
+                        itemEditTagsField.setText("")
                     }
                 }
             }
         })
 
-        item_edit_image_field.setOnClickListener {
+        itemEditImageField.setOnClickListener {
             ImagePicker.with(thisFragment)
                 .crop(
                     4f,
@@ -314,9 +316,9 @@ class ItemEditFragment : Fragment() {
         chip.isCloseIconVisible = true
         chip.isClickable = true
         chip.isCheckable = false
-        item_edit_tags_chips.addView(chip)
+        itemEditTagsChips.addView(chip)
         chip.setOnCloseIconClickListener {
-            item_edit_tags_chips.removeView(chip as View)
+            itemEditTagsChips.removeView(chip as View)
         }
     }
 

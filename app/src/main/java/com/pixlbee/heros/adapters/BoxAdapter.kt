@@ -16,11 +16,12 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
 import com.pixlbee.heros.models.BoxModel
+import com.pixlbee.heros.utility.Utils
 
 
 class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Boolean = false) : RecyclerView.Adapter<BoxAdapter.BoxViewHolder>() {
 
-    lateinit var context: Context
+    private lateinit var mContext: Context
     private var mBoxList: ArrayList<BoxModel> = ArrayList()
 
     private lateinit var mListener: OnBoxClickListener
@@ -40,7 +41,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BoxViewHolder {
-        context = parent.context
+        mContext = parent.context
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.card_box, parent, false)
         return BoxViewHolder(view, mListener, compactView)
@@ -54,36 +55,29 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
 
     override fun onBindViewHolder(holder: BoxViewHolder, position: Int) {
         this.holder = holder
-        holder.box_id.text = mBoxList[position].id
-        holder.box_name.text = mBoxList[position].name
-        holder.box_location.text = mBoxList[position].location
-        holder.box_color.background.setTint(mBoxList[position].color)
+        holder.boxId.text = mBoxList[position].id
+        holder.boxName.text = mBoxList[position].name
+        holder.boxLocation.text = mBoxList[position].location
+        holder.boxColor.background.setTint(mBoxList[position].color)
 
         if (mBoxList[position].image != ""){
             val imageByteArray = Base64.decode(mBoxList[position].image, Base64.DEFAULT)
-            Glide.with(context)
+            Glide.with(mContext)
                 .load(imageByteArray)
-                .into(holder.box_img)
+                .into(holder.boxImg)
         }
 
-        holder.box_container.transitionName = mBoxList[position].id
+        holder.boxContainer.transitionName = mBoxList[position].id
 
-
-        //val img = Utils.StringToBitMap(mBoxList[position].image)
-        //if (img != null){
-        //    holder.box_img.setImageBitmap(img)
-        //}
-
-        holder.box_status_tags.removeAllViews()
-
+        holder.boxStatusTags.removeAllViews()
         if(mBoxList[position].status != ""){
             for (tag in mBoxList[position].status.split(";")){
                 if (tag != ""){
-                    val chip = Chip(context)
+                    val chip = Chip(mContext)
                     chip.text = tag
                     chip.minHeight = 1
                     chip.setTextAppearance(R.style.BoxStatusChip)
-                    holder.box_status_tags.addView(chip)
+                    holder.boxStatusTags.addView(chip)
                 }
             }
         }
@@ -92,26 +86,26 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
 
     inner class BoxViewHolder(itemView: View, private var mListener: OnBoxClickListener, compactView: Boolean) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
-        var box_id: TextView = itemView.findViewById(R.id.box_id)
-        var box_name: TextView = itemView.findViewById(R.id.box_name)
-        var box_location: TextView = itemView.findViewById(R.id.box_location)
-        var box_img: ImageView = itemView.findViewById(R.id.box_img)
-        var box_status_tags: ChipGroup = itemView.findViewById(R.id.box_status)
-        var box_container: MaterialCardView = itemView.findViewById(R.id.box_card_small)
-        var box_color: View = itemView.findViewById(R.id.box_color)
+        var boxId: TextView = itemView.findViewById(R.id.box_id)
+        var boxName: TextView = itemView.findViewById(R.id.box_name)
+        var boxLocation: TextView = itemView.findViewById(R.id.box_location)
+        var boxImg: ImageView = itemView.findViewById(R.id.box_img)
+        var boxStatusTags: ChipGroup = itemView.findViewById(R.id.box_status)
+        var boxContainer: MaterialCardView = itemView.findViewById(R.id.box_card_small)
+        var boxColor: View = itemView.findViewById(R.id.box_color)
 
         init {
             itemView.setOnClickListener(this)
 
             if (compactView) {
-                box_status_tags.visibility = View.GONE
+                boxStatusTags.visibility = View.GONE
             }
         }
 
         override fun onClick(view: View?) {
             if(mListener != null){
                 // second argument is the element from which the transition will start
-                mListener.onBoxClicked(mBoxList[adapterPosition], box_container)
+                mListener.onBoxClicked(mBoxList[adapterPosition], boxContainer)
             }
             true
         }
@@ -136,16 +130,16 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
 
     fun updateColorInFirebase(position: Int) {
         notifyItemChanged(position)
-        val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
+        val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val boxes: DataSnapshot? = task.result
                 if (boxes != null) {
                     for (box: DataSnapshot in boxes.children) {
                         val id = box.child("id").value.toString()
-                        if (id == holder.box_id.text.toString()) {
+                        if (id == holder.boxId.text.toString()) {
                             val boxKey: String = box.key.toString()
-                            FirebaseDatabase.getInstance().reference.child("boxes").child(boxKey).child("color").setValue(mBoxList[position].color)
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes").child(boxKey).child("color").setValue(mBoxList[position].color)
                         }
                     }
                 }

@@ -15,8 +15,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.transition.*
-import com.google.firebase.database.*
+import com.google.android.material.transition.Hold
+import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialFadeThrough
+import com.google.android.material.transition.MaterialSharedAxis
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.pixlbee.heros.R
 import com.pixlbee.heros.adapters.ItemAdapter
 import com.pixlbee.heros.models.ItemModel
@@ -26,11 +32,10 @@ import java.util.*
 
 class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
-    private var return_item_instead_of_show_details: Boolean = false
-    var itemList: ArrayList<ItemModel> = ArrayList<ItemModel>()
-    lateinit var adapter: ItemAdapter
-    lateinit var rv: RecyclerView
-    private lateinit var firebase_listener: ValueEventListener
+    private var returnItemInsteadOfShowDetails: Boolean = false
+    var mItemList: ArrayList<ItemModel> = ArrayList<ItemModel>()
+    lateinit var mAdapter: ItemAdapter
+    private lateinit var mFirebaseListener: ValueEventListener
     private var searchQueryText: String = ""
 
 
@@ -44,7 +49,7 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 // Do something when collapsed
                 searchQueryText = ""
-                adapter.setFilter(filterAndSort(itemList))
+                mAdapter.setFilter(filterAndSort(mItemList))
                 return true // Return true to collapse action view
             }
 
@@ -83,23 +88,23 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         val view: View = inflater.inflate(R.layout.fragment_items, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_items) as RecyclerView
 
-        adapter = ItemAdapter()
-        adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        mAdapter = ItemAdapter()
+        mAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-        return_item_instead_of_show_details = arguments?.getBoolean("return_item_instead_of_show_details") as Boolean
-        if (return_item_instead_of_show_details){
-            adapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
+        returnItemInsteadOfShowDetails = arguments?.getBoolean("return_item_instead_of_show_details") as Boolean
+        if (returnItemInsteadOfShowDetails){
+            mAdapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
                 override fun onItemClicked(item: ItemModel, view: View) {
-                    val item_id = item.id
+                    val itemId = item.id
                     //adapter.setFilter(itemList)
                     val navController: NavController = Navigation.findNavController(view)
                     // push the selected item back to BoxEditFragment
-                    navController.previousBackStackEntry?.savedStateHandle?.set("item_id", item_id)
+                    navController.previousBackStackEntry?.savedStateHandle?.set("item_id", itemId)
                     navController.popBackStack()
                 }
             })
         } else {
-            adapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
+            mAdapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
                 override fun onItemClicked(item: ItemModel, view: View) {
                     exitTransition = Hold()
                     val extras = FragmentNavigatorExtras(
@@ -113,12 +118,12 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
 
         recyclerview.layoutManager = LinearLayoutManager(activity)
-        recyclerview.adapter = adapter
+        recyclerview.adapter = mAdapter
 
         initFirebase()
 
-        val items_add_button: FloatingActionButton = view.findViewById(R.id.items_add_button)
-        items_add_button.setOnClickListener { viwe ->
+        val itemsAddButton: FloatingActionButton = view.findViewById(R.id.items_add_button)
+        itemsAddButton.setOnClickListener { viwe ->
             if (viwe != null) {
                 if (Utils.checkHasWritePermission(context)) {
                     val itemModel = ItemModel("", "", "", "", "")
@@ -146,7 +151,7 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         postponeEnterTransition()
         view.doOnPreDraw { startPostponedEnterTransition() }
 
-        if (return_item_instead_of_show_details) {
+        if (returnItemInsteadOfShowDetails) {
             // receive new item from ItemEditFragment
             val navController = findNavController()
             navController.currentBackStackEntry?.savedStateHandle?.getLiveData<ItemModel>("item")?.observe(
@@ -160,30 +165,30 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
 
     private fun initFirebase(){
-        firebase_listener = object : ValueEventListener {
+        mFirebaseListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
-                itemList.clear()
-                val boxes = dataSnapshot.child("items")
+                mItemList.clear()
+                val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("items")
                 for (box: DataSnapshot in boxes.children){
                     val description = box.child("description").value.toString()
                     val id = box.child("id").value.toString()
                     val image = box.child("image").value.toString()
                     val name = box.child("name").value.toString()
                     val tags = box.child("tags").value.toString()
-                    itemList.add(ItemModel(id, name, description, tags, image))
+                    mItemList.add(ItemModel(id, name, description, tags, image))
                 }
-                adapter.setFilter(filterAndSort(itemList))
-                adapter.notifyDataSetChanged()
+                mAdapter.setFilter(filterAndSort(mItemList))
+                mAdapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}
         }
-        FirebaseDatabase.getInstance().reference.addValueEventListener(firebase_listener)
+        FirebaseDatabase.getInstance().reference.addValueEventListener(mFirebaseListener)
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
         searchQueryText = newText
-        adapter.setFilter(filterAndSort(itemList))
+        mAdapter.setFilter(filterAndSort(mItemList))
         //activity?.runOnUiThread {
         //    adapter.notifyDataSetChanged()
         //}
@@ -226,7 +231,7 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onDestroyView() {
         Log.w("home","destroy")
         super.onDestroyView()
-        FirebaseDatabase.getInstance().reference.removeEventListener(firebase_listener)
+        FirebaseDatabase.getInstance().reference.removeEventListener(mFirebaseListener)
     }
 
 }

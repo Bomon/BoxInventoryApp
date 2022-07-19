@@ -78,9 +78,6 @@
     <string name="pdf_saved_in_downloads">PDF in Downloads gespeichert</string>
     <string name="pdf_open_with">PDF öffnen mit</string>
 
-    <string name="pdf_title">Bundesanstalt Technisches Hilfswerk</string>
-    <string name="pdf_subtitle">Ortsverband Obernburg, FGr Öl (C)</string>
-    <string name="pdf_address">"Im Weidig 22 - 63785 Obernburg - Tel: (0 60 22) 64 95 10"</string>
     <string name="pdf_item_amount">Anz.</string>
     <string name="pdf_item_name">Gegenstand</string>
     <string name="pdf_item_invnr">Inventar Nr.</string>
@@ -113,4 +110,7 @@
     <string name="dialog_order_descending">Absteigend (Z-A)</string>
     <string name="task_cancelled">Abgebrochen</string>
     <string name="error_store_file_in_downloads">Fehler: Datei konnte nicht gespeichert werden.</string>
+    <string name="drawer_organizations_title">Einheiten</string>
+    <string name="demo_btn">Demo</string>
+    <string name="error_demo_failed">Demo Account nicht verfügbar</string>
 </resources>

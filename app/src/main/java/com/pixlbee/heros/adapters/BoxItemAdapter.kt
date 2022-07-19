@@ -12,19 +12,19 @@ import com.google.android.material.chip.ChipGroup
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
-import com.pixlbee.heros.utility.Utils
 import com.pixlbee.heros.models.BoxItemModel
+import com.pixlbee.heros.utility.Utils
 
 
 class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxItemViewHolder>() {
 
-    lateinit var context: Context
+    private lateinit var mContext: Context
     private var mItemList: ArrayList<BoxItemModel> = ArrayList()
-    private lateinit var box_id: String
+    private lateinit var mBoxId: String
 
 
     init {
-        box_id = boxId
+        mBoxId = boxId
     }
 
     override fun getItemId(position: Int): Long {
@@ -36,7 +36,7 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BoxItemViewHolder {
-        context = parent.context
+        mContext = parent.context
         val layoutInflater = LayoutInflater.from(parent.context)
         return BoxItemViewHolder(layoutInflater.inflate(R.layout.card_item_in_box, parent, false))
 
@@ -49,33 +49,33 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
 
 
     override fun onBindViewHolder(holder: BoxItemViewHolder, position: Int) {
-        holder.item_amount.text = mItemList[position].item_amount
-        holder.item_name.text = mItemList[position].item_name
-        holder.item_color.background.setTint(mItemList[position].item_color)
+        holder.itemAmount.text = mItemList[position].item_amount
+        holder.itemName.text = mItemList[position].item_name
+        holder.itemColor.background.setTint(mItemList[position].item_color)
 
-        holder.item_invnums.removeAllViews()
+        holder.itemInvnums.removeAllViews()
         for (tag in mItemList[position].item_invnum.split(";")){
             if (tag != ""){
-                val chip = Chip(context)
+                val chip = Chip(mContext)
                 chip.setTextAppearance(android.R.style.TextAppearance_Material_Small)
                 chip.text = tag
-                holder.item_invnums.addView(chip)
+                holder.itemInvnums.addView(chip)
             }
         }
 
-        val img = Utils.StringToBitMap(mItemList[position].item_image)
+        val img = Utils.stringToBitMap(mItemList[position].item_image)
         if (img != null){
-            holder.item_image.setImageBitmap(img)
+            holder.itemImage.setImageBitmap(img)
         }
     }
 
 
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-        var item_color: View = itemView.findViewById(R.id.item_color)
-        var item_amount: TextView = itemView.findViewById(R.id.item_amount)
-        var item_name: TextView = itemView.findViewById(R.id.item_name)
-        var item_invnums: ChipGroup = itemView.findViewById(R.id.item_invnums)
-        var item_image: ImageView = itemView.findViewById(R.id.item_img)
+        var itemColor: View = itemView.findViewById(R.id.item_color)
+        var itemAmount: TextView = itemView.findViewById(R.id.item_amount)
+        var itemName: TextView = itemView.findViewById(R.id.item_name)
+        var itemInvnums: ChipGroup = itemView.findViewById(R.id.item_invnums)
+        var itemImage: ImageView = itemView.findViewById(R.id.item_img)
     }
 
 
@@ -88,20 +88,20 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
 
     fun updateColorInFirebase(position: Int) {
         notifyItemChanged(position)
-        val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
+        val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val boxes: DataSnapshot? = task.result
                 if (boxes != null) {
                     for (box: DataSnapshot in boxes.children) {
                         val id = box.child("id").value.toString()
-                        if (id == box_id) {
+                        if (id == mBoxId) {
                             val boxKey: String = box.key.toString()
                             for (item: DataSnapshot in box.child("content").children){
-                                val item_id = item.child("id").value.toString()
-                                if (mItemList[position].item_id == item_id) {
+                                val itemId = item.child("id").value.toString()
+                                if (mItemList[position].item_id == itemId) {
                                     val itemKey: String = item.key.toString()
-                                    FirebaseDatabase.getInstance().reference.child("boxes")
+                                    FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")
                                         .child(boxKey).child("content").child(itemKey)
                                         .child("color").setValue(mItemList[position].item_color)
                                 }

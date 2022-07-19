@@ -27,7 +27,7 @@ import it.sephiroth.android.library.numberpicker.NumberPicker.OnNumberPickerChan
 
 class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adapter<BoxItemEditAdapter.BoxItemViewHolder>() {
 
-    lateinit var context: Context
+    lateinit var mContext: Context
     private var mItemModel: ArrayList<BoxItemModel> = ArrayList()
 
 
@@ -42,7 +42,7 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BoxItemViewHolder {
-        context = parent.context
+        mContext = parent.context
         val layoutInflater = LayoutInflater.from(parent.context)
         return BoxItemViewHolder(layoutInflater.inflate(R.layout.card_item_in_box_edit, parent, false))
 
@@ -78,30 +78,30 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
 
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
-        var item_edit_amount: NumberPicker
-        private var item_edit_invnum: ChipGroup
+        private var itemEditAmount: NumberPicker
+        private var itemEditInvnum: ChipGroup
         //var item_edit_status: EditText
-        private var item_name: TextView
-        private var item_color_button: MaterialButton
-        private var item_delete_button: MaterialButton
-        private var item_invnum_button: MaterialButton
+        private var itemName: TextView
+        private var itemColorButton: MaterialButton
+        private var itemDeleteButton: MaterialButton
+        private var itemInvnumButton: MaterialButton
 
 
         init {
-            item_edit_amount = itemView.findViewById(R.id.box_item_edit_amount)
-            item_edit_invnum = itemView.findViewById(R.id.box_item_invnums)
+            itemEditAmount = itemView.findViewById(R.id.box_item_edit_amount)
+            itemEditInvnum = itemView.findViewById(R.id.box_item_invnums)
             //item_edit_status = itemView.findViewById<EditText>(R.id.box_item_edit_status)
-            item_name = itemView.findViewById<EditText>(R.id.box_item_name)
-            item_delete_button = itemView.findViewById(R.id.box_item_delete_btn)
-            item_color_button = itemView.findViewById(R.id.box_item_color_btn)
-            item_invnum_button = itemView.findViewById(R.id.box_item_invnum_btn)
-            item_delete_button.setOnClickListener {
+            itemName = itemView.findViewById<EditText>(R.id.box_item_name)
+            itemDeleteButton = itemView.findViewById(R.id.box_item_delete_btn)
+            itemColorButton = itemView.findViewById(R.id.box_item_color_btn)
+            itemInvnumButton = itemView.findViewById(R.id.box_item_invnum_btn)
+            itemDeleteButton.setOnClickListener {
                 mItemModel.removeAt(adapterPosition)
                 notifyItemRemoved(adapterPosition)
                 notifyItemRangeChanged(adapterPosition, mItemModel.size)
             }
 
-            for( v in item_edit_amount.children) {
+            for( v in itemEditAmount.children) {
                 if(v is EditText) {
                     v.setOnEditorActionListener { _, _, _ ->
                         v.clearFocus()
@@ -111,30 +111,30 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
                     }
                 }
             }
-            val fragmentManager = (context as FragmentActivity).supportFragmentManager
-            val colors = context.resources.getIntArray(R.array.picker_colors)
-            item_color_button.setOnClickListener {
+            val fragmentManager = (mContext as FragmentActivity).supportFragmentManager
+            val colors = mContext.resources.getIntArray(R.array.picker_colors)
+            itemColorButton.setOnClickListener {
                 ColorSheet().colorPicker(
                     colors = colors,
                     listener = { color ->
-                        setColorButtonColor(color, item_color_button)
+                        setColorButtonColor(color, itemColorButton)
                         mItemModel[adapterPosition].item_color = color
                     })
                     .show(fragmentManager)
             }
 
-            item_invnum_button.setOnClickListener {
-                val builder = MaterialAlertDialogBuilder(context)
-                builder.setTitle(context.resources.getString(R.string.dialog_add_invnr_title))
+            itemInvnumButton.setOnClickListener {
+                val builder = MaterialAlertDialogBuilder(mContext)
+                builder.setTitle(mContext.resources.getString(R.string.dialog_add_invnr_title))
 
-                val viewInflated: View = LayoutInflater.from(context)
+                val viewInflated: View = LayoutInflater.from(mContext)
                     .inflate(R.layout.dialog_add_invnum, itemView as ViewGroup?, false)
                 val input = viewInflated.findViewById<View>(R.id.dialog_input_invnum) as EditText
                 val container = viewInflated.findViewById<View>(R.id.dialog_input_invnum_container) as TextInputLayout
 
                 builder.setView(viewInflated)
-                builder.setPositiveButton(context.resources.getString(R.string.dialog_add), null)
-                builder.setNegativeButton(context.resources.getString(R.string.dialog_cancel)) { dialog, _ -> dialog.cancel() }
+                builder.setPositiveButton(mContext.resources.getString(R.string.dialog_add), null)
+                builder.setNegativeButton(mContext.resources.getString(R.string.dialog_cancel)) { dialog, _ -> dialog.cancel() }
 
                 val mAlertDialog: AlertDialog = builder.create()
                 mAlertDialog.setOnShowListener {
@@ -142,27 +142,27 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
                     b.setOnClickListener {
                         val inputText = input.text.toString()
                         if (inputText != "" && ";" !in inputText) {
-                            val chip = Chip(context)
+                            val chip = Chip(mContext)
                             chip.text = input.text.toString()
                             chip.isCloseIconVisible = true
                             chip.setOnCloseIconClickListener {
-                                item_edit_invnum.removeView(chip as View)
+                                itemEditInvnum.removeView(chip as View)
                                 mItemModel[adapterPosition].item_invnum =
-                                    Utils.chipListToString(item_edit_invnum)
+                                    Utils.chipListToString(itemEditInvnum)
                             }
-                            item_edit_invnum.addView(chip)
+                            itemEditInvnum.addView(chip)
                             mItemModel[adapterPosition].item_invnum =
-                                Utils.chipListToString(item_edit_invnum)
+                                Utils.chipListToString(itemEditInvnum)
                             mAlertDialog.dismiss()
                         } else {
                             if (inputText == "") {
                                 container.isErrorEnabled = true
                                 container.error =
-                                    context.resources.getString(R.string.error_dialog_invnr_empty)
+                                    mContext.resources.getString(R.string.error_dialog_invnr_empty)
                             } else {
                                 container.isErrorEnabled = true
                                 container.error =
-                                    context.resources.getString(R.string.error_dialog_invnr_invalid)
+                                    mContext.resources.getString(R.string.error_dialog_invnr_invalid)
                             }
                         }
                     }
@@ -171,36 +171,36 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
 
             }
 
-            item_edit_amount.numberPickerChangeListener = object : OnNumberPickerChangeListener{
-                override fun onProgressChanged(numberPicker: NumberPicker, progress: Int, fromUser: Boolean): Unit {
-                    mItemModel[adapterPosition].item_amount = item_edit_amount.progress.toString()
+            itemEditAmount.numberPickerChangeListener = object : OnNumberPickerChangeListener{
+                override fun onProgressChanged(numberPicker: NumberPicker, progress: Int, fromUser: Boolean) {
+                    mItemModel[adapterPosition].item_amount = itemEditAmount.progress.toString()
                 }
 
-                override fun onStartTrackingTouch(numberPicker: NumberPicker): Unit {
+                override fun onStartTrackingTouch(numberPicker: NumberPicker) {
                 }
 
-                override fun onStopTrackingTouch(numberPicker: NumberPicker): Unit{
+                override fun onStopTrackingTouch(numberPicker: NumberPicker) {
                 }
             }
 
         }
 
-        fun bind(model: BoxItemModel): Unit {
-            item_name.text = model.item_name
+        fun bind(model: BoxItemModel) {
+            itemName.text = model.item_name
             //item_edit_amount.setText(model.item_amount)
-            item_edit_amount.progress = model.item_amount.toInt()
-            setColorButtonColor(model.item_color, item_color_button)
+            itemEditAmount.progress = model.item_amount.toInt()
+            setColorButtonColor(model.item_color, itemColorButton)
 
-            item_edit_invnum.removeAllViews()
+            itemEditInvnum.removeAllViews()
             for (invnum in model.item_invnum.split(";")){
                 if (invnum != ""){
-                    val chip = Chip(context)
+                    val chip = Chip(mContext)
                     chip.text = invnum
                     chip.isCloseIconVisible = true
-                    item_edit_invnum.addView(chip)
+                    itemEditInvnum.addView(chip)
                     chip.setOnCloseIconClickListener {
-                        item_edit_invnum.removeView(chip as View)
-                        mItemModel[adapterPosition].item_invnum = Utils.chipListToString(item_edit_invnum)
+                        itemEditInvnum.removeView(chip as View)
+                        mItemModel[adapterPosition].item_invnum = Utils.chipListToString(itemEditInvnum)
                     }
                 }
             }
