@@ -17,13 +17,18 @@ android {
         versionCode 1
         versionName "1.0"
 
+        resConfigs "en", "de"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    ndkVersion "25.0.8775105"
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            ndk {
+                debugSymbolLevel 'FULL'
+            }
         }
     }
     compileOptions {
@@ -50,6 +55,13 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:20.0.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
+
+    implementation platform('com.google.firebase:firebase-bom:30.2.0')
+    implementation 'com.google.firebase:firebase-core'
+    implementation('com.google.firebase:firebase-auth') {
+        exclude module: "play-services-safetynet"
+    }
+
     implementation 'androidx.test:core-ktx:1.4.0'
     implementation 'androidx.core:core:1.6.0'
     implementation 'com.google.android.material:material:1.6.1'
