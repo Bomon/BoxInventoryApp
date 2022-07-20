@@ -64,7 +64,7 @@ class BoxFragment : Fragment(){
 
 
     private fun deleteBox() {
-        val boxesRef = FirebaseDatabase.getInstance().reference.child("boxes")
+        val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val boxes: DataSnapshot? = task.result
@@ -88,13 +88,13 @@ class BoxFragment : Fragment(){
         builder.setTitle(resources.getString(R.string.dialog_delete_box_title))
         builder.setMessage(resources.getString(R.string.dialog_delete_box_text))
 
-        builder.setPositiveButton(resources.getString(R.string.dialog_yes)) { dialog, which ->
+        builder.setPositiveButton(resources.getString(R.string.dialog_yes)) { _, _ ->
             deleteBox()
             val navController: NavController = Navigation.findNavController(view!!)
             navController.navigateUp()
         }
 
-        builder.setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, which ->
+        builder.setNegativeButton(resources.getString(R.string.dialog_no)) { _, _ ->
         }
         builder.show()
     }
@@ -335,7 +335,6 @@ class BoxFragment : Fragment(){
                 if (Utils.checkHasWritePermission(context, false)){
                     val oldBoxModel: BoxItemModel = mItemList[viewHolder.adapterPosition]
                     val position = viewHolder.adapterPosition
-                    //boxList.removeAt(viewHolder.adapterPosition)
 
                     var color: Int = Utils.getNextColor(context!!, oldBoxModel.item_color)
                     if (direction == ItemTouchHelper.RIGHT){

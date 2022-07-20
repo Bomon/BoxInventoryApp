@@ -137,10 +137,10 @@ class MainActivity : AppCompatActivity() {
                     val orgName = dataSnapshot.child(orgId).child("name").value.toString()
                     val orgReadPermissions = org.value.toString()
 
-                    //FirebaseDatabase.getInstance().reference.keepSynced(false)
-                    //FirebaseDatabase.getInstance().getReference(orgId).keepSynced(true)
-                    //FirebaseDatabase.getInstance().getReference("read_permissions").keepSynced(true)
-                    //FirebaseDatabase.getInstance().getReference("write_permissions").keepSynced(true)
+                    FirebaseDatabase.getInstance().reference.keepSynced(false)
+                    FirebaseDatabase.getInstance().getReference(orgId).keepSynced(true)
+                    FirebaseDatabase.getInstance().getReference("read_permissions").keepSynced(true)
+                    FirebaseDatabase.getInstance().getReference("write_permissions").keepSynced(true)
 
                     // add these to the drawer
                     if (orgReadPermissions.contains(userId)) {
@@ -177,9 +177,9 @@ class MainActivity : AppCompatActivity() {
                         // add icon to org that indicates write or read permissions
                         val writeUsers = dataSnapshot.child("write_permissions").child(orgId).value.toString()
                         if (writeUsers.contains(userId)) {
-                            addedMenuItem.icon = resources.getDrawable(R.drawable.ic_baseline_edit_24)
+                            addedMenuItem.icon = context.getDrawable(R.drawable.ic_baseline_edit_24)
                         } else {
-                            addedMenuItem.icon = resources.getDrawable(R.drawable.ic_baseline_remove_red_eye_24)
+                            addedMenuItem.icon = context.getDrawable(R.drawable.ic_baseline_remove_red_eye_24)
                         }
 
                         // store info about new item

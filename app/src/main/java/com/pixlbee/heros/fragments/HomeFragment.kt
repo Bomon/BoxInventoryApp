@@ -74,9 +74,6 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onQueryTextChange(newText: String): Boolean {
         searchQueryText = newText
         mAdapter.setFilter(filterAndSort(mBoxList))
-        //activity?.runOnUiThread {
-        //    adapter.notifyDataSetChanged()
-        //}
         return true
     }
 

@@ -236,7 +236,6 @@ class Utils {
             colorCircle.add(context.resources.getColor(R.color.thw_blue))
             colorCircle.add(context.resources.getColor(R.color.md_green_500))
             colorCircle.add(context.resources.getColor(R.color.md_yellow_500))
-            colorCircle.add(context.resources.getColor(R.color.md_orange_500))
             colorCircle.add(context.resources.getColor(R.color.md_red_500))
 
             val colorPos = colorCircle.indexOf(currentColor)

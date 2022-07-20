@@ -190,7 +190,7 @@ class BoxEditFragment : Fragment() {
         mBoxModel.location = boxEditLocationField.text.toString()
         mBoxModel.description = boxEditDescriptionField.text.toString()
         mBoxModel.color = boxEditColor
-        mBoxModel.status = ""
+        mBoxModel.status = Utils.chipListToString(boxEditStatusChips)
         mBoxModel.image = ""
         if (::imageBitmap.isInitialized){
             mBoxModel.image = Utils.getEncoded64ImageStringFromBitmap(imageBitmap)
@@ -198,6 +198,13 @@ class BoxEditFragment : Fragment() {
         if (::locationImageBitmap.isInitialized){
             mBoxModel.location_image = Utils.getEncoded64ImageStringFromBitmap(locationImageBitmap)
         }
+        val itemList = mBoxItemEditAdapter.getCurrentStatus()
+        val newContentItems = ArrayList<ContentItem>()
+        for (item: BoxItemModel in itemList) {
+            val newItem = ContentItem("", item.item_amount, item.item_id, item.item_invnum, item.item_color)
+            newContentItems.add(newItem)
+        }
+        mBoxModel.content = newContentItems
         FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").push().setValue(mBoxModel)
         return true
     }
