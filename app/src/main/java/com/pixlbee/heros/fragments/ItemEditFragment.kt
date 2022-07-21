@@ -12,8 +12,11 @@ import android.text.TextWatcher
 import android.view.*
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
@@ -46,6 +49,7 @@ class ItemEditFragment : Fragment() {
     private lateinit var itemEditDescriptionField: EditText
     private lateinit var itemEditTagsField: EditText
     private lateinit var itemEditTagsChips: ChipGroup
+    private lateinit var itemEditImageSpinner: ProgressBar
 
     private var isNewItem: Boolean = false
 
@@ -58,6 +62,7 @@ class ItemEditFragment : Fragment() {
             itemEditNameLabel.isErrorEnabled = true
             itemEditNameLabel.error = resources.getString(R.string.error_field_empty)
             status = false
+            Toast.makeText(context, resources.getString(R.string.error_item_edit_field), Toast.LENGTH_SHORT).show()
         }
 
         return status
@@ -253,6 +258,7 @@ class ItemEditFragment : Fragment() {
         itemEditTagsField = v.findViewById(R.id.item_edit_tags)
         itemEditImageField = v.findViewById(R.id.item_edit_image)
         itemEditTagsChips = v.findViewById(R.id.item_edit_tags_chips)
+        itemEditImageSpinner = v.findViewById(R.id.item_edit_image_spinner)
 
         itemEditNameField.setText(mItemModel.name)
         itemEditDescriptionField.setText(mItemModel.description)
@@ -296,14 +302,36 @@ class ItemEditFragment : Fragment() {
             }
         })
 
+
+
+        val startForImageResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                val resultCode = result.resultCode
+                val data = result.data
+
+                if (resultCode == AppCompatActivity.RESULT_OK) {
+                    //Image Uri will not be null for RESULT_OK
+                    val uri: Uri = data?.data!!
+                    imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
+                    itemEditImageField.setImageURI(uri)
+                    itemEditImageSpinner.visibility = View.GONE
+                    //} else if (resultCode == ImagePicker.RESULT_ERROR) {
+                    //Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                } else {
+                    itemEditImageSpinner.visibility = View.GONE
+                    Toast.makeText(context, resources.getString(R.string.task_cancelled), Toast.LENGTH_SHORT).show()
+                }
+            }
+
+
         itemEditImageField.setOnClickListener {
             ImagePicker.with(thisFragment)
-                .crop(
-                    4f,
-                    3f
-                )                    //Crop image(Optional), Check Customization for more option
+                .crop()                    //Crop image(Optional), Check Customization for more option
                 .compress(1024)            //Final image size will be less than 1 MB(Optional)
-                .start()
+                .createIntent { intent ->
+                    startForImageResult.launch(intent)
+                    itemEditImageSpinner.visibility = View.VISIBLE
+                }
         }
 
         return v

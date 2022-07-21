@@ -257,16 +257,24 @@ class ItemFragment : Fragment() {
                     }
                 }
 
+                var addedIds: ArrayList<String> = ArrayList()
                 mBoxList.clear()
                 val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                 for (box: DataSnapshot in boxes.children){
                     for (boxContent: DataSnapshot in box.child("content").children) {
                         if (boxContent.child("id").value.toString() == mItemModel.id) {
                             val boxModel = Utils.readBoxModelFromDataSnapshot(context, box)
-                            mBoxList.add(boxModel)
+                            if (boxModel.id !in addedIds) {
+                                mBoxList.add(boxModel)
+                                addedIds.add(boxModel.id)
+                            }
                         }
                     }
                 }
+
+                mBoxList.sortWith(
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.name) }
+                )
 
                 mAdapter.setFilter(mBoxList)
                 if (mBoxList.size == 0){

@@ -208,6 +208,17 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
     }
 
 
+    fun moveItem(from: Int, to: Int) {
+        val fromLocation = mItemModel[from]
+        mItemModel.removeAt(from)
+        if (to < from) {
+            mItemModel.add(to , fromLocation)
+        } else {
+            mItemModel.add(to, fromLocation)
+        }
+    }
+
+
     fun addToItemList(newList: ArrayList<BoxItemModel>) {
         this.mItemModel = newList
         notifyItemInserted(mItemModel.size-1)

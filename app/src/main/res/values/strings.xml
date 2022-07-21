@@ -20,7 +20,7 @@
 
     <string name="dialog_add">Hinzufügen</string>
     <string name="dialog_cancel">Abbrechen</string>
-    <string name="dialog_invnum">Inventarnummer</string>
+    <string name="dialog_invnum">Inventarnummer / Detail</string>
     <string name="dialog_yes">Ja</string>
     <string name="dialog_no">Nein</string>
 
@@ -33,7 +33,7 @@
     <string name="user_hint">Benutzername</string>
     <string name="containting_box">Enthalten in:</string>
     <string name="containing_box_empty">In keiner Box enthalten</string>
-    <string name="invnums_label">Inventarnummern:</string>
+    <string name="invnums_label">Inventarnummern / Details:</string>
 
 
     <string name="item_edit_tags_title">Tags</string>
@@ -45,7 +45,7 @@
 
     <string name="edit_box_color">Farbmarkierung ändern</string>
     <string name="edit_item_color">Farbe</string>
-    <string name="edit_item_invnum">InvNr.</string>
+    <string name="edit_item_invnum">InvNr./Detail</string>
     <string name="dialog_dismiss_title">Änderungen Verwerfen?</string>
     <string name="dialog_dismiss_text">Alle nicht gespeicherten Änderungen gehen verloren.</string>
     <string name="dialog_save_title">Änderungen Speichern?</string>
@@ -57,9 +57,9 @@
     <string name="fragment_box_edit_title_new">Box erstellen</string>
     <string name="dialog_delete_box_title">Box Löschen?</string>
     <string name="dialog_delete_box_text">Soll die Box wirklich gelöscht werden?</string>
-    <string name="dialog_add_invnr_title">Inventarnummer Hinzufügen</string>
-    <string name="error_dialog_invnr_empty">Inventarnummer darf nicht leer sein</string>
-    <string name="error_dialog_invnr_invalid">Inventarnummer darf kein ; enthalten</string>
+    <string name="dialog_add_invnr_title">Inventarnummer / Detail Hinzufügen</string>
+    <string name="error_dialog_invnr_empty">Feld nicht leer sein</string>
+    <string name="error_dialog_invnr_invalid">Feld darf kein ; enthalten</string>
     <string name="fragment_item_edit_title">Gegenstand erstellen</string>
     <string name="fragment_item_edit_title_new">Gegenstand bearbeiten</string>
     <string name="dialog_delete_item_title">Gegenstand Löschen?</string>
@@ -80,7 +80,7 @@
 
     <string name="pdf_item_amount">Anz.</string>
     <string name="pdf_item_name">Gegenstand</string>
-    <string name="pdf_item_invnr">Inventar Nr.</string>
+    <string name="pdf_item_invnr">InvNr. / Detail</string>
 
     <string name="btn_search">Suche</string>
     <string name="btn_sort">Sortieren</string>
@@ -113,4 +113,10 @@
     <string name="drawer_organizations_title">Einheiten</string>
     <string name="demo_btn">Demo</string>
     <string name="error_demo_failed">Demo Account nicht verfügbar</string>
+    <string name="error_item_edit_field">Bezeichnung darf nicht leer sein</string>
+    <string name="error_box_edit_field">Ungültige Felder  - Bitte Eingaben überprüfen</string>
+    <string name="error_qrcode_org_no_permission">Fehler. QR-Code gehört zu einer privaten Einheit.</string>
+    <string name="qrcode_belongs_other_org">Dieser QR-Code gehört zur Einheit "'"</string>
+    <string name="qrcode_change_org">"'". Einheit wechseln?</string>
+    <string name="qrcode_change_org_btn">Wechseln</string>
 </resources>

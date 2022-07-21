@@ -1,6 +1,7 @@
 package com.pixlbee.heros.fragments
 
 import android.Manifest
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,6 +17,8 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.budiyev.android.codescanner.*
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -34,6 +37,7 @@ class QRScannerFragment : Fragment() {
     lateinit var mAdapter: BoxAdapter
 
     private var qrContent: String = ""
+    private var mSnackbar: Snackbar? = null
     private var toast: Toast? = null
     private lateinit var mFirebaseListener: ValueEventListener
 
@@ -108,18 +112,75 @@ class QRScannerFragment : Fragment() {
                 mFirebaseListener = object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
 
+                        val urlSplit = it.text.split("&")
+                        var scannedCode = ""
+                        var scannedOrg = ""
+                        if (urlSplit.size == 1){
+                            // Assume this is a legacy QRcode (without URL)
+                            scannedCode = urlSplit[0]
+                        } else if (urlSplit.size == 2){
+                            // assume it is a code without org
+                            scannedCode = urlSplit[1].replace("box=", "")
+                        } else {
+                            // assume it is a code with org
+                            scannedOrg = urlSplit[1].replace("org=", "")
+                            scannedCode = urlSplit[2].replace("box=", "")
+                        }
+                        // do not continue to search box if orgs dont match
+                        if (scannedOrg != "") {
+                            val currentOrg = Utils.getCurrentlySelectedOrg(context!!)
+                            if (scannedOrg.lowercase() != currentOrg.lowercase()) {
+                                val userId = FirebaseAuth.getInstance().currentUser?.uid.toString()
+                                // serach if the user has access to this org
+                                for (org in dataSnapshot.child("read_permissions").children) {
+                                    val orgId: String = org.key.toString()
+                                    val orgName =
+                                        dataSnapshot.child(orgId).child("name").value.toString()
+                                    val orgReadPermissions = org.value.toString()
+                                    // If he belongs to it, show a snackbar with option to switch org
+                                    if (orgId == scannedOrg && orgReadPermissions.contains(userId)) {
+                                        qrContent = it.text
+                                        mSnackbar?.dismiss()
+                                        mBoxList.clear()
+                                        toast?.cancel()
+                                        mAdapter.setFilter(mBoxList)
+                                        mSnackbar = Snackbar.make(
+                                            view,
+                                            resources.getString(R.string.qrcode_belongs_other_org) + orgName + resources.getString(R.string.qrcode_change_org),
+                                            Snackbar.LENGTH_INDEFINITE
+                                        ).setAction(resources.getString(R.string.qrcode_change_org_btn)) {
+                                            val sharedPreferences: SharedPreferences =
+                                                context!!.getSharedPreferences(
+                                                    "AppPreferences",
+                                                    AppCompatActivity.MODE_PRIVATE
+                                                )
+                                            val editor = sharedPreferences.edit()
+                                            editor.putString("selected_organization", scannedOrg)
+                                            editor.commit()
+                                            // restart activity to load new org content
+                                            startActivity(activity.intent)
+                                            activity.finish()
+                                        }
+                                        mSnackbar?.anchorView = view.findViewById(R.id.RV_qr)
+                                        mSnackbar?.show()
+                                        return
+                                    }
+                                }
+                                // otherwise show a snackbar that he is not allowd to switch
+                                qrContent = ""
+                                mBoxList.clear()
+                                mSnackbar?.dismiss()
+                                mAdapter.setFilter(mBoxList)
+                                showToast(resources.getString(R.string.error_qrcode_org_no_permission), Toast.LENGTH_SHORT)
+                                return
+                            }
+                        }
+
                         val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                         for (box: DataSnapshot in boxes.children){
                             val qrcode = box.child("qrcode").value.toString()
-                            val urlSplit = it.text.split("&")
-                            var scannedCode = ""
-                            scannedCode = if (urlSplit.size == 1){
-                                // Assume this is a legacy QRcode (without URL)
-                                urlSplit[0]
-                            } else {
-                                urlSplit[1].replace("box=", "")
-                            }
                             if (qrcode.lowercase() == scannedCode.lowercase()){
+                                mSnackbar?.dismiss()
                                 mBoxList.clear()
                                 val boxModel = Utils.readBoxModelFromDataSnapshot(context, box)
                                 mBoxList.add(boxModel)
@@ -130,6 +191,8 @@ class QRScannerFragment : Fragment() {
                             }
                         }
                         // if we end up here: code is invalid
+                        qrContent = ""
+                        mSnackbar?.dismiss()
                         showToast(resources.getString(R.string.error_qrcode_invalid), Toast.LENGTH_SHORT)
                         mBoxList.clear()
                         mAdapter.setFilter(mBoxList)
@@ -171,6 +234,7 @@ class QRScannerFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        mSnackbar?.dismiss()
         if (::mFirebaseListener.isInitialized) {
             FirebaseDatabase.getInstance().reference.removeEventListener(mFirebaseListener)
         }

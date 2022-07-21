@@ -312,14 +312,6 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
-    private fun replaceUmlauteForSorting(text: String): String{
-        var text = text.lowercase(Locale.getDefault()).replace("ä","ae")
-        text = text.replace("ö","oe")
-        text = text.replace("ü","ue")
-        return text
-    }
-
-
     private fun filterAndSort(models: List<BoxModel>): List<BoxModel> {
         val query = searchQueryText.lowercase(Locale.getDefault())
         val filteredModelList: MutableList<BoxModel> = ArrayList()
@@ -348,7 +340,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
             R.id.radioButtonOrderId -> {
                 filteredModelList.sortWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER) { replaceUmlauteForSorting(it.id) }
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.id) }
                 )
                 if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
@@ -356,7 +348,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
             R.id.radioButtonOrderName -> {
                 filteredModelList.sortWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER) { replaceUmlauteForSorting(it.name) }
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.name) }
                 )
                 if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
@@ -364,7 +356,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
             R.id.radioButtonOrderLocation -> {
                 filteredModelList.sortWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER) { replaceUmlauteForSorting(it.location) }
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.location) }
                 )
                 if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
@@ -372,7 +364,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
             R.id.radioButtonOrderStatus -> {
                 filteredModelList.sortWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER) { replaceUmlauteForSorting(it.status) }
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.status) }
                 )
                 if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()

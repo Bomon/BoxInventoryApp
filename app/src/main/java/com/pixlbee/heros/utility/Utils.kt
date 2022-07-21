@@ -21,7 +21,9 @@ import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ContentItem
 import com.pixlbee.heros.models.ItemModel
 import java.io.ByteArrayOutputStream
+import java.util.*
 import java.util.concurrent.ExecutionException
+import kotlin.collections.ArrayList
 
 
 class Utils {
@@ -212,6 +214,15 @@ class Utils {
                 R.id.radioButtonOrderDescending -> { return "order_descending" }
             }
             return "order_ascending"
+        }
+
+
+
+        fun replaceUmlauteForSorting(text: String): String{
+            var text = text.lowercase(Locale.getDefault()).replace("ä","ae")
+            text = text.replace("ö","oe")
+            text = text.replace("ü","ue")
+            return text
         }
 
 

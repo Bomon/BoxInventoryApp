@@ -235,7 +235,7 @@ class BoxPdfCreator {
         //val imageOel = prepareImage(oel)
         val thw: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_thw)
         //val imageThw = prepareImage(pixlbee)
-        val qrcode: Bitmap? = encodeAsBitmap(box_model.qrcode, BarcodeFormat.QR_CODE, 512, 512)
+        val qrcode: Bitmap? = encodeAsBitmap(context, box_model.qrcode, BarcodeFormat.QR_CODE, 512, 512)
         //val qrcodeImg = prepareImage(bmp)
         val qrLogo: Bitmap = BitmapFactory.decodeResource(context.resources,
             R.drawable.qrcode_center_round_blue
@@ -460,13 +460,15 @@ class BoxPdfCreator {
     }
 
     private fun encodeAsBitmap(
+        context: Context,
         contents: String,
         format: BarcodeFormat?,
         desiredWidth: Int,
         desiredHeight: Int
     ): Bitmap? {
+        val currentOrg = Utils.getCurrentlySelectedOrg(context)
         val qrCodeContents =
-            "https://play.google.com/store/apps/details?id=com.pixlbee.heros&box=$contents"
+            "https://play.google.com/store/apps/details?id=com.pixlbee.heros&org=$currentOrg&box=$contents"
 
         val hints: HashMap<EncodeHintType, Any> = HashMap<EncodeHintType, Any>()
         hints[EncodeHintType.ERROR_CORRECTION] = ErrorCorrectionLevel.M

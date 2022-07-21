@@ -41,7 +41,7 @@
     <string name="press_back_again_to_exit">Press BACK again to exit</string>
     <string name="edit_box_color">Change color</string>
     <string name="edit_item_color">Color</string>
-    <string name="edit_item_invnum">InvNr.</string>
+    <string name="edit_item_invnum">InvNr./Detail</string>
     <string name="dialog_dismiss_title">Discard changes?</string>
     <string name="dialog_dismiss_text">All unsaved changes will be lost.</string>
     <string name="dialog_save_title">Save changes?</string>
@@ -53,9 +53,9 @@
     <string name="fragment_box_edit_title_new">Create box</string>
     <string name="dialog_delete_box_title">Delete box?</string>
     <string name="dialog_delete_box_text">Do you really want to delete this box?</string>
-    <string name="dialog_add_invnr_title">Add inventory number</string>
-    <string name="error_dialog_invnr_empty">Inventory number must not be blank</string>
-    <string name="error_dialog_invnr_invalid">Inventory number must not contain ;</string>
+    <string name="dialog_add_invnr_title">Add inventory number / Detail</string>
+    <string name="error_dialog_invnr_empty">Field must not be blank</string>
+    <string name="error_dialog_invnr_invalid">Field must not contain ;</string>
     <string name="fragment_item_edit_title">Create item</string>
     <string name="fragment_item_edit_title_new">Edit item</string>
     <string name="dialog_delete_item_title">Delete item?</string>
@@ -74,7 +74,7 @@
     <string name="pdf_open_with">Open PDF with</string>
     <string name="pdf_item_amount">Anz.</string>
     <string name="pdf_item_name">Gegenstand</string>
-    <string name="pdf_item_invnr">Inventar Nr.</string>
+    <string name="pdf_item_invnr">InvNr. / Detail</string>
     <string name="btn_search">Search</string>
     <string name="btn_sort">Sort</string>
     <string name="btn_add_box">New</string>
@@ -105,4 +105,10 @@
     <string name="drawer_organizations_title">Units</string>
     <string name="demo_btn">Demo</string>
     <string name="error_demo_failed">Demo account not available</string>
+    <string name="error_item_edit_field">Name must not be empty</string>
+    <string name="error_box_edit_field">Invalid fields - Please check entries</string>
+    <string name="error_qrcode_org_no_permission">Error. QR-code belongs to a restricted unit.</string>
+    <string name="qrcode_belongs_other_org">This QR code belongs to unit "'"</string>
+    <string name="qrcode_change_org">"'". Switch unit?</string>
+    <string name="qrcode_change_org_btn">Switch</string>
 </resources>

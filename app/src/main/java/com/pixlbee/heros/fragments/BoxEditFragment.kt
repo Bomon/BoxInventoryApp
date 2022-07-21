@@ -8,10 +8,7 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +20,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -68,6 +66,8 @@ class BoxEditFragment : Fragment() {
     private lateinit var boxEditQrcodeFieldContainer: TextInputLayout
     private lateinit var boxEditColorBtn: MaterialButton
     private lateinit var boxEditColorPreview: View
+    private lateinit var boxEditImageSpinner: ProgressBar
+    private lateinit var boxEditLocationImageSpinner: ProgressBar
     private var boxEditColor: Int = -1
 
     private var qrList: ArrayList<String> = ArrayList()
@@ -114,6 +114,9 @@ class BoxEditFragment : Fragment() {
             boxEditLocationFieldContainer.isErrorEnabled = true
             boxEditLocationFieldContainer.error = resources.getString(R.string.error_field_empty)
             status = false
+        }
+        if (!status){
+            Toast.makeText(context, resources.getString(R.string.error_box_edit_field), Toast.LENGTH_SHORT).show()
         }
 
         return status
@@ -387,6 +390,9 @@ class BoxEditFragment : Fragment() {
         boxEditQrcodeFieldContainer = v.findViewById(R.id.box_edit_qrcode_container)
         boxEditLocationFieldContainer = v.findViewById(R.id.box_edit_location_container)
 
+        boxEditImageSpinner = v.findViewById(R.id.bod_edit_image_spinner)
+        boxEditLocationImageSpinner = v.findViewById(R.id.bod_edit_location_image_spinner)
+
         val confirmationChars = listOf(";", "\n")
         boxEditStatusInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -461,6 +467,12 @@ class BoxEditFragment : Fragment() {
             boxEditImageField.setImageBitmap(Utils.stringToBitMap(mBoxModel.image))
         }
 
+        if (mBoxModel.location_image == "") {
+            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(boxEditLocationImageField)
+        } else {
+            boxEditLocationImageField.setImageBitmap(Utils.stringToBitMap(mBoxModel.location_image))
+        }
+
         val thisFragment = this
 
 
@@ -474,21 +486,21 @@ class BoxEditFragment : Fragment() {
                     val uri: Uri = data?.data!!
                     imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
                     boxEditImageField.setImageURI(uri)
+                    boxEditImageSpinner.visibility = View.GONE
                 //} else if (resultCode == ImagePicker.RESULT_ERROR) {
                     //Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
                 } else {
+                    boxEditImageSpinner.visibility = View.GONE
                     Toast.makeText(context, resources.getString(R.string.task_cancelled), Toast.LENGTH_SHORT).show()
                 }
             }
 
         boxEditImageField.setOnClickListener {
             ImagePicker.with(thisFragment)
-                .crop(
-                    4f,
-                    3f
-                )                    //Crop image(Optional), Check Customization for more option
+                .crop()                    //Crop image(Optional), Check Customization for more option
                 .compress(1024)            //Final image size will be less than 1 MB(Optional)
                 .createIntent { intent ->
+                    boxEditImageSpinner.visibility = View.VISIBLE
                     startForMainImageResult.launch(intent)
                 }
         }
@@ -503,9 +515,11 @@ class BoxEditFragment : Fragment() {
                     val uri: Uri = data?.data!!
                     locationImageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
                     boxEditLocationImageField.setImageURI(uri)
+                    boxEditLocationImageSpinner.visibility = View.GONE
                 //} else if (resultCode == ImagePicker.RESULT_ERROR) {
                     //Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
                 } else {
+                    boxEditLocationImageSpinner.visibility = View.GONE
                     Toast.makeText(context, resources.getString(R.string.task_cancelled), Toast.LENGTH_SHORT).show()
                 }
             }
@@ -516,6 +530,7 @@ class BoxEditFragment : Fragment() {
                 .crop()                    //Crop image(Optional), Check Customization for more option
                 .compress(1024)            //Final image size will be less than 1 MB(Optional)
                 .createIntent { intent ->
+                    boxEditLocationImageSpinner.visibility = View.VISIBLE
                     startForLocationImageResult.launch(intent)
                 }
         }
@@ -543,6 +558,59 @@ class BoxEditFragment : Fragment() {
                 )
             }
         }
+
+
+        val itemTouchHelper by lazy {
+            val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END, 0) {
+
+                override fun onMove(recyclerView: RecyclerView,
+                                    viewHolder: RecyclerView.ViewHolder,
+                                    target: RecyclerView.ViewHolder): Boolean {
+                    val adapter = recyclerView.adapter as BoxItemEditAdapter
+                    val from = viewHolder.adapterPosition
+                    val to = target.adapterPosition
+
+                    adapter.notifyItemMoved(from, to)
+
+                    return true
+                }
+
+                override fun onMoved(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    fromPos: Int,
+                    target: RecyclerView.ViewHolder,
+                    toPos: Int,
+                    x: Int,
+                    y: Int
+                ) {
+                    super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
+                    val adapter = recyclerView.adapter as BoxItemEditAdapter
+                    adapter.moveItem(fromPos, toPos)
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                }
+
+                override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                    super.onSelectedChanged(viewHolder, actionState)
+
+                    if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                        viewHolder?.itemView?.alpha = 0.5f
+                    }
+                }
+
+                override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                    super.clearView(recyclerView, viewHolder)
+
+                    viewHolder.itemView.alpha = 1.0f
+                }
+            }
+
+            ItemTouchHelper(simpleItemTouchCallback)
+        }
+        itemTouchHelper.attachToRecyclerView(recyclerview)
+
 
         return v
     }
