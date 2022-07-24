@@ -89,7 +89,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         demoBtn.setOnClickListener {
-            var email = "demo@thw.thw"
+            val email = "demo@thw.thw"
             val password = "demodemo123"
             auth = Firebase.auth
             auth.signInWithEmailAndPassword(email, password)

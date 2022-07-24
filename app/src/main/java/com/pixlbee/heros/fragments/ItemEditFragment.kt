@@ -309,7 +309,7 @@ class ItemEditFragment : Fragment() {
                 val resultCode = result.resultCode
                 val data = result.data
 
-                if (resultCode == AppCompatActivity.RESULT_OK) {
+                if (resultCode == RESULT_OK) {
                     //Image Uri will not be null for RESULT_OK
                     val uri: Uri = data?.data!!
                     imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
