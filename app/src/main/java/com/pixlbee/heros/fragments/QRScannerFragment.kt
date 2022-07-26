@@ -207,12 +207,12 @@ class QRScannerFragment : Fragment() {
 
         }
 
-        codeScanner.errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
-            activity. runOnUiThread {
-                Toast.makeText(activity, resources.getString(R.string.error_start_camera) + {it.message},
-                    Toast.LENGTH_LONG).show()
-            }
-        }
+        //codeScanner.errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
+        //    activity. runOnUiThread {
+        //        Toast.makeText(activity, resources.getString(R.string.error_start_camera) + {it.message},
+        //            Toast.LENGTH_LONG).show()
+        //    }
+        //}
 
         scannerView.setOnClickListener {
             codeScanner.startPreview()

@@ -33,6 +33,7 @@ import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ContentItem
 import com.pixlbee.heros.utility.Utils
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -46,6 +47,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     private var doubleBackToExitPressedOnce: Boolean = false
     private lateinit var exitToast: Toast
     private var searchQueryText: String = ""
+    private var isFirstCreate: Boolean = true
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -287,6 +289,13 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
         postponeEnterTransition()
         view.doOnPreDraw { startPostponedEnterTransition() }
+
+        // Trigger reload on first creation. Reason: Initial boxes after login may be not visible
+        if (isFirstCreate){
+            val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+            val task = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("last_Login").setValue(timeStamp)
+            isFirstCreate = false
+        }
     }
 
 

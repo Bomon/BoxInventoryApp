@@ -257,7 +257,7 @@ class ItemFragment : Fragment() {
                     }
                 }
 
-                var addedIds: ArrayList<String> = ArrayList()
+                val addedIds: ArrayList<String> = ArrayList()
                 mBoxList.clear()
                 val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                 for (box: DataSnapshot in boxes.children){
