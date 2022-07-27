@@ -59,6 +59,7 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
                 val chip = Chip(mContext)
                 chip.setTextAppearance(android.R.style.TextAppearance_Material_Small)
                 chip.text = tag
+                chip.isClickable = false
                 holder.itemInvnums.addView(chip)
             }
         }

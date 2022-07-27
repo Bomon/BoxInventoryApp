@@ -140,7 +140,7 @@ class BoxEditFragment : Fragment() {
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("name").setValue(boxEditNameField.text.toString())
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("description").setValue(boxEditDescriptionField.text.toString())
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("qrcode").setValue(boxEditQrcodeField.text.toString())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("location").setValue(boxEditLocationField.text.toString())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("location_details").setValue(boxEditLocationField.text.toString())
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("color").setValue(boxEditColor)
 
                             val chipString = Utils.chipListToString(boxEditStatusChips)
@@ -190,7 +190,7 @@ class BoxEditFragment : Fragment() {
         mBoxModel.id = boxEditIdField.text.toString()
         mBoxModel.name = boxEditNameField.text.toString()
         mBoxModel.qrcode = boxEditQrcodeField.text.toString()
-        mBoxModel.location = boxEditLocationField.text.toString()
+        mBoxModel.vehicle = boxEditLocationField.text.toString()
         mBoxModel.description = boxEditDescriptionField.text.toString()
         mBoxModel.color = boxEditColor
         mBoxModel.status = Utils.chipListToString(boxEditStatusChips)
@@ -449,7 +449,7 @@ class BoxEditFragment : Fragment() {
 
         boxEditNameField.setText(mBoxModel.name)
         boxEditIdField.setText(mBoxModel.id)
-        boxEditLocationField.setText(mBoxModel.location)
+        boxEditLocationField.setText(mBoxModel.vehicle)
         boxEditQrcodeField.setText(mBoxModel.qrcode)
         boxEditDescriptionField.setText(mBoxModel.description)
         boxEditColorPreview.background.setTint(mBoxModel.color)

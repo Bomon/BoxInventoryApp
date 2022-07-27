@@ -111,4 +111,5 @@
     <string name="qrcode_belongs_other_org">This QR code belongs to unit "'"</string>
     <string name="qrcode_change_org">"'". Switch unit?</string>
     <string name="qrcode_change_org_btn">Switch</string>
+    <string name="title_nav_vehicles">Vehicles</string>
 </resources>

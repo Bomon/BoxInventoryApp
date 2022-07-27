@@ -2,18 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_home"
-        android:icon="@drawable/ic_baseline_widgets_24"
-        android:title="@string/title_nav_home" />
+        android:id="@+id/navigation_vehicles"
+        android:icon="@drawable/ic_baseline_fire_truck_24"
+        android:title="@string/title_nav_vehicles" />
 
     <item
-        android:id="@+id/navigation_qrscanner"
-        android:icon="@drawable/ic_baseline_qr_code_scanner_24"
-        android:title="@string/title_nav_qrscanner" />
+        android:id="@+id/navigation_boxes"
+        android:icon="@drawable/ic_baseline_widgets_24"
+        android:title="@string/title_nav_home" />
 
     <item
         android:id="@+id/navigation_items"
         android:icon="@drawable/ic_baseline_build_24"
         android:title="@string/title_nav_items" />
+
+    <item
+        android:id="@+id/navigation_qrscanner"
+        android:icon="@drawable/ic_baseline_qr_code_scanner_24"
+        android:title="@string/title_nav_qrscanner" />
 
 </menu>

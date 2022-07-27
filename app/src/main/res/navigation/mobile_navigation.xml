@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_vehicles">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.pixlbee.heros.fragments.HomeFragment"
+        android:id="@+id/navigation_boxes"
+        android:name="com.pixlbee.heros.fragments.BoxesFragment"
         android:label="@string/title_nav_home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_navigation_home_to_boxFragment"
+            android:id="@+id/action_navigation_boxes_to_boxFragment"
             app:destination="@id/boxFragment" />
         <action
-            android:id="@+id/action_navigation_home_to_boxEditFragment"
+            android:id="@+id/action_navigation_boxes_to_boxEditFragment"
             app:destination="@id/boxEditFragment" />
     </fragment>
 
@@ -53,6 +53,9 @@
         <argument
             android:name="boxModel"
             app:argType="com.pixlbee.heros.models.BoxModel" />
+        <action
+            android:id="@+id/action_boxFragment_to_vehicleDetailFragment"
+            app:destination="@id/vehicleDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/boxEditFragment"
@@ -96,6 +99,44 @@
             android:defaultValue="false" />
         <argument
             android:name="isBoxEditMode"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_vehicles"
+        android:name="com.pixlbee.heros.fragments.VehiclesFragment"
+        android:label="@string/title_nav_vehicles"
+        tools:layout="@layout/fragment_vehicles" >
+        <action
+            android:id="@+id/action_navigation_vehicles_to_vehicleDetailFragment"
+            app:destination="@id/vehicleDetailFragment" />
+        <action
+            android:id="@+id/action_navigation_vehicles_to_vehicleEditFragment"
+            app:destination="@id/vehicleEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/vehicleDetailFragment"
+        android:name="com.pixlbee.heros.fragments.VehicleDetailFragment"
+        android:label="VehicleDetailFragment" >
+        <action
+            android:id="@+id/action_vehicleDetailFragment_to_boxFragment"
+            app:destination="@id/boxFragment" />
+        <action
+            android:id="@+id/action_vehicleDetailFragment_to_vehicleEditFragment"
+            app:destination="@id/vehicleEditFragment" />
+        <argument
+            android:name="vehicleModel"
+            app:argType="com.pixlbee.heros.models.VehicleModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/vehicleEditFragment"
+        android:name="com.pixlbee.heros.fragments.VehicleEditFragment"
+        android:label="VehicleEditFragment" >
+        <argument
+            android:name="vehicleModel"
+            app:argType="com.pixlbee.heros.models.VehicleModel" />
+        <argument
+            android:name="isNewVehicle"
             app:argType="boolean"
             android:defaultValue="false" />
     </fragment>

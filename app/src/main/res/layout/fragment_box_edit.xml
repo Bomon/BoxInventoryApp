@@ -8,7 +8,7 @@
     android:background="?attr/colorSurface"
     tools:context=".fragments.ItemsFragment">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/box_edit_card_scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -121,9 +121,11 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/box_edit_description"
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"
+                        android:layout_height="wrap_content"
+                        android:minHeight="150dp"
                         android:gravity="top"
                         android:inputType="textMultiLine"
+                        android:isScrollContainer="false"
                         android:overScrollMode="always"
                         android:scrollbarStyle="insideInset"
                         android:scrollbars="vertical" />
@@ -394,6 +396,6 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,36 +10,34 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.utility.Utils
 
 
-class ContainingBoxAdapter(
+class VehicleBoxesAdapter(
     mDataList: ArrayList<BoxModel>,
-    item_id: String,
-) : RecyclerView.Adapter<ContainingBoxAdapter.ContainingBoxViewHolder>() {
+    vehicle_id: String,
+) : RecyclerView.Adapter<VehicleBoxesAdapter.ContainingBoxViewHolder>() {
 
     lateinit var mContext: Context
-    lateinit var mItemId: String
+    lateinit var mVehicleId: String
     private var mBoxList: ArrayList<BoxModel> = ArrayList()
 
 
-    private lateinit var mListener: OnContainingBoxClickListener
+    private lateinit var mListener: OnVehicleBoxClickListener
 
 
     init {
         setFilter(mDataList)
-        this.mItemId = item_id
+        this.mVehicleId = vehicle_id
     }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContainingBoxViewHolder {
         mContext = parent.context
         val layoutInflater = LayoutInflater.from(parent.context)
-        return ContainingBoxViewHolder(layoutInflater.inflate(R.layout.card_box_with_inv, parent, false))
+        return ContainingBoxViewHolder(layoutInflater.inflate(R.layout.card_box, parent, false))
     }
 
 
@@ -72,30 +70,7 @@ class ContainingBoxAdapter(
         fun bind(model: BoxModel) {
             boxId.text = model.id
             boxName.text = model.name
-
-
-            val vehiclesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("vehicles")
-            vehiclesRef.get().addOnCompleteListener { task ->
-                var foundVehicle = false
-                if (task.isSuccessful) {
-                    val vehicles: DataSnapshot? = task.result
-                    if (vehicles != null) {
-                        for (vehicle: DataSnapshot in vehicles.children) {
-                            val id = vehicle.child("id").value.toString()
-                            val vehicleKey = vehicle.key.toString()
-                            if (id == mBoxList[position].vehicle) {
-                                boxVehicle.text = vehicle.child("name").value.toString()
-                                foundVehicle = true
-                                break
-                            }
-                        }
-                    }
-                }
-                if (!foundVehicle){
-                    boxVehicle.text = mContext.resources.getString(R.string.error_no_vehicle_assigned)
-                }
-            }
-
+            boxVehicle.visibility = View.GONE
             boxColor.background.setTint(model.color)
 
             val img = Utils.stringToBitMap(model.image)
@@ -116,41 +91,13 @@ class ContainingBoxAdapter(
                 }
             }
 
-            if (boxInvLabel != null && boxInvnums != null) {
-                val invnums = ArrayList<String>()
-                for (ci in model.content){
-                    if (ci.id == mItemId){
-                        if (ci.invnum != ""){
-                            invnums.add(ci.invnum)
-                        }
-                    }
-                }
-
-                if (invnums.size > 0){
-                    boxInvLabel.visibility = View.VISIBLE
-                    boxInvnums.visibility = View.VISIBLE
-                    boxInvnums.removeAllViews()
-                    for (invnum in invnums){
-                        if (invnum != ""){
-                            val chip = Chip(mContext)
-                            chip.setTextAppearance(android.R.style.TextAppearance_Material_Small)
-                            chip.isClickable = false
-                            chip.text = invnum
-                            boxInvnums.addView(chip)
-                        }
-                    }
-                } else {
-                    boxInvLabel.visibility = View.GONE
-                    boxInvnums.visibility = View.GONE
-                }
-            }
             boxContainer.transitionName = model.id
         }
 
         override fun onClick(view: View?) {
             if(mListener != null){
                 // second argument is the element from which the transition will start
-                mListener.onContainingBoxClicked(mBoxList[adapterPosition], boxContainer)
+                mListener.onVehicleBoxClicked(mBoxList[adapterPosition], boxContainer)
             }
             true
         }
@@ -164,12 +111,12 @@ class ContainingBoxAdapter(
     }
 
 
-    interface OnContainingBoxClickListener{
-        fun onContainingBoxClicked(box: BoxModel, view: View)
+    interface OnVehicleBoxClickListener{
+        fun onVehicleBoxClicked(box: BoxModel, view: View)
     }
 
 
-    fun setOnBoxClickListener(mListener: OnContainingBoxClickListener) {
+    fun setOnBoxClickListener(mListener: OnVehicleBoxClickListener) {
         this.mListener = mListener
     }
 

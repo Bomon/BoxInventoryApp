@@ -2,13 +2,10 @@ package com.pixlbee.heros.fragments
 
 import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.*
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
-import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
@@ -37,7 +34,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
+class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private var viewGroup: ViewGroup? = null
     var mBoxList: ArrayList<BoxModel> = ArrayList<BoxModel>()
@@ -96,6 +93,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                             "",
                             "",
                             "",
+                            "-1",
                             "",
                             "",
                             "",
@@ -107,7 +105,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                         bundle.putSerializable("items", ArrayList<BoxItemModel>().toTypedArray())
                         bundle.putSerializable("isNewBox", true)
                         val navController: NavController = Navigation.findNavController(view!!)
-                        navController.navigate(R.id.action_navigation_home_to_boxEditFragment, bundle)
+                        navController.navigate(R.id.action_navigation_boxes_to_boxEditFragment, bundle)
                     }
                 }
                 true
@@ -129,7 +127,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                     // Set button checked that is stored in settings
                     val sharedPreferences = context!!.getSharedPreferences("AppPreferences", MODE_PRIVATE)
                     val savedOrderByBtnId: Int = Utils.getButtonForSortSetting(sharedPreferences.getString("settings_box_order_by", "order_by_id"))
-                    val savedOrderAscDescBtnId: Int = Utils.getButtonForSortSettingAscDesc(sharedPreferences.getString("settings_box_order_asc_desc", "order_asc"))
+                    val savedOrderAscDescBtnId: Int = Utils.getButtonForSortSettingAscDesc(sharedPreferences.getString("settings_box_order_asc_desc", "order_ascending"))
 
                     radioGroup.findViewById<RadioButton>(savedOrderByBtnId).isChecked = true
                     radioGroupAscDesc.findViewById<RadioButton>(savedOrderAscDescBtnId).isChecked = true
@@ -165,19 +163,6 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
 
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (doubleBackToExitPressedOnce) {
-                exitToast.cancel()
-                activity?.finish()
-            }
-            if (::exitToast.isInitialized){
-                exitToast.cancel()
-            }
-            doubleBackToExitPressedOnce = true
-            Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
-            exitToast = Toast.makeText(context, getText(R.string.press_back_again_to_exit), Toast.LENGTH_LONG)
-            exitToast.show()
-        }
     }
 
 
@@ -202,7 +187,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
                     view to box.id
                 )
                 val navController: NavController = Navigation.findNavController(view)
-                navController.navigate(HomeFragmentDirections.actionNavigationHomeToBoxFragment(box), extras)
+                navController.navigate(BoxesFragmentDirections.actionNavigationBoxesToBoxFragment(box), extras)
             }
         })
 
@@ -328,7 +313,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         for (model in models) {
             if (model.id.lowercase().contains(query)) {
                 filteredModelList.add(model)
-            } else if (model.location.lowercase().contains(query)) {
+            } else if (model.vehicle.lowercase().contains(query)) {
                 filteredModelList.add(model)
             } else if (model.name.lowercase().contains(query)) {
                 filteredModelList.add(model)
@@ -338,7 +323,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         }
         val sharedPreferences = context!!.getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val savedOrderByBtnId = Utils.getButtonForSortSetting(sharedPreferences.getString("settings_box_order_by", "order_by_id"))
-        val savedOrderAscDescBtnId = Utils.getButtonForSortSettingAscDesc(sharedPreferences.getString("settings_box_order_asc_desc", "order_asc"))
+        val savedOrderAscDescBtnId = Utils.getButtonForSortSettingAscDesc(sharedPreferences.getString("settings_box_order_asc_desc", "order_ascending"))
 
         // Sort list according to settings
         when (savedOrderByBtnId) {
@@ -365,7 +350,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
             }
             R.id.radioButtonOrderLocation -> {
                 filteredModelList.sortWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.location) }
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.vehicle) }
                 )
                 if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()

@@ -18,12 +18,14 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.transition.Hold
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
@@ -32,9 +34,11 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.pixlbee.heros.R
 import com.pixlbee.heros.adapters.BoxItemAdapter
+import com.pixlbee.heros.adapters.VehicleAdapter
 import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ContentItem
+import com.pixlbee.heros.models.VehicleModel
 import com.pixlbee.heros.utility.BoxPdfCreator
 import com.pixlbee.heros.utility.Utils
 import com.stfalcon.imageviewer.StfalconImageViewer
@@ -42,6 +46,8 @@ import com.stfalcon.imageviewer.StfalconImageViewer
 
 class BoxFragment : Fragment(){
 
+    private lateinit var mVehicleAdapter: VehicleAdapter
+    private lateinit var mVehicle: VehicleModel
     private lateinit var mBoxModel: BoxModel
     lateinit var mBoxItemAdapter: BoxItemAdapter
     private lateinit var mFirebaseListener: ValueEventListener
@@ -49,7 +55,8 @@ class BoxFragment : Fragment(){
 
     private lateinit var boxNameField: TextView
     private lateinit var boxDescriptionField: TextView
-    private lateinit var boxLocationField: TextView
+    private lateinit var boxVehicleField: RecyclerView
+    private lateinit var boxLocationDetailsField: TextView
     private lateinit var boxStatusField: ChipGroup
     private lateinit var boxColorField: View
 
@@ -179,16 +186,45 @@ class BoxFragment : Fragment(){
     }
 
 
+    private fun updateVehicleModel(vehicle_id: String){
+        val vehiclesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles")
+        vehiclesRef.get().addOnCompleteListener { task ->
+            var foundVehicle = false
+            if (task.isSuccessful) {
+                val vehicles: DataSnapshot? = task.result
+                if (vehicles != null) {
+                    for (vehicle: DataSnapshot in vehicles.children) {
+                        val id = vehicle.child("id").value.toString()
+                        val vehicleKey = vehicle.key.toString()
+                        if (id == vehicle_id) {
+                            mVehicle = Utils.readVehicleModelFromDataSnapshot(context, vehicle)
+                            Log.e("Error", "found vehicles: " + mVehicle.name)
+                            foundVehicle = true
+                            break
+                        }
+                    }
+                }
+            }
+            if (!foundVehicle){
+                mVehicle = VehicleModel("-1", resources.getString(R.string.error_no_vehicle_assigned), "", "", "", "")
+            }
+            mVehicleAdapter.setFilter(listOf(mVehicle))
+        }
+    }
+
+
     private fun updateContent(){
         val boxId = mBoxModel.id
-        val boxContent = mBoxModel.content
-        val boxLocation = mBoxModel.location
+        val boxVehicle = mBoxModel.vehicle
+        val boxLocationDetails = mBoxModel.location_details
         val boxName = mBoxModel.name
         val boxImg: String = mBoxModel.image
         val boxDescription = mBoxModel.description
         val boxStatus = mBoxModel.status
         val boxColor = mBoxModel.color
         val boxLocationImg = mBoxModel.location_image
+
+        updateVehicleModel(boxVehicle)
 
         //box_id_field.text = box_id
         boxNameField.text = boxName
@@ -206,7 +242,7 @@ class BoxFragment : Fragment(){
             boxStatusField.visibility = View.VISIBLE
 
         //box_notes_field.text = box_notes
-        boxLocationField.text = boxLocation
+        boxLocationDetailsField.text = boxLocationDetails
 
         boxStatusField.removeAllViews()
         for (tag in boxStatus.split(";")){
@@ -248,7 +284,7 @@ class BoxFragment : Fragment(){
         boxNameField = v.findViewById(R.id.box_summary_name)
         boxDescriptionField = v.findViewById(R.id.box_summary_description)
         //box_notes_field = v.findViewById(R.id.box_summary_notes)
-        boxLocationField = v.findViewById(R.id.box_location_name)
+        boxLocationDetailsField = v.findViewById(R.id.box_summary_location_details)
         boxStatusField = v.findViewById(R.id.box_summary_status)
         boxSummaryImageField = v.findViewById(R.id.box_summary_image)
         boxLocationImageField = v.findViewById(R.id.box_location_image)
@@ -257,8 +293,6 @@ class BoxFragment : Fragment(){
 
         // Transition taget element
         boxContainer.transitionName = mBoxModel.id
-
-        updateContent()
 
         //Init Image Fullscreen on click
         boxSummaryImageField.setOnClickListener {
@@ -288,6 +322,25 @@ class BoxFragment : Fragment(){
         mBoxItemAdapter = BoxItemAdapter(mBoxModel.id)
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = mBoxItemAdapter
+
+        mVehicleAdapter = VehicleAdapter(ArrayList<VehicleModel>())
+        mVehicleAdapter.setOnVehicleClickListener(object: VehicleAdapter.OnVehicleClickListener{
+            override fun onVehicleClicked(vehicle: VehicleModel, view: View) {
+                if (vehicle.id.toString() != "-1"){
+                    exitTransition = Hold()
+                    val extras = FragmentNavigatorExtras(
+                        view to vehicle.id.toString()
+                    )
+                    val navController: NavController = Navigation.findNavController(view)
+                    navController.navigate(BoxFragmentDirections.actionBoxFragmentToVehicleDetailFragment(vehicle), extras)
+                }
+            }
+        })
+        val recyclerviewVehicle = v.findViewById<View>(R.id.box_summary_vehicle_rv) as RecyclerView
+        recyclerviewVehicle.layoutManager = LinearLayoutManager(activity)
+        recyclerviewVehicle.adapter = mVehicleAdapter
+
+        updateContent()
 
         // Swipe functionality
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT + ItemTouchHelper.LEFT) {

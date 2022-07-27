@@ -119,4 +119,26 @@
     <string name="qrcode_belongs_other_org">Dieser QR-Code gehört zur Einheit "'"</string>
     <string name="qrcode_change_org">"'". Einheit wechseln?</string>
     <string name="qrcode_change_org_btn">Wechseln</string>
+    <string name="title_nav_vehicles">Fahrzeuge</string>
+    <string name="content_description_vehicle_image">Fahrzeug Foto</string>
+    <string name="vehicle_containting_boxes">Geladene Boxen</string>
+    <string name="vehicle_empty">Keine Boxen auf Fahrzeug</string>
+    <string name="vehicle_edit_title">Fahrzeugdaten</string>
+    <string name="vehicle_edit_name">Name</string>
+    <string name="vehicle_edit_callname">Funkrufname</string>
+    <string name="vehicle_edit_parkingspot">Stellplatz</string>
+    <string name="dialog_order_vehicles_by_name">Name</string>
+    <string name="dialog_order_vehicles_by_callname">Funkrufname</string>
+    <string name="dialog_order_vehicles_by_parking_spot">Stellplatz</string>
+    <string name="content_description_parking_spot">Stellplatz</string>
+    <string name="dialog_delete_vehicle_title">Fahrzeug Löschen?</string>
+    <string name="dialog_delete_vehicle_text">Soll das Fahrzeug wirklich gelöscht werden?</string>
+    <string name="error_vehicle_edit_field">Fahrzeugname darf nicht leer sein</string>
+    <string name="fragment_vehicle_edit_title">Fahrzeug bearbeiten</string>
+    <string name="fragment_vehicle_edit_title_new">Neues Fahrzeug</string>
+    <string name="vehicle_details_title">Fahrzeug Details</string>
+    <string name="vehicle">Fahrzeug</string>
+    <string name="location_details">Standort Details</string>
+    <string name="error_no_vehicle_assigned">nicht zugeordnet</string>
+    <string name="vehicle_location_label">Fahrzeug / Standort</string>
 </resources>

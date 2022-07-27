@@ -20,10 +20,10 @@ import com.pixlbee.heros.R
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ContentItem
 import com.pixlbee.heros.models.ItemModel
+import com.pixlbee.heros.models.VehicleModel
 import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.concurrent.ExecutionException
-import kotlin.collections.ArrayList
 
 
 class Utils {
@@ -59,12 +59,13 @@ class Utils {
         fun readBoxModelFromDataSnapshot(context: Context?, box: DataSnapshot): BoxModel {
             val image = box.child("image").value.toString()
             val locationImage = box.child("location_image").value.toString()
-            val location = box.child("location").value.toString()
+            val location_details = box.child("location_details").value.toString()
             val id = box.child("id").value.toString()
             val numericId = box.child("numeric_id").value.toString().toLong()
             val name = box.child("name").value.toString()
             val description = box.child("description").value.toString()
             val qrcode = box.child("qrcode").value.toString()
+            val in_vehicle = box.child("in_vehicle").value.toString()
             val notes = box.child("notes").value.toString()
 
             var color: Int? = box.child("color").value.toString().toIntOrNull()
@@ -98,7 +99,8 @@ class Utils {
                 name,
                 description,
                 qrcode,
-                location,
+                in_vehicle,
+                location_details,
                 image,
                 locationImage,
                 color,
@@ -115,6 +117,17 @@ class Utils {
             val image = item.child("image").value.toString()
             val tags = item.child("tags").value.toString()
             return ItemModel(id, name, description, tags, image)
+        }
+
+
+        fun readVehicleModelFromDataSnapshot(context: Context?, item: DataSnapshot): VehicleModel {
+            val id = item.child("id").value.toString()
+            val name = item.child("name").value.toString()
+            val callname = item.child("callname").value.toString()
+            val parkingSpot = item.child("parking_spot").value.toString()
+            val description = item.child("description").value.toString()
+            val image = item.child("image").value.toString()
+            return VehicleModel(id, name, callname, description, parkingSpot, image)
         }
 
 
@@ -184,6 +197,9 @@ class Utils {
                 "order_by_status" -> { return R.id.radioButtonOrderStatus }
                 "order_by_color" -> { return R.id.radioButtonOrderColor }
                 "order_by_latest" -> { return R.id.radioButtonOrderLatest }
+                "vehicles_order_by_name" -> { return R.id.radioButtonVehiclesOrderName }
+                "vehicles_order_by_callname" -> { return R.id.radioButtonVehiclesOrderCallname }
+                "vehicles_order_by_parking_spot" -> { return R.id.radioButtonVehiclesOrderParkingSpot }
             }
             return R.id.radioButtonOrderId
         }
@@ -196,6 +212,9 @@ class Utils {
                 R.id.radioButtonOrderStatus -> { return "order_by_status" }
                 R.id.radioButtonOrderColor -> { return "order_by_color" }
                 R.id.radioButtonOrderLatest -> { return "order_by_latest" }
+                R.id.radioButtonVehiclesOrderName -> { return "vehicles_order_by_name" }
+                R.id.radioButtonVehiclesOrderCallname -> { return "vehicles_order_by_callname" }
+                R.id.radioButtonVehiclesOrderParkingSpot -> { return "vehicles_order_by_parking_spot" }
             }
             return "order_by_id"
         }
@@ -204,6 +223,8 @@ class Utils {
             when (btnText) {
                 "order_ascending" -> { return R.id.radioButtonOrderAscending }
                 "order_descending" -> { return R.id.radioButtonOrderDescending }
+                "vehicles_order_ascending" -> { return R.id.radioButtonVehiclesOrderAscending }
+                "vehicles_order_descending" -> { return R.id.radioButtonVehiclesOrderDescending }
             }
             return R.id.radioButtonOrderAscending
         }
@@ -212,6 +233,8 @@ class Utils {
             when (btnId) {
                 R.id.radioButtonOrderAscending -> { return "order_ascending" }
                 R.id.radioButtonOrderDescending -> { return "order_descending" }
+                R.id.radioButtonVehiclesOrderAscending -> { return "vehicles_order_ascending" }
+                R.id.radioButtonVehiclesOrderDescending -> { return "vehicles_order_descending" }
             }
             return "order_ascending"
         }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/vehicle_btn_edit"
+        android:icon="@drawable/ic_baseline_edit_24"
+        android:title="@string/btn_edit"
+        app:showAsAction="always|collapseActionView" />
+    <item
+        android:id="@+id/vehicle_btn_delete"
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:title="@string/btn_delete"
+        app:showAsAction="always" />
+</menu>

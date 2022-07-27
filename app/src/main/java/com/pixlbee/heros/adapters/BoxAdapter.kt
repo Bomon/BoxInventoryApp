@@ -57,7 +57,30 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
         this.holder = holder
         holder.boxId.text = mBoxList[position].id
         holder.boxName.text = mBoxList[position].name
-        holder.boxLocation.text = mBoxList[position].location
+
+        val vehiclesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("vehicles")
+        vehiclesRef.get().addOnCompleteListener { task ->
+            var foundVehicle = false
+            if (task.isSuccessful) {
+                val vehicles: DataSnapshot? = task.result
+                if (vehicles != null) {
+                    for (vehicle: DataSnapshot in vehicles.children) {
+                        val id = vehicle.child("id").value.toString()
+                        val vehicleKey = vehicle.key.toString()
+                        if (id == mBoxList[position].vehicle) {
+                            holder.boxVehicle.text = vehicle.child("name").value.toString()
+                            foundVehicle = true
+                            break
+                        }
+                    }
+                }
+            }
+            if (!foundVehicle){
+                holder.boxVehicle.text = mContext.resources.getString(R.string.error_no_vehicle_assigned)
+            }
+        }
+
+
         holder.boxColor.background.setTint(mBoxList[position].color)
 
         if (mBoxList[position].image != ""){
@@ -88,7 +111,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
 
         var boxId: TextView = itemView.findViewById(R.id.box_id)
         var boxName: TextView = itemView.findViewById(R.id.box_name)
-        var boxLocation: TextView = itemView.findViewById(R.id.box_location)
+        var boxVehicle: TextView = itemView.findViewById(R.id.box_vehicle)
         var boxImg: ImageView = itemView.findViewById(R.id.box_img)
         var boxStatusTags: ChipGroup = itemView.findViewById(R.id.box_status)
         var boxContainer: MaterialCardView = itemView.findViewById(R.id.box_card_small)

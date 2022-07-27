@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         // Init App bar configuration (defines home fragments where drawer is visible, otherwise back button)
         mDrawer = binding.drawerLayout
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.navigation_home, R.id.navigation_qrscanner, R.id.navigation_items),
+            setOf(R.id.navigation_vehicles, R.id.navigation_boxes, R.id.navigation_items, R.id.navigation_qrscanner),
             mDrawer
         )
 

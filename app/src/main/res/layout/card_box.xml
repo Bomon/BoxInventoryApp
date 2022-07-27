@@ -68,12 +68,34 @@
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?android:attr/textColorSecondary" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/box_location"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_height="wrap_content"
-                android:layout_margin="1dp"
-                android:text="@string/location" />
+                android:layout_width="match_parent"
+                android:orientation="horizontal">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/box_vehicle_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="20dp"
+                    android:scaleType="fitStart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_baseline_fire_truck_24" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/box_vehicle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="1dp"
+                    android:text="@string/location"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/box_vehicle_icon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 
