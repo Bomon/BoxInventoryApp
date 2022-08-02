@@ -39,6 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:layout_marginBottom="8dp"
                 android:padding="16dp">
 
                 <TextView
@@ -56,42 +57,55 @@
                     android:layout_height="wrap_content"
                     app:chipSpacingHorizontal="6dp"
                     app:chipSpacingVertical="-8dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/box_color"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
 
-                <TextView
-                    android:id="@+id/vehicle_details_description"
-                    android:layout_marginTop="16dp"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/vehicle_details_parking_spot_container"
+                    android:layout_marginTop ="16dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/content_description_description"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?android:attr/textColorSecondary" />
+                    android:layout_width="wrap_content"
+                    android:orientation="horizontal">
 
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginRight="4dp"
+                        android:scaleType="fitStart"
+                        app:srcCompat="@drawable/ic_baseline_location_on_24" />
+
+                    <TextView
+                        android:id="@+id/vehicle_details_parking_spot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/content_description_description"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="?android:attr/textColorSecondary" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
             <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/vehicle_divider"
+                android:id="@+id/vehicle_details_divider"
                 app:dividerInsetStart="8dp"
                 app:dividerInsetEnd="8dp"
-                android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
             <TextView
-                android:id="@+id/vehicle_details_parking_spot"
+                android:id="@+id/vehicle_details_description"
+                android:layout_margin="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:text="@string/content_description_parking_spot"
+                android:text="@string/content_description_description"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?android:attr/textColorSecondary" />
 
             <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/vehicle_divider2"
+                android:id="@+id/vehicle_details_divider2"
                 app:dividerInsetStart="8dp"
                 app:dividerInsetEnd="8dp"
                 android:layout_width="match_parent"

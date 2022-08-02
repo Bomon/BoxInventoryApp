@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
@@ -15,11 +17,13 @@ import com.google.android.material.chip.ChipGroup
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
+import com.pixlbee.heros.fragments.BoxesFragmentDirections
 import com.pixlbee.heros.models.BoxModel
+import com.pixlbee.heros.models.VehicleModel
 import com.pixlbee.heros.utility.Utils
 
 
-class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Boolean = false) : RecyclerView.Adapter<BoxAdapter.BoxViewHolder>() {
+class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Boolean = false, private var locationClickable: Boolean = false, private var tagClickable: Boolean = false) : RecyclerView.Adapter<BoxAdapter.BoxViewHolder>() {
 
     private lateinit var mContext: Context
     private var mBoxList: ArrayList<BoxModel> = ArrayList()
@@ -33,7 +37,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
     }
 
     override fun getItemId(position: Int): Long {
-        return mBoxList[position].numeric_id
+        return mBoxList[position].numeric_id.toLong()
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -61,6 +65,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
         val vehiclesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("vehicles")
         vehiclesRef.get().addOnCompleteListener { task ->
             var foundVehicle = false
+            var mVehicle: VehicleModel? = null
             if (task.isSuccessful) {
                 val vehicles: DataSnapshot? = task.result
                 if (vehicles != null) {
@@ -70,6 +75,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
                         if (id == mBoxList[position].vehicle) {
                             holder.boxVehicle.text = vehicle.child("name").value.toString()
                             foundVehicle = true
+                            mVehicle = Utils.readVehicleModelFromDataSnapshot(vehicle)
                             break
                         }
                     }
@@ -77,8 +83,16 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
             }
             if (!foundVehicle){
                 holder.boxVehicle.text = mContext.resources.getString(R.string.error_no_vehicle_assigned)
+            } else if (locationClickable){
+                holder.boxVehicle.setOnClickListener {
+                    val navController: NavController = Navigation.findNavController(it)
+                    navController.navigate(BoxesFragmentDirections.actionNavigationBoxesToVehicleDetailFragment(
+                        mVehicle!!
+                    ))
+                }
             }
         }
+
 
 
         holder.boxColor.background.setTint(mBoxList[position].color)
@@ -101,9 +115,29 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
                     chip.minHeight = 1
                     chip.setTextAppearance(R.style.BoxStatusChip)
                     holder.boxStatusTags.addView(chip)
+                    if (tagClickable){
+                        chip.setOnClickListener {
+                            mListener.onBoxTagClicked(tag)
+                        }
+                    }
                 }
             }
         }
+
+        // show incomplete icon if box has items taken out
+        var isIncomplete = false
+        for (ci in mBoxList[position].content){
+            if (ci.amount_taken.toInt() != 0){
+                isIncomplete = true
+                break
+            }
+        }
+        if (isIncomplete){
+            holder.boxIncompleteIcon.visibility = View.VISIBLE
+        } else {
+            holder.boxIncompleteIcon.visibility = View.GONE
+        }
+
     }
 
 
@@ -116,6 +150,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
         var boxStatusTags: ChipGroup = itemView.findViewById(R.id.box_status)
         var boxContainer: MaterialCardView = itemView.findViewById(R.id.box_card_small)
         var boxColor: View = itemView.findViewById(R.id.box_color)
+        var boxIncompleteIcon: ImageView = itemView.findViewById(R.id.box_incomplete_icon)
 
         init {
             itemView.setOnClickListener(this)
@@ -144,6 +179,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
 
     interface OnBoxClickListener{
         fun onBoxClicked(box: BoxModel, view: View)
+        fun onBoxTagClicked(tag: String)
     }
 
 

@@ -3,9 +3,9 @@ package com.pixlbee.heros.fragments
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.divider.MaterialDivider
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
@@ -36,7 +37,7 @@ import com.stfalcon.imageviewer.StfalconImageViewer
 
 class VehicleDetailFragment : Fragment() {
     private lateinit var mVehicleModel: VehicleModel
-    lateinit var mAdapter: BoxAdapter
+    private lateinit var mAdapter: BoxAdapter
     private lateinit var mFirebaseListener: ValueEventListener
     var mBoxList: ArrayList<BoxModel> = ArrayList()
 
@@ -45,7 +46,9 @@ class VehicleDetailFragment : Fragment() {
     private lateinit var vehicleParkingSpotField: TextView
     private lateinit var vehicleDescriptionField: TextView
     private lateinit var vehicleImageField: ImageView
-    lateinit var vehicleContainedBoxesEmptyLabel: TextView
+    private lateinit var vehicleContainedBoxesEmptyLabel: TextView
+    private lateinit var vehicleParkingSpotContainer: LinearLayout
+    private lateinit var vehicleDescriptionDivider: MaterialDivider
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -159,8 +162,10 @@ class VehicleDetailFragment : Fragment() {
         val vehicleImage = mVehicleModel.image
 
         if (vehicleDescription == ""){
+            vehicleDescriptionDivider.visibility = View.GONE
             vehicleDescriptionField.visibility = View.GONE
         } else {
+            vehicleDescriptionDivider.visibility = View.VISIBLE
             vehicleDescriptionField.visibility = View.VISIBLE
         }
 
@@ -168,10 +173,10 @@ class VehicleDetailFragment : Fragment() {
         vehicleDescriptionField.text = vehicleDescription
         vehicleParkingSpotField.text = vehicleParkingSpot
 
-        if (vehicleDescription == "") {
-            vehicleDescriptionField.visibility = View.GONE
+        if (vehicleParkingSpot == "") {
+            vehicleParkingSpotContainer.visibility = View.GONE
         } else {
-            vehicleDescriptionField.visibility = View.VISIBLE
+            vehicleParkingSpotContainer.visibility = View.VISIBLE
         }
 
         vehicleCallnameField.removeAllViews()
@@ -219,13 +224,13 @@ class VehicleDetailFragment : Fragment() {
         vehicleCallnameField = v.findViewById(R.id.vehicle_details_callname)
         vehicleParkingSpotField = v.findViewById(R.id.vehicle_details_parking_spot)
         vehicleContainedBoxesEmptyLabel = v.findViewById(R.id.vehicle_details_content_empty_label)
+        vehicleParkingSpotContainer = v.findViewById(R.id.vehicle_details_parking_spot_container)
+        vehicleDescriptionDivider = v.findViewById(R.id.vehicle_details_divider)
 
         val vehicleContainer: ConstraintLayout = v.findViewById(R.id.vehicle_details_fragment_container)
 
         // Transition taget element
         vehicleContainer.transitionName = mVehicleModel.id.toString()
-
-        updateContent()
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.vehicle_details_content) as RecyclerView
@@ -238,6 +243,10 @@ class VehicleDetailFragment : Fragment() {
                 // second argument is the animation start view
                 val navController: NavController = Navigation.findNavController(view)
                 navController.navigate(VehicleDetailFragmentDirections.actionVehicleDetailFragmentToBoxFragment(box), extras)
+            }
+
+            override fun onBoxTagClicked(tag: String) {
+                //do nothing
             }
         })
 
@@ -259,20 +268,18 @@ class VehicleDetailFragment : Fragment() {
                 val vehicles = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles")
                 for (vehicle: DataSnapshot in vehicles.children){
                     if (vehicle.child("id").value.toString() == mVehicleModel.id.toString()){
-                        mVehicleModel = Utils.readVehicleModelFromDataSnapshot(context, vehicle)
+                        mVehicleModel = Utils.readVehicleModelFromDataSnapshot(vehicle)
                         updateContent()
                         break
                     }
                 }
 
-                Log.e("Error", "looking for boxes with id " + mVehicleModel.id.toString())
                 mBoxList.clear()
                 val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                 for (box: DataSnapshot in boxes.children){
                     if (box.child("in_vehicle").value.toString() == mVehicleModel.id.toString()) {
                         val boxModel = Utils.readBoxModelFromDataSnapshot(context, box)
                         mBoxList.add(boxModel)
-                        Log.e("Error", "found box")
                     }
                 }
 
@@ -300,6 +307,10 @@ class VehicleDetailFragment : Fragment() {
 
         postponeEnterTransition()
         view.doOnPreDraw { startPostponedEnterTransition() }
+
+
+
+        updateContent()
 
     }
 

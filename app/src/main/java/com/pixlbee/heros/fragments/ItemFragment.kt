@@ -251,7 +251,7 @@ class ItemFragment : Fragment() {
                 val items = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("items")
                 for (item: DataSnapshot in items.children){
                     if (item.child("id").value.toString() == mItemModel.id){
-                        mItemModel = Utils.readItemModelFromDataSnapshot(context, item)
+                        mItemModel = Utils.readItemModelFromDataSnapshot(item)
                         updateContent()
                         break
                     }

@@ -46,12 +46,14 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
     private var searchQueryText: String = ""
     private var isFirstCreate: Boolean = true
 
+    private lateinit var searchView: SearchView
+    private lateinit var searchBtn: MenuItem
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_home, menu)
-        val searchBtn = menu.findItem(R.id.home_btn_search)
-
-        val searchView: SearchView = MenuItemCompat.getActionView(searchBtn) as SearchView
+        searchBtn = menu.findItem(R.id.home_btn_search)
+        searchView = MenuItemCompat.getActionView(searchBtn) as SearchView
         searchView.setOnQueryTextListener(this)
         searchBtn.setOnActionExpandListener(object :
             MenuItem.OnActionExpandListener {
@@ -88,9 +90,10 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
                     if(Utils.checkHasWritePermission(context)){
                         val bundle = Bundle()
                         val boxModel = BoxModel(
-                            System.currentTimeMillis(),
+                            (UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE).toString(),
                             "",
                             "",
+                            "Box",
                             "",
                             "",
                             "-1",
@@ -178,7 +181,7 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
         val view: View = inflater.inflate(R.layout.fragment_home, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_home) as RecyclerView
 
-        mAdapter = BoxAdapter(mBoxList)
+        mAdapter = BoxAdapter(mBoxList, locationClickable = true, tagClickable = true)
         mAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         mAdapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
             override fun onBoxClicked(box: BoxModel, view: View) {
@@ -188,6 +191,11 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
                 )
                 val navController: NavController = Navigation.findNavController(view)
                 navController.navigate(BoxesFragmentDirections.actionNavigationBoxesToBoxFragment(box), extras)
+            }
+
+            override fun onBoxTagClicked(tag: String) {
+                searchBtn.expandActionView()
+                searchView.setQuery(tag, true)
             }
         })
 
@@ -351,6 +359,14 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
             R.id.radioButtonOrderLocation -> {
                 filteredModelList.sortWith(
                     compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.vehicle) }
+                )
+                if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
+                    filteredModelList.reverse()
+                true
+            }
+            R.id.radioButtonCompleteness -> {
+                filteredModelList.sortWith(
+                    compareBy { it.content.sumOf { ic -> ic.amount_taken.toInt() * -1 } }
                 )
                 if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()

@@ -1,6 +1,7 @@
 package com.pixlbee.heros.fragments
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,10 +18,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.Hold
+import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
@@ -29,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.pixlbee.heros.R
 import com.pixlbee.heros.adapters.VehicleAdapter
+import com.pixlbee.heros.models.ItemModel
 import com.pixlbee.heros.models.VehicleModel
 import com.pixlbee.heros.utility.Utils
 import java.text.SimpleDateFormat
@@ -36,6 +40,7 @@ import java.util.*
 
 class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
 
+    private var returnVehicleInsteadOfShowDetails: Boolean = false
     private var viewGroup: ViewGroup? = null
     var mVehiclesList: ArrayList<VehicleModel> = ArrayList<VehicleModel>()
     lateinit var mAdapter: VehicleAdapter
@@ -155,24 +160,41 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
 
+        returnVehicleInsteadOfShowDetails = arguments?.getBoolean("return_vehicle_instead_of_show_details") as Boolean
+        if (returnVehicleInsteadOfShowDetails) {
+            (activity as AppCompatActivity?)!!.supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+            (activity as AppCompatActivity?)!!.supportActionBar!!.setHomeButtonEnabled(false)
+        } else {
+            // Show double press BACk to exit
+
+            requireActivity().onBackPressedDispatcher.addCallback(this) {
+                if (doubleBackToExitPressedOnce) {
+                    exitToast.cancel()
+                    activity?.finish()
+                }
+                if (::exitToast.isInitialized){
+                    exitToast.cancel()
+                }
+                doubleBackToExitPressedOnce = true
+                Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+                exitToast = Toast.makeText(context, getText(R.string.press_back_again_to_exit), Toast.LENGTH_LONG)
+                exitToast.show()
+            }
+
+        }
+
+        val transformEnter = MaterialContainerTransform(requireContext(), true)
+        transformEnter.scrimColor = Color.TRANSPARENT
+        sharedElementEnterTransition = transformEnter
+
+        val transformReturn = MaterialContainerTransform(requireContext(), false)
+        transformReturn.scrimColor = Color.TRANSPARENT
+        sharedElementReturnTransition = transformReturn
+
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
 
         (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.title_nav_vehicles)
-
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (doubleBackToExitPressedOnce) {
-                exitToast.cancel()
-                activity?.finish()
-            }
-            if (::exitToast.isInitialized){
-                exitToast.cancel()
-            }
-            doubleBackToExitPressedOnce = true
-            Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
-            exitToast = Toast.makeText(context, getText(R.string.press_back_again_to_exit), Toast.LENGTH_LONG)
-            exitToast.show()
-        }
 
     }
 
@@ -191,16 +213,31 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
 
         mAdapter = VehicleAdapter(mVehiclesList)
         mAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-        mAdapter.setOnVehicleClickListener(object: VehicleAdapter.OnVehicleClickListener{
-            override fun onVehicleClicked(vehicle: VehicleModel, view: View) {
-                exitTransition = Hold()
-                val extras = FragmentNavigatorExtras(
-                    view to vehicle.id.toString()
-                )
-                val navController: NavController = Navigation.findNavController(view)
-                navController.navigate(VehiclesFragmentDirections.actionNavigationVehiclesToVehicleDetailFragment(vehicle), extras)
-            }
-        })
+
+
+        if (returnVehicleInsteadOfShowDetails) {
+            mAdapter.setOnVehicleClickListener(object : VehicleAdapter.OnVehicleClickListener {
+                override fun onVehicleClicked(vehicle: VehicleModel, view: View) {
+                    val navController: NavController = Navigation.findNavController(view)
+                    // push the selected item back to BoxEditFragment
+                    navController.previousBackStackEntry?.savedStateHandle?.set("vehicleModel", vehicle)
+                    navController.popBackStack()
+                }
+            })
+        } else {
+            mAdapter.setOnVehicleClickListener(object: VehicleAdapter.OnVehicleClickListener{
+                override fun onVehicleClicked(vehicle: VehicleModel, view: View) {
+                    exitTransition = Hold()
+                    val extras = FragmentNavigatorExtras(
+                        view to vehicle.id.toString()
+                    )
+                    val navController: NavController = Navigation.findNavController(view)
+                    navController.navigate(VehiclesFragmentDirections.actionNavigationVehiclesToVehicleDetailFragment(vehicle), extras)
+                }
+            })
+
+        }
+
 
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = mAdapter
@@ -224,6 +261,17 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
             val task = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("last_Login").setValue(timeStamp)
             isFirstCreate = false
         }
+
+        if (returnVehicleInsteadOfShowDetails) {
+            // receive new item from ItemEditFragment
+            val navController = findNavController()
+            navController.currentBackStackEntry?.savedStateHandle?.getLiveData<ItemModel>("item")?.observe(
+                viewLifecycleOwner) { result ->
+                // Push this back to the BoxEditFragment
+                navController.previousBackStackEntry?.savedStateHandle?.set("item_id", result.id)
+                navController.navigateUp()
+            }
+        }
     }
 
 
@@ -233,7 +281,7 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
                 mVehiclesList.clear()
                 val vehicles = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles")
                 for (vehicle: DataSnapshot in vehicles.children){
-                    val vehicleModel = Utils.readVehicleModelFromDataSnapshot(context, vehicle)
+                    val vehicleModel = Utils.readVehicleModelFromDataSnapshot(vehicle)
                     mVehiclesList.add(vehicleModel)
                 }
                 mAdapter.setFilter(filterAndSort(mVehiclesList))

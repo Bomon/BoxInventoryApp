@@ -20,7 +20,7 @@ class VehicleAdapter(var content: ArrayList<VehicleModel>, private var compactVi
     private lateinit var mContext: Context
     private var mVehicleList: ArrayList<VehicleModel> = ArrayList()
 
-    private lateinit var mListener: OnVehicleClickListener
+    private var mListener: OnVehicleClickListener? = null
     private lateinit var holder: VehicleViewHolder
 
 
@@ -64,7 +64,7 @@ class VehicleAdapter(var content: ArrayList<VehicleModel>, private var compactVi
         if (mVehicleList[position].parking_spot == "") {
             holder.vehicleParkingSpotContainer.visibility = View.GONE
         } else {
-            holder.vehicleParkingSpotContainer.visibility = View.VISIBLE
+            //holder.vehicleParkingSpotContainer.visibility = View.VISIBLE
         }
 
         if (mVehicleList[position].image != ""){
@@ -78,7 +78,7 @@ class VehicleAdapter(var content: ArrayList<VehicleModel>, private var compactVi
     }
 
 
-    inner class VehicleViewHolder(itemView: View, private var mListener: OnVehicleClickListener, compactView: Boolean) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
+    inner class VehicleViewHolder(itemView: View, private var mListener: OnVehicleClickListener?, compactView: Boolean) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
         var vehicleName: TextView = itemView.findViewById(R.id.vehicle_name)
         var vehicleCallname: TextView = itemView.findViewById(R.id.vehicle_callname)
@@ -94,7 +94,7 @@ class VehicleAdapter(var content: ArrayList<VehicleModel>, private var compactVi
         override fun onClick(view: View?) {
             if(mListener != null){
                 // second argument is the element from which the transition will start
-                mListener.onVehicleClicked(mVehicleList[adapterPosition], vehicleContainer)
+                mListener?.onVehicleClicked(mVehicleList[adapterPosition], vehicleContainer)
             }
             true
         }

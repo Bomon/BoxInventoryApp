@@ -148,7 +148,7 @@
                     android:layout_height="wrap_content"
                     app:helperTextEnabled="true"
                     app:helperText="@string/edit_box_status_helper"
-                    android:hint="@string/edit_box_status">
+                    android:hint="@string/edit_item_status">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/item_edit_tags"

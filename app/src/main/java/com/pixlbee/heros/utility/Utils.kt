@@ -59,13 +59,14 @@ class Utils {
         fun readBoxModelFromDataSnapshot(context: Context?, box: DataSnapshot): BoxModel {
             val image = box.child("image").value.toString()
             val locationImage = box.child("location_image").value.toString()
-            val location_details = box.child("location_details").value.toString()
+            val locationDetails = box.child("location_details").value.toString()
+            val type = box.child("type").value.toString()
             val id = box.child("id").value.toString()
-            val numericId = box.child("numeric_id").value.toString().toLong()
+            val numericId = box.child("numeric_id").value.toString()
             val name = box.child("name").value.toString()
             val description = box.child("description").value.toString()
             val qrcode = box.child("qrcode").value.toString()
-            val in_vehicle = box.child("in_vehicle").value.toString()
+            val inVehicle = box.child("in_vehicle").value.toString()
             val notes = box.child("notes").value.toString()
 
             var color: Int? = box.child("color").value.toString().toIntOrNull()
@@ -82,7 +83,12 @@ class Utils {
             val contentList = ArrayList<ContentItem>()
             for (c: DataSnapshot in content.children){
                 val itemAmount = c.child("amount").value.toString()
+                var itemAmountTaken = c.child("amount_taken").value.toString()
+                if (itemAmountTaken == "null"){
+                    itemAmountTaken = "0"
+                }
                 val itemId = c.child("id").value.toString()
+                val itemNumericId = c.child("numeric_id").value.toString()
                 val itemInvNum = c.child("invnum").value.toString()
                 var itemColor: Int? = c.child("color").value.toString().toIntOrNull()
                 if (itemColor == null) {
@@ -91,16 +97,17 @@ class Utils {
                         itemColor = ContextCompat.getColor(context, R.color.default_item_color)
                     }
                 }
-                contentList.add(ContentItem(c.key.toString(), itemAmount, itemId, itemInvNum, itemColor))
+                contentList.add(ContentItem(itemNumericId, c.key.toString(), itemAmount, itemAmountTaken, itemId, itemInvNum, itemColor))
             }
             return BoxModel(
                 numericId,
                 id,
                 name,
+                type,
                 description,
                 qrcode,
-                in_vehicle,
-                location_details,
+                inVehicle,
+                locationDetails,
                 image,
                 locationImage,
                 color,
@@ -110,7 +117,7 @@ class Utils {
         }
 
 
-        fun readItemModelFromDataSnapshot(context: Context?, item: DataSnapshot): ItemModel {
+        fun readItemModelFromDataSnapshot(item: DataSnapshot): ItemModel {
             val id = item.child("id").value.toString()
             val name = item.child("name").value.toString()
             val description = item.child("description").value.toString()
@@ -120,7 +127,7 @@ class Utils {
         }
 
 
-        fun readVehicleModelFromDataSnapshot(context: Context?, item: DataSnapshot): VehicleModel {
+        fun readVehicleModelFromDataSnapshot(item: DataSnapshot): VehicleModel {
             val id = item.child("id").value.toString()
             val name = item.child("name").value.toString()
             val callname = item.child("callname").value.toString()
@@ -182,7 +189,7 @@ class Utils {
             var chipString = ""
             for (chip in chipGroup.allViews) {
                 if (chip is Chip){
-                    chipString += ";" + chip.text.toString()
+                    chipString += ";" + chip.text.toString().trim()
                 }
             }
             return chipString.removePrefix(";")
@@ -195,6 +202,7 @@ class Utils {
                 "order_by_name" -> { return R.id.radioButtonOrderName }
                 "order_by_location" -> { return R.id.radioButtonOrderLocation }
                 "order_by_status" -> { return R.id.radioButtonOrderStatus }
+                "order_by_completeness" -> { return R.id.radioButtonCompleteness }
                 "order_by_color" -> { return R.id.radioButtonOrderColor }
                 "order_by_latest" -> { return R.id.radioButtonOrderLatest }
                 "vehicles_order_by_name" -> { return R.id.radioButtonVehiclesOrderName }
@@ -210,6 +218,7 @@ class Utils {
                 R.id.radioButtonOrderName -> { return "order_by_name" }
                 R.id.radioButtonOrderLocation -> { return "order_by_location" }
                 R.id.radioButtonOrderStatus -> { return "order_by_status" }
+                R.id.radioButtonCompleteness -> { return "order_by_completeness" }
                 R.id.radioButtonOrderColor -> { return "order_by_color" }
                 R.id.radioButtonOrderLatest -> { return "order_by_latest" }
                 R.id.radioButtonVehiclesOrderName -> { return "vehicles_order_by_name" }

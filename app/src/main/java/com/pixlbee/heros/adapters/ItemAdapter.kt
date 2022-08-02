@@ -2,6 +2,7 @@ package com.pixlbee.heros.adapters
 
 import android.content.Context
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,6 +67,10 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
                     val chip = Chip(context)
                     chip.text = tag
                     holder.itemTags.addView(chip)
+                    chip.setOnClickListener {
+                        Log.e("Error", "Chip clicked: " + tag)
+                        mListener.onItemTagClicked(tag)
+                    }
                 }
             }
         } else {
@@ -96,8 +101,6 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
             itemView.setOnClickListener(this)
         }
 
-
-
         override fun onClick(view: View?) {
             if(mListener != null){
                 // second argument is the element from which the transition will start
@@ -117,6 +120,7 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     interface OnItemClickListener{
         fun onItemClicked(item: ItemModel, view: View)
+        fun onItemTagClicked(tag: String)
     }
 
 

@@ -36,6 +36,13 @@
             android:windowSoftInputMode="adjustPan"
             android:label="@string/app_name" >
         </activity>
+        <activity
+            android:name="com.pixlbee.heros.activities.SettingsActivity"
+            android:label="@string/activity_settings_title"
+            android:parentActivityName="com.pixlbee.heros.activities.MainActivity">
+        </activity>
+        <activity android:name="com.pixlbee.heros.activities.HerosAppIntro"
+            android:label="@string/app_name" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

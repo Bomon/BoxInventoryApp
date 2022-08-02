@@ -24,6 +24,7 @@ import com.pixlbee.heros.utility.Utils
 import dev.sasikanth.colorsheet.ColorSheet
 import it.sephiroth.android.library.numberpicker.NumberPicker
 import it.sephiroth.android.library.numberpicker.NumberPicker.OnNumberPickerChangeListener
+import java.lang.Integer.min
 
 class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adapter<BoxItemEditAdapter.BoxItemViewHolder>() {
 
@@ -38,8 +39,12 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
 
     init {
         setFilter(mDataList)
+        setHasStableIds(true)
     }
 
+    override fun getItemId(position: Int): Long {
+        return mItemModel[position].numeric_id.toLong()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BoxItemViewHolder {
         mContext = parent.context
@@ -79,6 +84,7 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
         private var itemEditAmount: NumberPicker
+        private var itemEditAmountTaken: NumberPicker
         private var itemEditInvnum: ChipGroup
         //var item_edit_status: EditText
         private var itemName: TextView
@@ -89,6 +95,7 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
 
         init {
             itemEditAmount = itemView.findViewById(R.id.box_item_edit_amount)
+            itemEditAmountTaken = itemView.findViewById(R.id.box_item_edit_amount_taken)
             itemEditInvnum = itemView.findViewById(R.id.box_item_invnums)
             //item_edit_status = itemView.findViewById<EditText>(R.id.box_item_edit_status)
             itemName = itemView.findViewById<EditText>(R.id.box_item_name)
@@ -101,6 +108,7 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
                 notifyItemRangeChanged(adapterPosition, mItemModel.size)
             }
 
+            // For loops are needed for automatically closing number keyboard on enter press
             for( v in itemEditAmount.children) {
                 if(v is EditText) {
                     v.setOnEditorActionListener { _, _, _ ->
@@ -111,6 +119,18 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
                     }
                 }
             }
+            for( v in itemEditAmountTaken.children) {
+                if(v is EditText) {
+                    v.setOnEditorActionListener { _, _, _ ->
+                        v.clearFocus()
+                        val imm = v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(v.windowToken, 0)
+                        true
+                    }
+                }
+            }
+
+
             val fragmentManager = (mContext as FragmentActivity).supportFragmentManager
             val colors = mContext.resources.getIntArray(R.array.picker_colors)
             itemColorButton.setOnClickListener {
@@ -174,6 +194,21 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
             itemEditAmount.numberPickerChangeListener = object : OnNumberPickerChangeListener{
                 override fun onProgressChanged(numberPicker: NumberPicker, progress: Int, fromUser: Boolean) {
                     mItemModel[adapterPosition].item_amount = itemEditAmount.progress.toString()
+                    itemEditAmountTaken.progress = min(itemEditAmountTaken.progress, itemEditAmount.progress)
+                }
+
+                override fun onStartTrackingTouch(numberPicker: NumberPicker) {
+                }
+
+                override fun onStopTrackingTouch(numberPicker: NumberPicker) {
+                }
+            }
+
+            itemEditAmountTaken.numberPickerChangeListener = object : OnNumberPickerChangeListener{
+                override fun onProgressChanged(numberPicker: NumberPicker, progress: Int, fromUser: Boolean) {
+                    mItemModel[adapterPosition].item_amount_taken = min(itemEditAmountTaken.progress, itemEditAmount.progress).toString()
+                    itemEditAmountTaken.progress = min(itemEditAmountTaken.progress, itemEditAmount.progress)
+
                 }
 
                 override fun onStartTrackingTouch(numberPicker: NumberPicker) {
@@ -189,6 +224,7 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
             itemName.text = model.item_name
             //item_edit_amount.setText(model.item_amount)
             itemEditAmount.progress = model.item_amount.toInt()
+            itemEditAmountTaken.progress = model.item_amount_taken.toInt()
             setColorButtonColor(model.item_color, itemColorButton)
 
             itemEditInvnum.removeAllViews()

@@ -14,8 +14,8 @@ android {
         applicationId 'com.pixlbee.heros'
         minSdk 26
         targetSdk 32
-        versionCode 2
-        versionName "1.1"
+        versionCode 1
+        versionName "1.2"
 
         resConfigs "en", "de"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -24,15 +24,15 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            //proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             ndk {
                 debugSymbolLevel 'FULL'
             }
         }
         debug {
-            minifyEnabled true
-            //proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             ndk {
                 debugSymbolLevel 'FULL'
             }
@@ -84,6 +84,8 @@ dependencies {
     implementation 'com.github.librepdf:openpdf:1.3.24'
     implementation 'ro.andob.androidawt:androidawt:1.0.4'
     implementation 'androidx.preference:preference:1.2.0'
+    implementation 'com.google.android.play:core:1.10.3'
+    implementation 'com.github.AppIntro:AppIntro:6.2.0'
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.2'
     testImplementation 'junit:junit:4.13.2'

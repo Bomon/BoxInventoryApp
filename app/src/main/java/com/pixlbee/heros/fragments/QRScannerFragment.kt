@@ -83,6 +83,10 @@ class QRScannerFragment : Fragment() {
                 bundle.putSerializable("boxModel", box)
                 navController.navigate(R.id.action_navigation_qrscanner_to_boxFragment, bundle)
             }
+
+            override fun onBoxTagClicked(tag: String) {
+                // do nothing
+            }
         })
 
         recyclerview.layoutManager = LinearLayoutManager(activity)

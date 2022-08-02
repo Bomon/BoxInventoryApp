@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_navigation_boxes_to_boxEditFragment"
             app:destination="@id/boxEditFragment" />
+        <action
+            android:id="@+id/action_navigation_boxes_to_vehicleDetailFragment"
+            app:destination="@id/vehicleDetailFragment" />
     </fragment>
 
     <fragment
@@ -56,6 +59,9 @@
         <action
             android:id="@+id/action_boxFragment_to_vehicleDetailFragment"
             app:destination="@id/vehicleDetailFragment" />
+        <action
+            android:id="@+id/action_boxFragment_to_itemFragment"
+            app:destination="@id/itemFragment" />
     </fragment>
     <fragment
         android:id="@+id/boxEditFragment"
@@ -67,12 +73,20 @@
             android:name="items"
             app:argType="com.pixlbee.heros.models.BoxItemModel[]" />
         <argument
+            android:name="vehicleModel"
+            app:argType="com.pixlbee.heros.models.VehicleModel"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
             android:name="isNewBox"
             app:argType="boolean"
             android:defaultValue="false" />
         <action
             android:id="@+id/action_boxEditFragment_to_navigation_items"
             app:destination="@id/navigation_items" />
+        <action
+            android:id="@+id/action_boxEditFragment_to_navigation_vehicles"
+            app:destination="@id/navigation_vehicles" />
     </fragment>
     <fragment
         android:id="@+id/itemFragment"
@@ -86,6 +100,9 @@
         <argument
             android:name="itemModel"
             app:argType="com.pixlbee.heros.models.ItemModel" />
+        <action
+            android:id="@+id/action_itemFragment_to_vehicleDetailFragment"
+            app:destination="@id/vehicleDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
@@ -113,11 +130,14 @@
         <action
             android:id="@+id/action_navigation_vehicles_to_vehicleEditFragment"
             app:destination="@id/vehicleEditFragment" />
+        <argument
+            android:name="return_vehicle_instead_of_show_details"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/vehicleDetailFragment"
-        android:name="com.pixlbee.heros.fragments.VehicleDetailFragment"
-        android:label="VehicleDetailFragment" >
+        android:name="com.pixlbee.heros.fragments.VehicleDetailFragment" >
         <action
             android:id="@+id/action_vehicleDetailFragment_to_boxFragment"
             app:destination="@id/boxFragment" />
@@ -130,8 +150,7 @@
     </fragment>
     <fragment
         android:id="@+id/vehicleEditFragment"
-        android:name="com.pixlbee.heros.fragments.VehicleEditFragment"
-        android:label="VehicleEditFragment" >
+        android:name="com.pixlbee.heros.fragments.VehicleEditFragment" >
         <argument
             android:name="vehicleModel"
             app:argType="com.pixlbee.heros.models.VehicleModel" />
@@ -140,4 +159,8 @@
             app:argType="boolean"
             android:defaultValue="false" />
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.pixlbee.heros.fragments.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>

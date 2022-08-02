@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/preferences_title_category_pdf"
+        app:iconSpaceReserved="false">
+        <EditTextPreference
+            app:iconSpaceReserved="false"
+            android:dialogTitle="@string/pdf_address_title"
+            android:key="pdf_address"
+            android:summary="@string/pdf_address_summary"
+            android:title="@string/pdf_address_title" />
+        <EditTextPreference
+            app:iconSpaceReserved="false"
+            android:dialogTitle="@string/pdf_title_title"
+            android:key="pdf_title"
+            android:summary="@string/pdf_title_summary"
+            android:title="@string/pdf_title_title" />
+        <EditTextPreference
+            app:iconSpaceReserved="false"
+            android:dialogTitle="@string/pdf_subtitle_title"
+            android:key="pdf_subtitle"
+            android:summary="@string/pdf_subtitle_summary"
+            android:title="PDF Untertitel" />
+        <com.pixlbee.heros.preferences.ImagePreference
+            app:iconSpaceReserved="false"
+            android:layout="@layout/image_preference"
+            android:key="pdf_logo_left"
+            android:summary="@string/pdf_logo_left_summary"
+            android:title="@string/pdf_logo_left_title"/>
+        <com.pixlbee.heros.preferences.ImagePreference
+            app:iconSpaceReserved="false"
+            android:layout="@layout/image_preference"
+            android:key="pdf_logo_right"
+            android:summary="@string/pdf_logo_right_summary"
+            android:title="@string/pdf_logo_right_title"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

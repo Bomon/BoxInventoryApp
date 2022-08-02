@@ -38,28 +38,36 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
 import com.pixlbee.heros.adapters.BoxItemEditAdapter
+import com.pixlbee.heros.adapters.VehicleAdapter
 import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ContentItem
+import com.pixlbee.heros.models.VehicleModel
 import com.pixlbee.heros.utility.Utils
 import dev.sasikanth.colorsheet.ColorSheet
 import java.time.Instant
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 class BoxEditFragment : Fragment() {
 
     private lateinit var mBoxModel: BoxModel
+    private lateinit var mItemList: ArrayList<BoxItemModel>
+    private lateinit var mVehicle: VehicleModel
 
     private lateinit var boxEditImageField: ImageView
     private lateinit var boxEditLocationImageField: ImageView
-    private lateinit var boxEditLocationFieldContainer: TextInputLayout
+    private lateinit var boxEditVehicleField: ImageView
+    private lateinit var boxEditLocationDetailsFieldContainer: TextInputLayout
     private lateinit var boxEditNameField: TextInputEditText
     private lateinit var boxEditNameFieldContainer: TextInputLayout
     private lateinit var boxEditIdField: TextInputEditText
     private lateinit var boxEditIdFieldContainer: TextInputLayout
+    private lateinit var boxEditTypeField: TextInputEditText
+    private lateinit var boxEditTypeFieldContainer: TextInputLayout
     private lateinit var boxEditDescriptionField: TextInputEditText
-    private lateinit var boxEditLocationField: TextInputEditText
+    private lateinit var boxEditLocationDetailsField: TextInputEditText
     private lateinit var boxEditStatusChips: ChipGroup
     private lateinit var boxEditStatusInput: TextInputEditText
     private lateinit var boxEditQrcodeField: EditText
@@ -75,8 +83,8 @@ class BoxEditFragment : Fragment() {
 
     private var isNewBox: Boolean = false
     private lateinit var mBoxItemEditAdapter: BoxItemEditAdapter
+    private lateinit var mVehicleAdapter: VehicleAdapter
 
-    private lateinit var mItemList: ArrayList<BoxItemModel>
     private lateinit var navController: NavController
 
     private lateinit var imageBitmap: Bitmap
@@ -110,11 +118,6 @@ class BoxEditFragment : Fragment() {
             boxEditQrcodeFieldContainer.error = resources.getString(R.string.error_box_already_exists_qrcode)
             status = false
         }
-        if (boxEditLocationField.text.toString() == "") {
-            boxEditLocationFieldContainer.isErrorEnabled = true
-            boxEditLocationFieldContainer.error = resources.getString(R.string.error_field_empty)
-            status = false
-        }
         if (!status){
             Toast.makeText(context, resources.getString(R.string.error_box_edit_field), Toast.LENGTH_SHORT).show()
         }
@@ -136,11 +139,13 @@ class BoxEditFragment : Fragment() {
                         val id = box.child("id").value.toString()
                         if (id == mBoxModel.id) {
                             val boxKey: String = box.key.toString()
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("id").setValue(boxEditIdField.text.toString())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("name").setValue(boxEditNameField.text.toString())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("description").setValue(boxEditDescriptionField.text.toString())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("qrcode").setValue(boxEditQrcodeField.text.toString())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("location_details").setValue(boxEditLocationField.text.toString())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("id").setValue(boxEditIdField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("name").setValue(boxEditNameField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("description").setValue(boxEditDescriptionField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("type").setValue(boxEditTypeField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("qrcode").setValue(boxEditQrcodeField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("in_vehicle").setValue(mVehicle.id)
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("location_details").setValue(boxEditLocationDetailsField.text.toString().trim())
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("color").setValue(boxEditColor)
 
                             val chipString = Utils.chipListToString(boxEditStatusChips)
@@ -163,7 +168,7 @@ class BoxEditFragment : Fragment() {
                             val itemList = mBoxItemEditAdapter.getCurrentStatus()
                             val updatedContentItems = ArrayList<ContentItem>()
                             for (item: BoxItemModel in itemList) {
-                                val newItem = ContentItem("", item.item_amount, item.item_id, item.item_invnum, item.item_color)
+                                val newItem = ContentItem(item.numeric_id, "", item.item_amount, item.item_amount_taken, item.item_id, item.item_invnum, item.item_color)
                                 updatedContentItems.add(newItem)
                                 FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("content").push().setValue(newItem)
                             }
@@ -190,7 +195,8 @@ class BoxEditFragment : Fragment() {
         mBoxModel.id = boxEditIdField.text.toString()
         mBoxModel.name = boxEditNameField.text.toString()
         mBoxModel.qrcode = boxEditQrcodeField.text.toString()
-        mBoxModel.vehicle = boxEditLocationField.text.toString()
+        mBoxModel.type = boxEditTypeField.text.toString()
+        mBoxModel.vehicle = boxEditLocationDetailsField.text.toString()
         mBoxModel.description = boxEditDescriptionField.text.toString()
         mBoxModel.color = boxEditColor
         mBoxModel.status = Utils.chipListToString(boxEditStatusChips)
@@ -204,7 +210,7 @@ class BoxEditFragment : Fragment() {
         val itemList = mBoxItemEditAdapter.getCurrentStatus()
         val newContentItems = ArrayList<ContentItem>()
         for (item: BoxItemModel in itemList) {
-            val newItem = ContentItem("", item.item_amount, item.item_id, item.item_invnum, item.item_color)
+            val newItem = ContentItem(item.numeric_id,"", item.item_amount, item.item_amount_taken, item.item_id, item.item_invnum, item.item_color)
             newContentItems.add(newItem)
         }
         mBoxModel.content = newContentItems
@@ -308,7 +314,9 @@ class BoxEditFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setHasOptionsMenu(true)
+
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             showDismissDialog()
         }
@@ -324,6 +332,12 @@ class BoxEditFragment : Fragment() {
         mBoxModel = arguments?.getSerializable("boxModel") as BoxModel
         val itemListArray: Array<BoxItemModel> = arguments?.getSerializable("items") as Array<BoxItemModel>
         mItemList = itemListArray.toCollection(ArrayList())
+        var vehicle = arguments?.getSerializable("vehicleModel") as VehicleModel?
+        if (vehicle == null) {
+            mVehicle = VehicleModel("-1", resources.getString(R.string.error_no_vehicle_assigned), "", "", "", "")
+        } else {
+            mVehicle = vehicle
+        }
         isNewBox = arguments?.getSerializable("isNewBox") as Boolean
 
 
@@ -359,6 +373,11 @@ class BoxEditFragment : Fragment() {
             viewLifecycleOwner) { result ->
             addSelectedItem(result)
         }
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<VehicleModel>("vehicleModel")?.observe(
+            viewLifecycleOwner) { result ->
+            mVehicle = result
+            mVehicleAdapter.setFilter(listOf(mVehicle))
+        }
     }
 
 
@@ -367,6 +386,15 @@ class BoxEditFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
 
+        if (isNewBox){
+            (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.fragment_box_edit_title_new)
+        } else {
+            (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.fragment_box_edit_title)
+        }
+
+        (activity as AppCompatActivity?)!!.supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity?)!!.supportActionBar!!.setHomeButtonEnabled(false)
+
         exitTransition = MaterialFadeThrough()
 
         val v =  inflater.inflate(R.layout.fragment_box_edit, container, false)
@@ -374,7 +402,8 @@ class BoxEditFragment : Fragment() {
         // Get the activity and widget
         boxEditNameField = v.findViewById(R.id.box_edit_name)
         boxEditIdField = v.findViewById(R.id.box_edit_id)
-        boxEditLocationField = v.findViewById(R.id.box_edit_location)
+        boxEditLocationDetailsField = v.findViewById(R.id.box_edit_location_details)
+        boxEditTypeField = v.findViewById(R.id.box_edit_type)
         boxEditQrcodeField = v.findViewById(R.id.box_edit_qrcode)
         boxEditDescriptionField = v.findViewById(R.id.box_edit_description)
         boxEditColorBtn = v.findViewById(R.id.box_edit_color_btn)
@@ -384,11 +413,13 @@ class BoxEditFragment : Fragment() {
         boxEditLocationImageField = v.findViewById(R.id.box_edit_location_image)
         boxEditStatusChips = v.findViewById(R.id.box_edit_status_chips)
         boxEditStatusInput = v.findViewById(R.id.box_edit_status_input)
+        boxEditVehicleField = v.findViewById(R.id.box_edit_vehicle_overlay)
 
         boxEditIdFieldContainer = v.findViewById(R.id.box_edit_id_container)
         boxEditNameFieldContainer = v.findViewById(R.id.box_edit_name_container)
         boxEditQrcodeFieldContainer = v.findViewById(R.id.box_edit_qrcode_container)
-        boxEditLocationFieldContainer = v.findViewById(R.id.box_edit_location_container)
+        boxEditLocationDetailsFieldContainer = v.findViewById(R.id.box_edit_location_details_container)
+        boxEditTypeFieldContainer = v.findViewById(R.id.box_edit_type_container)
 
         boxEditImageSpinner = v.findViewById(R.id.bod_edit_image_spinner)
         boxEditLocationImageSpinner = v.findViewById(R.id.bod_edit_location_image_spinner)
@@ -449,7 +480,8 @@ class BoxEditFragment : Fragment() {
 
         boxEditNameField.setText(mBoxModel.name)
         boxEditIdField.setText(mBoxModel.id)
-        boxEditLocationField.setText(mBoxModel.vehicle)
+        boxEditLocationDetailsField.setText(mBoxModel.location_details)
+        boxEditTypeField.setText(mBoxModel.type)
         boxEditQrcodeField.setText(mBoxModel.qrcode)
         boxEditDescriptionField.setText(mBoxModel.description)
         boxEditColorPreview.background.setTint(mBoxModel.color)
@@ -498,7 +530,7 @@ class BoxEditFragment : Fragment() {
         boxEditImageField.setOnClickListener {
             ImagePicker.with(thisFragment)
                 .crop()                    //Crop image(Optional), Check Customization for more option
-                .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                .compress(2048)            //Final image size will be less than 1 MB(Optional)
                 .createIntent { intent ->
                     boxEditImageSpinner.visibility = View.VISIBLE
                     startForMainImageResult.launch(intent)
@@ -528,12 +560,20 @@ class BoxEditFragment : Fragment() {
         boxEditLocationImageField.setOnClickListener {
             ImagePicker.with(thisFragment)
                 .crop()                    //Crop image(Optional), Check Customization for more option
-                .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                .compress(2048)            //Final image size will be less than 1 MB(Optional)
                 .createIntent { intent ->
                     boxEditLocationImageSpinner.visibility = View.VISIBLE
                     startForLocationImageResult.launch(intent)
                 }
         }
+
+
+        //Init vehicle view
+        mVehicleAdapter = VehicleAdapter(ArrayList<VehicleModel>())
+        val recyclerviewVehicle = v.findViewById<View>(R.id.box_edit_vehicle_rv) as RecyclerView
+        recyclerviewVehicle.layoutManager = LinearLayoutManager(activity)
+        recyclerviewVehicle.adapter = mVehicleAdapter
+        mVehicleAdapter.setFilter(listOf(mVehicle))
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.box_edit_content) as RecyclerView
@@ -554,6 +594,23 @@ class BoxEditFragment : Fragment() {
                 findNavController().navigate(
                     BoxEditFragmentDirections.actionBoxEditFragmentToNavigationItems(
                         returnItemInsteadOfShowDetails = true
+                    ), extras
+                )
+            }
+        }
+
+        boxEditVehicleField.setOnClickListener { view ->
+            if (view != null) {
+                exitTransition = Hold()
+                // Temp store elements for when item was added
+                mBoxModel.status = Utils.chipListToString(boxEditStatusChips)
+                mBoxModel.color = boxEditColor
+                mItemList = mBoxItemEditAdapter.getCurrentStatus()
+
+                val extras = FragmentNavigatorExtras(view to "transition_to_vehicles")
+                findNavController().navigate(
+                    BoxEditFragmentDirections.actionBoxEditFragmentToNavigationVehicles(
+                        returnVehicleInsteadOfShowDetails = true
                     ), extras
                 )
             }
@@ -628,13 +685,19 @@ class BoxEditFragment : Fragment() {
                         if (id == item_id) {
                             val itemName = item.child("name").value.toString()
                             val itemImage = item.child("images").value.toString()
+                            val itemDescription = item.child("description").value.toString()
+                            val itemTags = item.child("tags").value.toString()
                             mItemList.add(BoxItemModel(
+                                (UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE).toString(),
                                 item_id,
                                 "1",
+                                "0",
                                 "",
                                 itemName,
                                 ContextCompat.getColor(requireContext(), R.color.default_item_color),
-                                itemImage
+                                itemImage,
+                                itemDescription,
+                                itemTags
                             ))
                             mBoxItemEditAdapter.addToItemList(mItemList)
                             return@addOnCompleteListener

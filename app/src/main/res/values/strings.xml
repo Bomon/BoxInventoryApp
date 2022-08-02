@@ -7,15 +7,15 @@
     <string name="location">Standort</string>
     <string name="content">Inhalt</string>
     <string name="edit_box_markings">Markierungen</string>
-    <string name="edit_box_id">ID / Nummer</string>
-    <string name="edit_box_name">Name</string>
+    <string name="edit_box_id">ID / Nummer *</string>
+    <string name="edit_box_name">Name *</string>
     <string name="edit_box_description">Beschreibung / Notizen</string>
     <string name="edit_box_status">Status / Tags hinzufügen</string>
-    <string name="edit_box_location">Standort</string>
+    <string name="edit_box_location_details">Standort Details</string>
     <string name="edit_box_add">Hinzufügen</string>
     <string name="edit_box_title">Box Daten</string>
     <string name="edit_box_status_helper">Zum Hinzufügen ; oder Enter drücken</string>
-    <string name="edit_box_qrcode">QR-Code</string>
+    <string name="edit_box_qrcode">QR-Code *</string>
     <string name="edit_box_qrcode_helper">Achtung: Durch eine Änderung werden die QR-Codes auf den ausgedruckten Labels ungültig</string>
 
     <string name="dialog_add">Hinzufügen</string>
@@ -38,7 +38,7 @@
 
     <string name="item_edit_tags_title">Tags</string>
     <string name="item_edit_description">Beschreibung / Notizen</string>
-    <string name="item_edit_name">Bezeichnung</string>
+    <string name="item_edit_name">Bezeichnung *</string>
     <string name="item_edit_title">Allgemeine Daten</string>
     <string name="item_edit_image">Foto</string>
     <string name="press_back_again_to_exit">Zum Verlassen nochmal ZURÜCK klicken</string>
@@ -124,7 +124,7 @@
     <string name="vehicle_containting_boxes">Geladene Boxen</string>
     <string name="vehicle_empty">Keine Boxen auf Fahrzeug</string>
     <string name="vehicle_edit_title">Fahrzeugdaten</string>
-    <string name="vehicle_edit_name">Name</string>
+    <string name="vehicle_edit_name">Name *</string>
     <string name="vehicle_edit_callname">Funkrufname</string>
     <string name="vehicle_edit_parkingspot">Stellplatz</string>
     <string name="dialog_order_vehicles_by_name">Name</string>
@@ -135,10 +135,33 @@
     <string name="dialog_delete_vehicle_text">Soll das Fahrzeug wirklich gelöscht werden?</string>
     <string name="error_vehicle_edit_field">Fahrzeugname darf nicht leer sein</string>
     <string name="fragment_vehicle_edit_title">Fahrzeug bearbeiten</string>
-    <string name="fragment_vehicle_edit_title_new">Neues Fahrzeug</string>
+    <string name="fragment_vehicle_edit_title_new">Fahrzeug erstellen</string>
     <string name="vehicle_details_title">Fahrzeug Details</string>
     <string name="vehicle">Fahrzeug</string>
     <string name="location_details">Standort Details</string>
     <string name="error_no_vehicle_assigned">nicht zugeordnet</string>
     <string name="vehicle_location_label">Fahrzeug / Standort</string>
+    <string name="edit_item_status">Tags hinzügen</string>
+    <string name="edit_box_type">Typ (Box, Regal, Staufach...)</string>
+    <string name="content_amount_label">Stück</string>
+    <string name="activity_settings_title">Einstellungen</string>
+    <string name="preferences_title_category_pdf">PDF Ausdruck Elemente</string>
+    <string name="preferences_title_category_general">Allgemein</string>
+    <string name="pdf_address_summary">In Fußzeile angegebene Adresse</string>
+    <string name="pdf_address_title">PDF Adresse</string>
+    <string name="pdf_title_title">PDF TItel</string>
+    <string name="pdf_title_summary">In Kopfzeile angezeigter Titel</string>
+    <string name="pdf_subtitle_title">PDF Untertitel</string>
+    <string name="pdf_subtitle_summary">In Kopfzeile angezeigter Untertitel</string>
+    <string name="pdf_logo_left_title">PDF Logo (Links)</string>
+    <string name="pdf_logo_left_summary">In Kopfzeile angezeigtes Logo, links vom Titel / Untertitel</string>
+    <string name="pdf_logo_right_title">PDF Logo (Rechts)</string>
+    <string name="pdf_logo_right_summary">In Kopfzeile angezeigtes Logo, rechts am Seitenrand</string>
+    <string name="pick_a_color">Farbe wählen</string>
+    <string name="content_availability_title">Verfügbar:</string>
+    <string name="content_amount_title">Gesamtzahl:</string>
+    <string name="content_availability_taken_title">Entnommen:</string>
+    <string name="dialog_order_by_completeness">Vollständigkeit</string>
+    <string name="snackbar_update_ready">Update ist bereit</string>
+    <string name="snackbar_btn_install">Installieren</string>
 </resources>

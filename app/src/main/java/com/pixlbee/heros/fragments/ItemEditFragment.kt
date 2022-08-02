@@ -82,8 +82,8 @@ class ItemEditFragment : Fragment() {
                         val id = item.child("id").value.toString()
                         if (id == mItemModel.id) {
                             val itemKey: String = item.key.toString()
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("description").setValue(itemEditDescriptionField.text.toString())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("name").setValue(itemEditNameField.text.toString())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("description").setValue(itemEditDescriptionField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("name").setValue(itemEditNameField.text.toString().trim())
                             val chipString = Utils.chipListToString(itemEditTagsChips)
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("tags").setValue(chipString)
                             if (::imageBitmap.isInitialized){
@@ -193,6 +193,9 @@ class ItemEditFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+
+        (activity as AppCompatActivity?)!!.supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity?)!!.supportActionBar!!.setHomeButtonEnabled(false)
 
         val transformEnter = MaterialContainerTransform(requireContext(), true)
         transformEnter.scrimColor = Color.TRANSPARENT
@@ -327,7 +330,7 @@ class ItemEditFragment : Fragment() {
         itemEditImageField.setOnClickListener {
             ImagePicker.with(thisFragment)
                 .crop()                    //Crop image(Optional), Check Customization for more option
-                .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                .compress(2048)            //Final image size will be less than 1 MB(Optional)
                 .createIntent { intent ->
                     startForImageResult.launch(intent)
                     itemEditImageSpinner.visibility = View.VISIBLE

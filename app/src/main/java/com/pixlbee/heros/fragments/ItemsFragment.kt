@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.core.view.doOnPreDraw
@@ -30,21 +31,23 @@ import com.pixlbee.heros.utility.Utils
 import java.util.*
 
 
-class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
+open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private var returnItemInsteadOfShowDetails: Boolean = false
     var mItemList: ArrayList<ItemModel> = ArrayList<ItemModel>()
     lateinit var mAdapter: ItemAdapter
     private lateinit var mFirebaseListener: ValueEventListener
     private var searchQueryText: String = ""
+    private lateinit var searchView: SearchView
+    private lateinit var searchBtn: MenuItem
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_items, menu)
-        val itemBtn = menu.findItem(R.id.items_btn_search)
-        val searchView: SearchView = MenuItemCompat.getActionView(itemBtn) as SearchView
+        searchBtn = menu.findItem(R.id.items_btn_search)
+        searchView = MenuItemCompat.getActionView(searchBtn) as SearchView
         searchView.setOnQueryTextListener(this)
-        itemBtn.setOnActionExpandListener(object :
+        searchBtn.setOnActionExpandListener(object :
             MenuItem.OnActionExpandListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 // Do something when collapsed
@@ -63,6 +66,12 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        returnItemInsteadOfShowDetails = arguments?.getBoolean("return_item_instead_of_show_details") as Boolean
+        if (returnItemInsteadOfShowDetails) {
+            (activity as AppCompatActivity?)!!.supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+            (activity as AppCompatActivity?)!!.supportActionBar!!.setHomeButtonEnabled(false)
+        }
 
         val transformEnter = MaterialContainerTransform(requireContext(), true)
         transformEnter.scrimColor = Color.TRANSPARENT
@@ -91,7 +100,6 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         mAdapter = ItemAdapter()
         mAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-        returnItemInsteadOfShowDetails = arguments?.getBoolean("return_item_instead_of_show_details") as Boolean
         if (returnItemInsteadOfShowDetails){
             mAdapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
                 override fun onItemClicked(item: ItemModel, view: View) {
@@ -101,6 +109,11 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                     // push the selected item back to BoxEditFragment
                     navController.previousBackStackEntry?.savedStateHandle?.set("item_id", itemId)
                     navController.popBackStack()
+                }
+
+                override fun onItemTagClicked(tag: String) {
+                    searchBtn.expandActionView()
+                    searchView.setQuery(tag, true)
                 }
             })
         } else {
@@ -112,6 +125,11 @@ class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                     )
                     val navController: NavController = Navigation.findNavController(view)
                     navController.navigate(ItemsFragmentDirections.actionNavigationItemsToItemFragment(item), extras)
+                }
+
+                override fun onItemTagClicked(tag: String) {
+                    searchBtn.expandActionView()
+                    searchView.setQuery(tag, true)
                 }
             })
         }

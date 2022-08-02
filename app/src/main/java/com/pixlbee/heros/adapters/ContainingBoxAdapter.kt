@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
@@ -13,7 +15,9 @@ import com.google.android.material.chip.ChipGroup
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
+import com.pixlbee.heros.fragments.ItemFragmentDirections
 import com.pixlbee.heros.models.BoxModel
+import com.pixlbee.heros.models.VehicleModel
 import com.pixlbee.heros.utility.Utils
 
 
@@ -61,9 +65,11 @@ class ContainingBoxAdapter(
         private var boxImage: ImageView = itemView.findViewById(R.id.box_inv_img)
         private var boxInvLabel: TextView = itemView.findViewById(R.id.box_inv_label)
         private var boxInvnums: ChipGroup = itemView.findViewById(R.id.box_inv_invnums)
+        private var boxAmount: TextView = itemView.findViewById(R.id.box_inv_amount)
         private var boxStatus: ChipGroup = itemView.findViewById(R.id.box_inv_status)
         private var boxColor: View = itemView.findViewById(R.id.box_inv_color)
         private var boxContainer: MaterialCardView = itemView.findViewById(R.id.box_inv_card_small)
+        private var boxIncompleteIcon: ImageView = itemView.findViewById(R.id.box_inv_incomplete_icon)
 
         init {
             itemView.setOnClickListener(this)
@@ -77,6 +83,7 @@ class ContainingBoxAdapter(
             val vehiclesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("vehicles")
             vehiclesRef.get().addOnCompleteListener { task ->
                 var foundVehicle = false
+                var mVehicle: VehicleModel? = null
                 if (task.isSuccessful) {
                     val vehicles: DataSnapshot? = task.result
                     if (vehicles != null) {
@@ -86,6 +93,7 @@ class ContainingBoxAdapter(
                             if (id == mBoxList[position].vehicle) {
                                 boxVehicle.text = vehicle.child("name").value.toString()
                                 foundVehicle = true
+                                mVehicle = Utils.readVehicleModelFromDataSnapshot(vehicle)
                                 break
                             }
                         }
@@ -93,6 +101,15 @@ class ContainingBoxAdapter(
                 }
                 if (!foundVehicle){
                     boxVehicle.text = mContext.resources.getString(R.string.error_no_vehicle_assigned)
+                } else {
+                    boxVehicle.setOnClickListener {
+                        val navController: NavController = Navigation.findNavController(it)
+                        navController.navigate(
+                            ItemFragmentDirections.actionItemFragmentToVehicleDetailFragment(
+                                mVehicle!!
+                            )
+                        )
+                    }
                 }
             }
 
@@ -117,13 +134,23 @@ class ContainingBoxAdapter(
             }
 
             if (boxInvLabel != null && boxInvnums != null) {
+                var countAmount = 0
+                var countAmountTaken = 0
                 val invnums = ArrayList<String>()
                 for (ci in model.content){
                     if (ci.id == mItemId){
+                        countAmountTaken += ci.amount_taken.toInt()
+                        countAmount += ci.amount.toInt()
                         if (ci.invnum != ""){
                             invnums.add(ci.invnum)
                         }
                     }
+                }
+
+                if (countAmountTaken == 0) {
+                    boxAmount.text = countAmount.toString()
+                } else {
+                    boxAmount.text = (countAmount - countAmountTaken).toString() + " / $countAmount"
                 }
 
                 if (invnums.size > 0){
@@ -145,6 +172,24 @@ class ContainingBoxAdapter(
                 }
             }
             boxContainer.transitionName = model.id
+
+
+
+
+            // show incomplete icon if box has items taken out
+            var isIncomplete = false
+            for (ci in mBoxList[position].content){
+                if (ci.amount_taken.toInt() != 0){
+                    isIncomplete = true
+                    break
+                }
+            }
+            if (isIncomplete){
+                boxIncompleteIcon.visibility = View.VISIBLE
+            } else {
+                boxIncompleteIcon.visibility = View.GONE
+            }
+
         }
 
         override fun onClick(view: View?) {

@@ -37,6 +37,12 @@
                 android:text="@string/dialog_order_by_location" />
 
             <RadioButton
+                android:id="@+id/radioButtonCompleteness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_order_by_completeness" />
+
+            <RadioButton
                 android:id="@+id/radioButtonOrderStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

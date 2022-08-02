@@ -17,7 +17,7 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/vehicle_img"
-            android:layout_width="150dp"
+            android:layout_width="130dp"
             android:layout_height="0dp"
             android:contentDescription="@string/content_description_box_image"
             android:scaleType="centerCrop"
@@ -33,7 +33,7 @@
             android:id="@+id/linearLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:minHeight="100dp"
+            android:minHeight="90dp"
             android:layout_marginStart="8dp"
             android:orientation="vertical"
             android:padding="16dp"
@@ -60,6 +60,7 @@
                 android:textColor="?android:attr/textColorSecondary" />
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/vehicle_parking_spot_container"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"

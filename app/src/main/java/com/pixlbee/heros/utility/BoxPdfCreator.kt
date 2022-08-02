@@ -229,48 +229,45 @@ class BoxPdfCreator {
     @Throws(InterruptedException::class)
     private fun buildPDFcontent(context: Context, document: Document, box_model: BoxModel){
 
-        val eagle: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_adler)
-        //val imageEagle = prepareImage(eagle)
-        val oel: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_oel)
-        //val imageOel = prepareImage(oel)
-        val thw: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_thw)
-        //val imageThw = prepareImage(pixlbee)
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences("AppPreferences",
+            AppCompatActivity.MODE_PRIVATE
+        )
+
         val qrcode: Bitmap? = encodeAsBitmap(context, box_model.qrcode, BarcodeFormat.QR_CODE, 512, 512)
-        //val qrcodeImg = prepareImage(bmp)
         val qrLogo: Bitmap = BitmapFactory.decodeResource(context.resources,
             R.drawable.qrcode_center_round_blue
         )
-        //val qrcodeLogoImg = prepareImage(qr_logo)
+
         runBlocking {
             val job = GlobalScope.launch {
                 val logoJob = async { prepareImage(qrLogo) }
                 val qrcodeJob = async { prepareImage(qrcode) }
-                val thwJob = async { prepareImage(thw) }
-                val oelJob = async { prepareImage(oel) }
-                val eagleJob = async { prepareImage(eagle) }
 
-                val (qrcodeLogoImg, qrcodeImg, imageThw, imageOel, imageEagle) = awaitAll(logoJob, qrcodeJob, thwJob, oelJob, eagleJob)
-
-                val sharedPreferences: SharedPreferences = context.getSharedPreferences("AppPreferences",
-                    AppCompatActivity.MODE_PRIVATE
-                )
+                val (qrcodeLogoImg, qrcodeImg) = awaitAll(logoJob, qrcodeJob)
 
                 document.setMargins(10f, 10f, 16f, 10f)
                 // Create Header
                 val headerPlaceholder = Phrase("", FontFactory.getFont(FontFactory.HELVETICA, 1f))
                 //addEmptyLine(headerPlaceholder, 1)
                 val headerParagraph = Paragraph()
-                val headerTable = PdfPTable(4)
+                val headerTable = PdfPTable(3)
                 headerTable.widthPercentage = 95f
-                val widths = floatArrayOf(8f, 72f, 10f, 10f)
+                val widths = floatArrayOf(10f, 70f, 20f)
                 headerTable.setWidths(widths)
-                if (imageEagle != null && sharedPreferences.getString("pdf_title", "TITLE").toString().contains("Technisches Hilfswerk")) {
-                    imageEagle.scaleAbsolute(50f, 50f)
-                    val cell = PdfPCell(imageEagle)
+
+                val headerLogoLeft = sharedPreferences.getString("pdf_logo_left", "")
+                if (headerLogoLeft != "") {
+                    val headerLogoLeftImg: Image = Image.getInstance(Base64.decode(headerLogoLeft, Base64.DEFAULT))
+                    val newHeight = 50f
+                    val newWidth = (newHeight / headerLogoLeftImg.height) * headerLogoLeftImg.width
+                    headerLogoLeftImg.scaleAbsolute(newWidth, newHeight)
+                    val cell = PdfPCell(headerLogoLeftImg)
                     cell.border = Rectangle.NO_BORDER
                     headerTable.addCell(cell)
                 } else {
-                    headerTable.addCell(PdfPCell(Paragraph("")))
+                    val emptyCell =PdfPCell(Paragraph(""))
+                    emptyCell.border = Rectangle.NO_BORDER
+                    headerTable.addCell(emptyCell)
                 }
 
                 val textTable = PdfPTable(1)
@@ -288,22 +285,20 @@ class BoxPdfCreator {
                 cell1.border = Rectangle.NO_BORDER
                 headerTable.addCell(cell1)
 
-                if (imageOel != null && sharedPreferences.getString("pdf_title", "TITLE").toString().contains("Technisches Hilfswerk")) {
-                    imageOel.scaleAbsolute(50f, 50f)
-                    val cell = PdfPCell(imageOel)
+                val headerLogoRight = sharedPreferences.getString("pdf_logo_right", "")
+                if (headerLogoRight != null) {
+                    val headerLogoRightImg: Image = Image.getInstance(Base64.decode(headerLogoRight, Base64.DEFAULT))
+                    val newHeight = 50f
+                    val newWidth = (newHeight / headerLogoRightImg.height) * headerLogoRightImg.width
+                    headerLogoRightImg.scaleAbsolute(newWidth, newHeight)
+                    val cell = PdfPCell(headerLogoRightImg)
                     cell.border = Rectangle.NO_BORDER
+                    cell.horizontalAlignment = Rectangle.ALIGN_RIGHT
                     headerTable.addCell(cell)
                 } else {
-                    headerTable.addCell(PdfPCell(Paragraph("")))
-                }
-
-                if (imageThw != null && sharedPreferences.getString("pdf_title", "TITLE").toString().contains("Technisches Hilfswerk")) {
-                    imageThw.scaleAbsolute(50f, 50f)
-                    val cell = PdfPCell(imageThw)
-                    cell.border = Rectangle.NO_BORDER
-                    headerTable.addCell(cell)
-                } else {
-                    headerTable.addCell(PdfPCell(Paragraph("")))
+                    val emptyCell = PdfPCell(Paragraph(""))
+                    emptyCell.border = Rectangle.NO_BORDER
+                    headerTable.addCell(emptyCell)
                 }
 
                 headerParagraph.add(headerPlaceholder)

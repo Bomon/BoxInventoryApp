@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -20,6 +21,14 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.InstallState
+import com.google.android.play.core.install.InstallStateUpdatedListener
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -33,9 +42,50 @@ class MainActivity : AppCompatActivity() {
 
     private var mOrganizationItemIds: ArrayList<Int> = ArrayList()
 
-    //private lateinit var mNavViewDrawer: NavigationView
+    private lateinit var mNavViewDrawer: NavigationView
     private lateinit var mDrawer: DrawerLayout
     private lateinit var binding: ActivityMainBinding
+
+    private val FLEXIBLE_APP_UPDATE_REQ_CODE = 5550123
+    private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
+    private val installStateUpdatedListener: InstallStateUpdatedListener by lazy {
+        object : InstallStateUpdatedListener {
+            override fun onStateUpdate(installState: InstallState) {
+                when {
+                    installState.installStatus() == InstallStatus.DOWNLOADED -> {
+                        val snackbar = Snackbar.make(
+                            findViewById<View>(android.R.id.content).rootView,
+                            resources.getString(R.string.snackbar_update_ready),
+                            Snackbar.LENGTH_INDEFINITE
+                        )
+                            .setAction(resources.getString(R.string.snackbar_btn_install)) {
+                                if (appUpdateManager != null) {
+                                    appUpdateManager.completeUpdate()
+                                }
+                            }
+                        snackbar?.anchorView = findViewById(R.id.bottom_nav_view)
+                        snackbar.show()
+                    }
+                    installState.installStatus() == InstallStatus.INSTALLED -> appUpdateManager.unregisterListener(this)
+                }
+            }
+        }
+    }
+
+    private fun checkUpdate() {
+        val appUpdateInfoTask = appUpdateManager?.appUpdateInfo
+        appUpdateInfoTask?.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() === UpdateAvailability.UPDATE_AVAILABLE
+                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    AppUpdateType.FLEXIBLE,
+                    this,
+                    FLEXIBLE_APP_UPDATE_REQ_CODE)
+            }
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +96,9 @@ class MainActivity : AppCompatActivity() {
             Log.e("Error", "Persistence cannot be enabled")
         }
 
+        appUpdateManager.registerListener(installStateUpdatedListener)
+        checkUpdate()
+
         // Color the status bar
         window.statusBarColor = resources.getColor(R.color.status_bar_color)
         window.navigationBarColor = SurfaceColors.SURFACE_2.getColor(this)
@@ -54,7 +107,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-
+        
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
 
         // Init App bar configuration (defines home fragments where drawer is visible, otherwise back button)
@@ -64,6 +117,8 @@ class MainActivity : AppCompatActivity() {
             mDrawer
         )
 
+        // fix icon highlight of bottom nav bar on back navigation
+        binding.bottomNavView.setupWithNavController(navController)
         // add logic to drawer button
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -82,7 +137,7 @@ class MainActivity : AppCompatActivity() {
             return@setOnItemSelectedListener true
         }
 
-        val mNavViewDrawer: NavigationView = findViewById(R.id.nav_view_drawer)
+        mNavViewDrawer = findViewById(R.id.nav_view_drawer)
         setupDrawerContent(mNavViewDrawer)
 
         //init firebase
@@ -106,7 +161,9 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
             }
-            R.id.nav_settings -> {}
+            R.id.nav_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+            }
         }
         menuItem.isChecked = false
         mDrawer.closeDrawers()
@@ -203,8 +260,10 @@ class MainActivity : AppCompatActivity() {
                         // get write permission status for this org
                         val writeUsers = dataSnapshot.child("write_permissions").child(selectedOrg).value.toString()
                         if (writeUsers.contains(userId)) {
+                            mNavViewDrawer.menu.findItem(R.id.nav_settings).isEnabled = true
                             editor.putBoolean("write_permission", true)
                         } else {
+                            mNavViewDrawer.menu.findItem(R.id.nav_settings).isEnabled = false
                             editor.putBoolean("write_permission", false)
                         }
                     }
@@ -214,8 +273,10 @@ class MainActivity : AppCompatActivity() {
                     // get write permissions
                     val writeUsers = dataSnapshot.child("write_permissions").child(selectedOrg).value.toString()
                     if (writeUsers.contains(userId)) {
+                        mNavViewDrawer.menu.findItem(R.id.nav_settings).isEnabled = true
                         editor.putBoolean("write_permission", true)
                     } else {
+                        mNavViewDrawer.menu.findItem(R.id.nav_settings).isEnabled = false
                         editor.putBoolean("write_permission", false)
                     }
                 }
@@ -224,9 +285,13 @@ class MainActivity : AppCompatActivity() {
                 val pdfAddress = dataSnapshot.child(selectedOrg).child("pdf_address").value.toString()
                 val pdfTitle = dataSnapshot.child(selectedOrg).child("pdf_title").value.toString()
                 val pdfSubtitle = dataSnapshot.child(selectedOrg).child("pdf_subtitle").value.toString()
+                val pdfLogoLeft = dataSnapshot.child(selectedOrg).child("pdf_logo_left").value.toString()
+                val pdfLogoRight = dataSnapshot.child(selectedOrg).child("pdf_logo_right").value.toString()
                 editor.putString("pdf_title", pdfTitle)
                 editor.putString("pdf_subtitle", pdfSubtitle)
                 editor.putString("pdf_address", pdfAddress)
+                editor.putString("pdf_logo_left", pdfLogoLeft)
+                editor.putString("pdf_logo_right", pdfLogoRight)
 
                 editor.commit()
             }

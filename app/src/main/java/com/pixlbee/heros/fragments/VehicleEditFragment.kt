@@ -77,10 +77,10 @@ class VehicleEditFragment : Fragment() {
                         val id = vehicle.child("id").value.toString()
                         if (id == mVehicleModel.id.toString()) {
                             val vehicleKey: String = vehicle.key.toString()
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("name").setValue(vehicleEditNameField.text.toString())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("callname").setValue(vehicleEditCallnameField.text.toString())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("description").setValue(vehicleEditDescriptionField.text.toString())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("parking_spot").setValue(vehicleEditParkingSpotField.text.toString())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("name").setValue(vehicleEditNameField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("callname").setValue(vehicleEditCallnameField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("description").setValue(vehicleEditDescriptionField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("parking_spot").setValue(vehicleEditParkingSpotField.text.toString().trim())
                             if (::imageBitmap.isInitialized){
                                 FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("image").setValue(
                                     Utils.getEncoded64ImageStringFromBitmap(imageBitmap))
@@ -188,6 +188,9 @@ class VehicleEditFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
+        (activity as AppCompatActivity?)!!.supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity?)!!.supportActionBar!!.setHomeButtonEnabled(false)
+
         val transformEnter = MaterialContainerTransform(requireContext(), true)
         transformEnter.scrimColor = Color.TRANSPARENT
         sharedElementEnterTransition = transformEnter
@@ -209,9 +212,9 @@ class VehicleEditFragment : Fragment() {
         isNewVehicle = arguments?.getSerializable("isNewVehicle") as Boolean
 
         if (isNewVehicle){
-            (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.fragment_vehicle_edit_title)
-        } else {
             (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.fragment_vehicle_edit_title_new)
+        } else {
+            (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.fragment_vehicle_edit_title)
         }
 
         val builder = StrictMode.VmPolicy.Builder()
