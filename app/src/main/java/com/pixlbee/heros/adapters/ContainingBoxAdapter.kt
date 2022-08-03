@@ -90,7 +90,7 @@ class ContainingBoxAdapter(
                         for (vehicle: DataSnapshot in vehicles.children) {
                             val id = vehicle.child("id").value.toString()
                             val vehicleKey = vehicle.key.toString()
-                            if (id == mBoxList[position].vehicle) {
+                            if (id == mBoxList[position].in_vehicle) {
                                 boxVehicle.text = vehicle.child("name").value.toString()
                                 foundVehicle = true
                                 mVehicle = Utils.readVehicleModelFromDataSnapshot(vehicle)
@@ -115,9 +115,11 @@ class ContainingBoxAdapter(
 
             boxColor.background.setTint(model.color)
 
-            val img = Utils.stringToBitMap(model.image)
-            if (img != null){
-                boxImage.setImageBitmap(img)
+            if (model.image != "") {
+                val img = Utils.stringToBitMap(model.image)
+                if (img != null){
+                    boxImage.setImageBitmap(img)
+                }
             }
 
             boxStatus.removeAllViews()

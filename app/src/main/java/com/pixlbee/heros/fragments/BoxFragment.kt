@@ -7,7 +7,6 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.widget.ImageView
@@ -16,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -55,7 +55,6 @@ class BoxFragment : Fragment(){
 
     private lateinit var boxNameField: TextView
     private lateinit var boxDescriptionField: TextView
-    private lateinit var boxVehicleField: RecyclerView
     private lateinit var boxLocationDetailsField: TextView
     private lateinit var boxStatusField: ChipGroup
     private lateinit var boxColorField: View
@@ -215,7 +214,7 @@ class BoxFragment : Fragment(){
 
     private fun updateContent(){
         val boxId = mBoxModel.id
-        val boxVehicle = mBoxModel.vehicle
+        val boxVehicleId = mBoxModel.in_vehicle
         val boxLocationDetails = mBoxModel.location_details
         val boxName = mBoxModel.name
         val boxImg: String = mBoxModel.image
@@ -224,7 +223,7 @@ class BoxFragment : Fragment(){
         val boxColor = mBoxModel.color
         val boxLocationImg = mBoxModel.location_image
 
-        updateVehicleModel(boxVehicle)
+        updateVehicleModel(boxVehicleId)
 
         //box_id_field.text = box_id
         boxNameField.text = boxName
@@ -242,7 +241,7 @@ class BoxFragment : Fragment(){
             boxStatusField.visibility = View.VISIBLE
 
         //box_notes_field.text = box_notes
-        boxLocationDetailsField.text = boxLocationDetails
+        boxLocationDetailsField.text = if (boxLocationDetails == "null") "" else boxLocationDetails
 
         boxStatusField.removeAllViews()
         for (tag in boxStatus.split(";")){
@@ -280,10 +279,8 @@ class BoxFragment : Fragment(){
         val v =  inflater.inflate(R.layout.fragment_box, container, false)
 
         // Get the activity and widget
-        //box_id_field = v.findViewById(R.id.box_summary_id)
         boxNameField = v.findViewById(R.id.box_summary_name)
         boxDescriptionField = v.findViewById(R.id.box_summary_description)
-        //box_notes_field = v.findViewById(R.id.box_summary_notes)
         boxLocationDetailsField = v.findViewById(R.id.box_summary_location_details)
         boxStatusField = v.findViewById(R.id.box_summary_status)
         boxSummaryImageField = v.findViewById(R.id.box_summary_image)
@@ -291,7 +288,7 @@ class BoxFragment : Fragment(){
         boxColorField = v.findViewById(R.id.box_summary_color)
         val boxContainer: View = v.findViewById(R.id.box_fragment_container)
 
-        // Transition taget element
+        // Transition target element
         boxContainer.transitionName = mBoxModel.id
 
         //Init Items View
@@ -301,32 +298,33 @@ class BoxFragment : Fragment(){
             override fun onBoxItemClicked(item: BoxItemModel, view: View) {
                 exitTransition = Hold()
                 val extras = FragmentNavigatorExtras(
-                    view to item.item_id
+                    view to item.item_id + item.numeric_id
                 )
                 // second argument is the animation start view
                 val itemModel = ItemModel(item.item_id, item.item_name, item.item_description, item.item_tags, item.item_image)
                 val navController: NavController = Navigation.findNavController(view)
-                navController.navigate(BoxFragmentDirections.actionBoxFragmentToItemFragment(itemModel), extras)
+                navController.navigate(BoxFragmentDirections.actionBoxFragmentToItemFragment(itemModel, item.numeric_id), extras)
             }
         })
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = mBoxItemAdapter
 
         // Init vehicle view
+        val recyclerviewVehicle = v.findViewById<View>(R.id.box_summary_vehicle_rv) as RecyclerView
+        recyclerviewVehicle.transitionName = "vehicleTransition"
         mVehicleAdapter = VehicleAdapter(ArrayList<VehicleModel>())
         mVehicleAdapter.setOnVehicleClickListener(object: VehicleAdapter.OnVehicleClickListener{
             override fun onVehicleClicked(vehicle: VehicleModel, view: View) {
-                if (vehicle.id.toString() != "-1"){
+                if (vehicle.id != "-1"){
                     exitTransition = Hold()
                     val extras = FragmentNavigatorExtras(
-                        view to vehicle.id.toString()
+                        recyclerviewVehicle to "vehicleTransition"
                     )
                     val navController: NavController = Navigation.findNavController(view)
                     navController.navigate(BoxFragmentDirections.actionBoxFragmentToVehicleDetailFragment(vehicle), extras)
                 }
             }
         })
-        val recyclerviewVehicle = v.findViewById<View>(R.id.box_summary_vehicle_rv) as RecyclerView
         recyclerviewVehicle.layoutManager = LinearLayoutManager(activity)
         recyclerviewVehicle.adapter = mVehicleAdapter
 
@@ -412,16 +410,16 @@ class BoxFragment : Fragment(){
                         ).getColor(0, 0)
                         val editIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_baseline_exposure_plus_1_24)
                         editIcon!!.setTint(iconColor)
-                        val intrinsicWidth = editIcon!!.intrinsicWidth
-                        val intrinsicHeight = editIcon!!.intrinsicHeight
+                        val intrinsicWidth = editIcon.intrinsicWidth
+                        val intrinsicHeight = editIcon.intrinsicHeight
                         // Calculate position of minus icon
-                        var editIconTop = itemView.top + (itemHeight - intrinsicHeight) / 2
+                        val editIconTop = itemView.top + (itemHeight - intrinsicHeight) / 2
                         val editIconMargin = (itemHeight - intrinsicHeight)
                         val editIconLeft = itemView.left - intrinsicWidth + 150
                         val editIconRight = itemView.left + 150
                         val editIconBottom = editIconTop + intrinsicHeight
                         // Draw the minus icon
-                        editIcon!!.setBounds(editIconLeft, editIconTop, editIconRight, editIconBottom)
+                        editIcon.setBounds(editIconLeft, editIconTop, editIconRight, editIconBottom)
                         editIcon.draw(c)
 
                     } else {
@@ -444,8 +442,8 @@ class BoxFragment : Fragment(){
                         ).getColor(0, 0)
                         val editIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_baseline_exposure_neg_1_24)
                         editIcon!!.setTint(iconColor)
-                        val intrinsicWidth = editIcon!!.intrinsicWidth
-                        val intrinsicHeight = editIcon!!.intrinsicHeight
+                        val intrinsicWidth = editIcon.intrinsicWidth
+                        val intrinsicHeight = editIcon.intrinsicHeight
                         // Calculate position of plus icon
                         val editIconTop = itemView.top + (itemHeight - intrinsicHeight) / 2
                         val editIconMargin = (itemHeight - intrinsicHeight)
@@ -453,7 +451,7 @@ class BoxFragment : Fragment(){
                         val editIconRight = itemView.right - 100
                         val editIconBottom = editIconTop + intrinsicHeight
                         // Draw the plus icon
-                        editIcon!!.setBounds(editIconLeft, editIconTop, editIconRight, editIconBottom)
+                        editIcon.setBounds(editIconLeft, editIconTop, editIconRight, editIconBottom)
                         editIcon.draw(c)
                     }
                     super.onChildDraw(c, recyclerView, viewHolder, dX/3, dY, actionState, isCurrentlyActive)
@@ -465,13 +463,10 @@ class BoxFragment : Fragment(){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 if (Utils.checkHasWritePermission(context, false)){
                     val position = viewHolder.bindingAdapterPosition
-                    val model: BoxItemModel = mItemList[position]
 
-                    //var color: Int = Utils.getNextColor(context!!, oldBoxModel.item_color)
                     var newTakenAmount = "0"
                     if (direction == ItemTouchHelper.RIGHT){
                         newTakenAmount = max(0, mItemList[position].item_amount_taken.toInt() - 1).toString()
-                        //color = Utils.getPreviousColor(context!!, oldBoxModel.item_color)
                     } else {
                         newTakenAmount = kotlin.math.min(
                             mItemList[position].item_amount.toInt(),
@@ -479,7 +474,6 @@ class BoxFragment : Fragment(){
                         ).toString()
                     }
                     mItemList[position].item_amount_taken = newTakenAmount
-                    //oldBoxModel.item_color = color
 
                     mBoxItemAdapter.updateAmountTaken(position, newTakenAmount)
                 }
@@ -517,7 +511,6 @@ class BoxFragment : Fragment(){
                         val itemId = item.child("id").value.toString()
                         var numericId = contentItem.numeric_id
                         if (numericId == "null") {
-                            Log.e("Error", "numeric id is null")
                             numericId = (UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE).toString()
                         }
                         if (itemId == contentItem.id) {
@@ -545,8 +538,16 @@ class BoxFragment : Fragment(){
     }
 
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
+
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
+    }
+
+
     override fun onDestroyView() {
-        Log.w("box","destroy")
         super.onDestroyView()
         FirebaseDatabase.getInstance().reference.removeEventListener(mFirebaseListener)
     }

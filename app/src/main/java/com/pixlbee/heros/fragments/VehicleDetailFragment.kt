@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.divider.MaterialDivider
+import com.google.android.material.transition.Hold
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
@@ -66,7 +67,7 @@ class VehicleDetailFragment : Fragment() {
                 if (boxes != null) {
                     for (box: DataSnapshot in boxes.children) {
                         val vehicleId = box.child("in_vehicle").value.toString()
-                        if (vehicleId == mVehicleModel.id.toString()) {
+                        if (vehicleId == mVehicleModel.id) {
                             val boxKey = box.key.toString()
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                                 .child(boxKey).child("in_vehicle").setValue("")
@@ -85,7 +86,7 @@ class VehicleDetailFragment : Fragment() {
                     for (vehicle: DataSnapshot in vehicles.children) {
                         val id = vehicle.child("id").value.toString()
                         val vehicleKey = vehicle.key.toString()
-                        if (id == mVehicleModel.id.toString()) {
+                        if (id == mVehicleModel.id) {
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).removeValue()
                             break
                         }
@@ -139,10 +140,13 @@ class VehicleDetailFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        val transform = MaterialContainerTransform()
-        transform.scrimColor = Color.TRANSPARENT
-        sharedElementEnterTransition = transform
-        sharedElementReturnTransition = transform
+        val transformEnter = MaterialContainerTransform(requireContext(), true)
+        transformEnter.scrimColor = Color.TRANSPARENT
+        sharedElementEnterTransition = transformEnter
+
+        val transformReturn = MaterialContainerTransform(requireContext(), false)
+        transformReturn.scrimColor = Color.TRANSPARENT
+        sharedElementReturnTransition = transformReturn
 
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
@@ -229,14 +233,15 @@ class VehicleDetailFragment : Fragment() {
 
         val vehicleContainer: ConstraintLayout = v.findViewById(R.id.vehicle_details_fragment_container)
 
-        // Transition taget element
-        vehicleContainer.transitionName = mVehicleModel.id.toString()
+        // Transition target element
+        vehicleContainer.transitionName = mVehicleModel.id
 
         //Init Items View
         val recyclerview = v.findViewById<View>(R.id.vehicle_details_content) as RecyclerView
         mAdapter = BoxAdapter(mBoxList)
         mAdapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
             override fun onBoxClicked(box: BoxModel, view: View) {
+                exitTransition = Hold()
                 val extras = FragmentNavigatorExtras(
                     view to box.id
                 )
@@ -254,8 +259,6 @@ class VehicleDetailFragment : Fragment() {
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = mAdapter
 
-        initFirebase()
-
         (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.vehicle_details_title)
 
         return v
@@ -267,7 +270,7 @@ class VehicleDetailFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 val vehicles = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles")
                 for (vehicle: DataSnapshot in vehicles.children){
-                    if (vehicle.child("id").value.toString() == mVehicleModel.id.toString()){
+                    if (vehicle.child("id").value.toString() == mVehicleModel.id){
                         mVehicleModel = Utils.readVehicleModelFromDataSnapshot(vehicle)
                         updateContent()
                         break
@@ -277,14 +280,14 @@ class VehicleDetailFragment : Fragment() {
                 mBoxList.clear()
                 val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                 for (box: DataSnapshot in boxes.children){
-                    if (box.child("in_vehicle").value.toString() == mVehicleModel.id.toString()) {
+                    if (box.child("in_vehicle").value.toString() == mVehicleModel.id) {
                         val boxModel = Utils.readBoxModelFromDataSnapshot(context, box)
                         mBoxList.add(boxModel)
                     }
                 }
 
                 mBoxList.sortWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.name) }
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.id) }
                 )
 
                 mAdapter.setFilter(mBoxList)
@@ -305,12 +308,10 @@ class VehicleDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
+        initFirebase()
+
         postponeEnterTransition()
         view.doOnPreDraw { startPostponedEnterTransition() }
-
-
-
-        updateContent()
 
     }
 

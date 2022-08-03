@@ -1,7 +1,6 @@
 package com.pixlbee.heros.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +23,7 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
     private var mItemList: ArrayList<BoxItemModel> = ArrayList()
     private lateinit var mBoxId: String
 
-    private lateinit var mListener: BoxItemAdapter.OnBoxItemClickListener
+    private lateinit var mListener: OnBoxItemClickListener
 
 
     init {
@@ -54,8 +53,8 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
 
 
     override fun onBindViewHolder(holder: BoxItemViewHolder, position: Int) {
-        var itemAmount = mItemList[position].item_amount.toInt()
-        var itemAvailAmount = itemAmount - mItemList[position].item_amount_taken.toInt()
+        val itemAmount = mItemList[position].item_amount.toInt()
+        val itemAvailAmount = itemAmount - mItemList[position].item_amount_taken.toInt()
 
         if (itemAvailAmount == itemAmount) {
             holder.itemAmount.text = itemAmount.toString()
@@ -76,12 +75,14 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
             }
         }
 
-        val img = Utils.stringToBitMap(mItemList[position].item_image)
-        if (img != null){
-            holder.itemImage.setImageBitmap(img)
+        if (mItemList[position].item_image != "") {
+            val img = Utils.stringToBitMap(mItemList[position].item_image)
+            if (img != null) {
+                holder.itemImage.setImageBitmap(img)
+            }
         }
 
-        holder.itemContainer.transitionName = mItemList[position].item_id
+        holder.itemContainer.transitionName = mItemList[position].numeric_id
     }
 
 
@@ -114,32 +115,6 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
 
     }
 
-    fun updateColorInFirebase(position: Int) {
-        notifyItemChanged(position)
-        val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")
-        boxesRef.get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val boxes: DataSnapshot? = task.result
-                if (boxes != null) {
-                    for (box: DataSnapshot in boxes.children) {
-                        val id = box.child("id").value.toString()
-                        if (id == mBoxId) {
-                            val boxKey: String = box.key.toString()
-                            for (item: DataSnapshot in box.child("content").children){
-                                val itemId = item.child("id").value.toString()
-                                if (mItemList[position].item_id == itemId) {
-                                    val itemKey: String = item.key.toString()
-                                    FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")
-                                        .child(boxKey).child("content").child(itemKey)
-                                        .child("color").setValue(mItemList[position].item_color)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     fun updateAmountTaken(position: Int, newTakenAmount: String) {
         val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")
@@ -153,7 +128,6 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
                             val boxKey: String = box.key.toString()
                             for (item: DataSnapshot in box.child("content").children){
                                 val itemId = item.child("numeric_id").value.toString()
-                                Log.e("Error", "Search for same ids:" + mItemList[position].numeric_id + " and box: " + itemId)
                                 if (mItemList[position].numeric_id == itemId) {
                                     val itemKey: String = item.key.toString()
                                     FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")

@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/navigation_boxes"
         android:name="com.pixlbee.heros.fragments.BoxesFragment"
-        android:label="@string/title_nav_home"
-        tools:layout="@layout/fragment_home" >
+        android:label="@string/title_nav_boxes"
+        tools:layout="@layout/fragment_boxes" >
         <action
             android:id="@+id/action_navigation_boxes_to_boxFragment"
             app:destination="@id/boxFragment" />
@@ -103,6 +103,10 @@
         <action
             android:id="@+id/action_itemFragment_to_vehicleDetailFragment"
             app:destination="@id/vehicleDetailFragment" />
+        <argument
+            android:name="subId"
+            app:argType="string"
+            android:defaultValue='' />
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"

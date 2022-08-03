@@ -38,7 +38,7 @@
         </RadioGroup>
 
         <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/sort_verhicles_divider"
+            android:id="@+id/sort_vehicles_divider"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:layout_width="match_parent"

@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Heros Gitterbox</string>
-    <string name="title_nav_home">Boxen</string>
+    <string name="title_nav_boxes">Boxen</string>
     <string name="title_nav_qrscanner">QR</string>
     <string name="title_nav_items">Ausrüstung</string>
 
@@ -31,7 +32,7 @@
     <string name="login_btn">Login</string>
     <string name="password_hint">Passwort</string>
     <string name="user_hint">Benutzername</string>
-    <string name="containting_box">Enthalten in:</string>
+    <string name="containing_box">Enthalten in:</string>
     <string name="containing_box_empty">In keiner Box enthalten</string>
     <string name="invnums_label">Inventarnummern / Details:</string>
 
@@ -99,6 +100,7 @@
     <string name="dialog_order_by_name">Name</string>
     <string name="dialog_order_by_id">ID / Nummer</string>
     <string name="dialog_order_by_location">Standort</string>
+    <string name="dialog_order_by_vehicle">Fahrzeug</string>
     <string name="dialog_order_by_status">"Status / Tags"</string>
     <string name="dialog_order_by_color">Farbmarkierung</string>
     <string name="dialog_sort_title">Sortieren Nach</string>
@@ -121,7 +123,7 @@
     <string name="qrcode_change_org_btn">Wechseln</string>
     <string name="title_nav_vehicles">Fahrzeuge</string>
     <string name="content_description_vehicle_image">Fahrzeug Foto</string>
-    <string name="vehicle_containting_boxes">Geladene Boxen</string>
+    <string name="vehicle_conainting_boxes">Geladene Boxen</string>
     <string name="vehicle_empty">Keine Boxen auf Fahrzeug</string>
     <string name="vehicle_edit_title">Fahrzeugdaten</string>
     <string name="vehicle_edit_name">Name *</string>
@@ -149,7 +151,7 @@
     <string name="preferences_title_category_general">Allgemein</string>
     <string name="pdf_address_summary">In Fußzeile angegebene Adresse</string>
     <string name="pdf_address_title">PDF Adresse</string>
-    <string name="pdf_title_title">PDF TItel</string>
+    <string name="pdf_title_title">PDF Titel</string>
     <string name="pdf_title_summary">In Kopfzeile angezeigter Titel</string>
     <string name="pdf_subtitle_title">PDF Untertitel</string>
     <string name="pdf_subtitle_summary">In Kopfzeile angezeigter Untertitel</string>
@@ -158,10 +160,18 @@
     <string name="pdf_logo_right_title">PDF Logo (Rechts)</string>
     <string name="pdf_logo_right_summary">In Kopfzeile angezeigtes Logo, rechts am Seitenrand</string>
     <string name="pick_a_color">Farbe wählen</string>
-    <string name="content_availability_title">Verfügbar:</string>
     <string name="content_amount_title">Gesamtzahl:</string>
     <string name="content_availability_taken_title">Entnommen:</string>
     <string name="dialog_order_by_completeness">Vollständigkeit</string>
     <string name="snackbar_update_ready">Update ist bereit</string>
     <string name="snackbar_btn_install">Installieren</string>
+    <string name="changelog_1_2_slide1_text">Update 1.2 ist da und bringt neben neuen Funktionen auch viele kleine Verbesserungen.</string>
+    <string name="changelog_1_2_slide2_title">Fahrzeuge</string>
+    <string name="changelog_1_2_slide2_text">Es gibt eine neue Hauptansicht, in der Fahrzeuge angelegt und verwaltet werden können. Jede Box kann nun einem bestimmten Fahrzeug zugewiesen werden.</string>
+    <string name="changelog_1_2_slide3_title">Einstellungen</string>
+    <string name="changelog_1_2_slide3_text">In den Einstellungen einer Einheit können jetzt Texte / Logos gesetzt werden, die bei der Erstellung des PDF Ausdrucks verwendet werden.\nDiese Einstellungen synchronisieren sich automatisch mit allen anderen Geräten.</string>
+    <string name="changelog_1_2_slide4_title">Verfügbarkeit von Ausrüstung</string>
+    <string name="changelog_1_2_slide4_text">Es wird nun angezeigt, wie viele Gegenstände in einer Box verfügbar sind.\nDurch ein kurzes Wischen (oder im Box-Editor) können Gegenstände als \'entnommen\' markiert werden.\n\nUnvollständige Boxen, werden zudem in der Übersicht mit einem kleinen \'!\' Symbol markiert.</string>
+    <string name="changelog_1_2_slide1_title">Neuigkeiten\n- Version 1.2 -</string>
+    <string name="error_login_timeout">Verbindung konnte nicht hergestellt werden.</string>
 </resources>

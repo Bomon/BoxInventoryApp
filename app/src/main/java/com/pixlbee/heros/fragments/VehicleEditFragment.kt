@@ -75,7 +75,7 @@ class VehicleEditFragment : Fragment() {
                 if (vehicles != null) {
                     for (vehicle: DataSnapshot in vehicles.children) {
                         val id = vehicle.child("id").value.toString()
-                        if (id == mVehicleModel.id.toString()) {
+                        if (id == mVehicleModel.id) {
                             val vehicleKey: String = vehicle.key.toString()
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("name").setValue(vehicleEditNameField.text.toString().trim())
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("callname").setValue(vehicleEditCallnameField.text.toString().trim())

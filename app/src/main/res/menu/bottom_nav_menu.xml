@@ -9,7 +9,7 @@
     <item
         android:id="@+id/navigation_boxes"
         android:icon="@drawable/ic_baseline_widgets_24"
-        android:title="@string/title_nav_home" />
+        android:title="@string/title_nav_boxes" />
 
     <item
         android:id="@+id/navigation_items"

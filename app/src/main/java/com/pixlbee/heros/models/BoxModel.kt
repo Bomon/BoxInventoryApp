@@ -19,7 +19,7 @@ class BoxModel(
     var type: String,
     var description: String,
     var qrcode: String,
-    var vehicle: String,
+    var in_vehicle: String,
     var location_details: String,
     var image: String,
     var location_image: String,

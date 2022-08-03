@@ -1,7 +1,6 @@
 package com.pixlbee.heros.preferences
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
 import android.util.AttributeSet
 import android.view.View
@@ -18,21 +17,20 @@ import com.pixlbee.heros.utility.Utils
 
 class ImagePreference : Preference {
 
-    constructor(context: Context?) : super(context!!) {
-    }
-    constructor(context: Context?, attrs: AttributeSet?) : super(context!!, attrs) {
-    }
+    constructor(context: Context?) : super(context!!)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context!!, attrs)
 
     private lateinit var imageField: ImageView
     private lateinit var imageSpinner: ProgressBar
-    private lateinit var bitmap: Bitmap
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
         imageField = holder.findViewById(R.id.image) as ImageView
         imageSpinner = holder.findViewById(R.id.image_spinner) as ProgressBar
 
-        val orgRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!))
+        val orgRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(
+            context
+        ))
         orgRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val org: DataSnapshot = task.result

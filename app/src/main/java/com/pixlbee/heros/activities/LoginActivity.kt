@@ -4,9 +4,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.TextUtils
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
@@ -44,7 +43,11 @@ class LoginActivity : AppCompatActivity() {
         loginBtn = findViewById(R.id.login_btn)
         demoBtn = findViewById(R.id.demo_btn)
 
+        val loginProgressBar = findViewById<ProgressBar>(R.id.login_progress_bar)
+        loginProgressBar.visibility = View.GONE
+
         loginBtn.setOnClickListener {
+
             var email: String = emailEt.text.toString()
             val password: String = passwordEt.text.toString()
 
@@ -62,6 +65,12 @@ class LoginActivity : AppCompatActivity() {
             }
 
             if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
+                loginProgressBar.visibility = View.VISIBLE
+                loginBtn.isEnabled = false
+                emailEt.isEnabled = false
+                passwordEt.isEnabled = false
+                demoBtn.isEnabled = false
+
                 email += "@thw.thw"
                 auth = Firebase.auth
                 auth.signInWithEmailAndPassword(email, password)
@@ -83,6 +92,12 @@ class LoginActivity : AppCompatActivity() {
                             passwordEtContainer.isErrorEnabled = true
                             passwordEtContainer.error = resources.getString(R.string.error_check_password)
                             Toast.makeText(this, resources.getString(R.string.error_login_failed), Toast.LENGTH_LONG).show()
+
+                            loginProgressBar.visibility = View.GONE
+                            loginBtn.isEnabled = true
+                            emailEt.isEnabled = true
+                            passwordEt.isEnabled = true
+                            demoBtn.isEnabled = true
                         }
                     }
             }
@@ -91,6 +106,15 @@ class LoginActivity : AppCompatActivity() {
         demoBtn.setOnClickListener {
             val email = "demo@thw.thw"
             val password = "demodemo123"
+
+            emailEt.setText("demo", TextView.BufferType.EDITABLE)
+            passwordEt.setText("demodemo123", TextView.BufferType.EDITABLE)
+            loginProgressBar.visibility = View.VISIBLE
+            loginBtn.isEnabled = false
+            emailEt.isEnabled = false
+            passwordEt.isEnabled = false
+            demoBtn.isEnabled = false
+
             auth = Firebase.auth
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
@@ -106,6 +130,14 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(this, resources.getString(R.string.error_demo_failed), Toast.LENGTH_LONG).show()
                     }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, resources.getString(R.string.error_login_timeout), Toast.LENGTH_LONG).show()
+                    loginProgressBar.visibility = View.GONE
+                    loginBtn.isEnabled = true
+                    emailEt.isEnabled = true
+                    passwordEt.isEnabled = true
+                    demoBtn.isEnabled = true
                 }
 
         }

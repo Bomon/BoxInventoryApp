@@ -15,41 +15,41 @@ class HerosAppIntro : AppIntro() {
         //isColorTransitionsEnabled = true
 
         val nightModeFlags: Int = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        var img_vehicle = R.drawable.changelog_vehicles_light
-        var img_item = R.drawable.changelog_item_light
-        var img_setting = R.drawable.changelog_settings_light
+        var imgVehicle = R.drawable.changelog_vehicles_light
+        var imgItem = R.drawable.changelog_item_light
+        var imgSetting = R.drawable.changelog_settings_light
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES){
-            img_vehicle = R.drawable.changelog_vehicles_dark
-            img_item = R.drawable.changelog_item_dark
-            img_setting = R.drawable.changelog_settings_dark
+            imgVehicle = R.drawable.changelog_vehicles_dark
+            imgItem = R.drawable.changelog_item_dark
+            imgSetting = R.drawable.changelog_settings_dark
         }
 
 
         // Call addSlide passing your Fragments.
         // You can use AppIntroFragment to use a pre-built fragment
         addSlide(AppIntroFragment.createInstance(
-            title = "Neuigkeiten\n- Version 1.2 -",
+            title = resources.getString(R.string.changelog_1_2_slide1_title),
             imageDrawable  = R.drawable.ic_logo,
             backgroundDrawable = R.drawable.back_slide1,
-            description = "Update 1.2 ist erschienen und bringt neben neue Funktionen auch viele kleine Verbesserungen"
+            description = resources.getString(R.string.changelog_1_2_slide1_text),
         ))
         addSlide(AppIntroFragment.createInstance(
-            title = "Fahrzeuge",
-            imageDrawable = img_vehicle,
+            title = resources.getString(R.string.changelog_1_2_slide2_title),
+            imageDrawable = imgVehicle,
             backgroundDrawable = R.drawable.back_slide2,
-            description = "Es gibt eine neue Hauptansicht, in der Fahrzeuge angelegt und verwaltet werden können. Jede Box kann nun einem Fahrzeug zugewiesen werden."
+            description = resources.getString(R.string.changelog_1_2_slide2_text)
         ))
         addSlide(AppIntroFragment.createInstance(
-            title = "Einstellungen",
-            imageDrawable = img_setting,
+            title =  resources.getString(R.string.changelog_1_2_slide3_title),
+            imageDrawable = imgSetting,
             backgroundDrawable = R.drawable.back_slide3,
-            description = "In den Einstellungen können jetzt Texte / Logos gesetzt werden, die bei der Erstellung des PDF Ausdrucks verwendet werden."
+            description = resources.getString(R.string.changelog_1_2_slide3_text)
         ))
         addSlide(AppIntroFragment.createInstance(
-            title = "Ausrüstungs Verfügbarkeit",
-            imageDrawable = img_item,
+            title =  resources.getString(R.string.changelog_1_2_slide4_title),
+            imageDrawable = imgItem,
             backgroundDrawable = R.drawable.back_slide4,
-            description = "Es wird nun angezeigt, wie viele Gegenstände in einer Box verfügbar sind.\n\nDurch ein kurzes Wischen (oder im Box-Editor) können Gegenstände als 'entnommen' markiert werden."
+            description = resources.getString(R.string.changelog_1_2_slide4_text)
         ))
     }
 

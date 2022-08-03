@@ -174,7 +174,7 @@ class BoxEditFragment : Fragment() {
                             }
                             // This is just a workaround
                             // Problem: when ID is changed, Box Fragment no longer can find the right box
-                            // Hence we go directly back to home after editing where the box is udpated
+                            // Hence we go directly back to home after editing where the box is updated
                             // If user clicks it again, he sees the box with the new ID
                             if (boxEditIdField.text.toString() != mBoxModel.id){
                                 navController.navigateUp()
@@ -196,7 +196,7 @@ class BoxEditFragment : Fragment() {
         mBoxModel.name = boxEditNameField.text.toString()
         mBoxModel.qrcode = boxEditQrcodeField.text.toString()
         mBoxModel.type = boxEditTypeField.text.toString()
-        mBoxModel.vehicle = boxEditLocationDetailsField.text.toString()
+        mBoxModel.in_vehicle = mVehicle.id
         mBoxModel.description = boxEditDescriptionField.text.toString()
         mBoxModel.color = boxEditColor
         mBoxModel.status = Utils.chipListToString(boxEditStatusChips)
@@ -330,21 +330,27 @@ class BoxEditFragment : Fragment() {
 
         // Get the arguments from the caller fragment/activity
         mBoxModel = arguments?.getSerializable("boxModel") as BoxModel
-        val itemListArray: Array<BoxItemModel> = arguments?.getSerializable("items") as Array<BoxItemModel>
+        val itemListArray: Array<BoxItemModel> =
+            arguments?.getSerializable("items") as Array<BoxItemModel>
         mItemList = itemListArray.toCollection(ArrayList())
-        var vehicle = arguments?.getSerializable("vehicleModel") as VehicleModel?
-        if (vehicle == null) {
-            mVehicle = VehicleModel("-1", resources.getString(R.string.error_no_vehicle_assigned), "", "", "", "")
-        } else {
-            mVehicle = vehicle
-        }
+        mVehicle = arguments?.getSerializable("vehicleModel") as VehicleModel?
+            ?: VehicleModel(
+                "-1",
+                resources.getString(R.string.error_no_vehicle_assigned),
+                "",
+                "",
+                "",
+                ""
+            )
         isNewBox = arguments?.getSerializable("isNewBox") as Boolean
 
 
-        if (isNewBox){
-            (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.fragment_box_edit_title_new)
+        if (isNewBox) {
+            (activity as AppCompatActivity).supportActionBar?.title =
+                resources.getString(R.string.fragment_box_edit_title_new)
         } else {
-            (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.fragment_box_edit_title)
+            (activity as AppCompatActivity).supportActionBar?.title =
+                resources.getString(R.string.fragment_box_edit_title)
         }
 
         val builder = StrictMode.VmPolicy.Builder()
@@ -480,8 +486,8 @@ class BoxEditFragment : Fragment() {
 
         boxEditNameField.setText(mBoxModel.name)
         boxEditIdField.setText(mBoxModel.id)
-        boxEditLocationDetailsField.setText(mBoxModel.location_details)
-        boxEditTypeField.setText(mBoxModel.type)
+        boxEditLocationDetailsField.setText(if (mBoxModel.location_details == "null") "" else mBoxModel.location_details)
+        boxEditTypeField.setText(if (mBoxModel.type == "null") "" else mBoxModel.type)
         boxEditQrcodeField.setText(mBoxModel.qrcode)
         boxEditDescriptionField.setText(mBoxModel.description)
         boxEditColorPreview.background.setTint(mBoxModel.color)

@@ -30,7 +30,6 @@ import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.BoxModel
 import com.pixlbee.heros.models.ContentItem
 import com.pixlbee.heros.utility.Utils
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -41,18 +40,16 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
     lateinit var mAdapter: BoxAdapter
     private lateinit var mFirebaseListener: ValueEventListener
 
-    private var doubleBackToExitPressedOnce: Boolean = false
     private lateinit var exitToast: Toast
     private var searchQueryText: String = ""
-    private var isFirstCreate: Boolean = true
 
     private lateinit var searchView: SearchView
     private lateinit var searchBtn: MenuItem
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_home, menu)
-        searchBtn = menu.findItem(R.id.home_btn_search)
+        inflater.inflate(R.menu.menu_boxes, menu)
+        searchBtn = menu.findItem(R.id.boxes_btn_search)
         searchView = MenuItemCompat.getActionView(searchBtn) as SearchView
         searchView.setOnQueryTextListener(this)
         searchBtn.setOnActionExpandListener(object :
@@ -82,10 +79,10 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         return when (item.itemId) {
-            R.id.home_btn_search -> {
+            R.id.boxes_btn_search -> {
                 true
             }
-            R.id.home_btn_add -> {
+            R.id.boxes_btn_add -> {
                 if (view != null) {
                     if(Utils.checkHasWritePermission(context)){
                         val bundle = Bundle()
@@ -113,7 +110,7 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
                 }
                 true
             }
-            R.id.home_btn_sort -> {
+            R.id.boxes_btn_sort -> {
                 if (context != null){
                     val builder = MaterialAlertDialogBuilder(context!!)
                     builder.setTitle(context!!.resources.getString(R.string.dialog_sort_title))
@@ -178,8 +175,8 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
         exitTransition = MaterialFadeThrough()
 
         viewGroup = container
-        val view: View = inflater.inflate(R.layout.fragment_home, container, false)
-        val recyclerview = view.findViewById<View>(R.id.RV_home) as RecyclerView
+        val view: View = inflater.inflate(R.layout.fragment_boxes, container, false)
+        val recyclerview = view.findViewById<View>(R.id.RV_boxes) as RecyclerView
 
         mAdapter = BoxAdapter(mBoxList, locationClickable = true, tagClickable = true)
         mAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -194,6 +191,7 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
             }
 
             override fun onBoxTagClicked(tag: String) {
+                exitTransition = Hold()
                 searchBtn.expandActionView()
                 searchView.setQuery(tag, true)
             }
@@ -282,13 +280,6 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
 
         postponeEnterTransition()
         view.doOnPreDraw { startPostponedEnterTransition() }
-
-        // Trigger reload on first creation. Reason: Initial boxes after login may be not visible
-        if (isFirstCreate){
-            val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-            val task = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("last_Login").setValue(timeStamp)
-            isFirstCreate = false
-        }
     }
 
 
@@ -321,8 +312,9 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
         for (model in models) {
             if (model.id.lowercase().contains(query)) {
                 filteredModelList.add(model)
-            } else if (model.vehicle.lowercase().contains(query)) {
-                filteredModelList.add(model)
+            // TODO: This is no longer working as vehicle is only ID now and not name
+            //} else if (model.in_vehicle.lowercase().contains(query)) {
+            //    filteredModelList.add(model)
             } else if (model.name.lowercase().contains(query)) {
                 filteredModelList.add(model)
             } else if (model.status.lowercase().contains(query)) {
@@ -356,9 +348,9 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
                     filteredModelList.reverse()
                 true
             }
-            R.id.radioButtonOrderLocation -> {
+            R.id.radioButtonOrderVehicle -> {
                 filteredModelList.sortWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.vehicle) }
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.in_vehicle) }
                 )
                 if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()

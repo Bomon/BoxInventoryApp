@@ -9,9 +9,6 @@
     tools:openDrawer="start">
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:orientation="vertical"
         android:layout_height="match_parent"
         android:layout_width="match_parent">
@@ -48,6 +45,17 @@
                 app:layout_constraintBottom_toTopOf="@+id/bottom_nav_view"
                 app:defaultNavHost="true"
                 app:navGraph="@navigation/mobile_navigation" />
+
+            <ProgressBar
+                android:id="@+id/nav_host_loading_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:tint="@color/md_white_1000"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bottom_nav_view"

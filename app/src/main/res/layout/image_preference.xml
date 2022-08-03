@@ -79,7 +79,7 @@
             style="?attr/textAppearanceBodyMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="asdklöf sadjlöfködk fjaslkölaöskdfj "
+            android:text="@string/location_details"
             android:textColor="?attr/colorOnSurfaceVariant" />
 
     </LinearLayout>

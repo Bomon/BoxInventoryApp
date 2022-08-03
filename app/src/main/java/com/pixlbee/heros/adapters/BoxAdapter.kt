@@ -72,7 +72,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
                     for (vehicle: DataSnapshot in vehicles.children) {
                         val id = vehicle.child("id").value.toString()
                         val vehicleKey = vehicle.key.toString()
-                        if (id == mBoxList[position].vehicle) {
+                        if (id == mBoxList[position].in_vehicle) {
                             holder.boxVehicle.text = vehicle.child("name").value.toString()
                             foundVehicle = true
                             mVehicle = Utils.readVehicleModelFromDataSnapshot(vehicle)
@@ -185,25 +185,6 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
 
     fun setOnBoxClickListener(mListener: OnBoxClickListener) {
         this.mListener = mListener
-    }
-
-    fun updateColorInFirebase(position: Int) {
-        notifyItemChanged(position)
-        val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")
-        boxesRef.get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val boxes: DataSnapshot? = task.result
-                if (boxes != null) {
-                    for (box: DataSnapshot in boxes.children) {
-                        val id = box.child("id").value.toString()
-                        if (id == holder.boxId.text.toString()) {
-                            val boxKey: String = box.key.toString()
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes").child(boxKey).child("color").setValue(mBoxList[position].color)
-                        }
-                    }
-                }
-            }
-        }
     }
 
 

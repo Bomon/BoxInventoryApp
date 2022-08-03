@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/box_fragment_container"
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/box_fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
@@ -16,6 +17,7 @@
         android:layout_height="match_parent"/>
 
     <ScrollView
+        android:id="@+id/box_scroll_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
@@ -179,7 +181,6 @@
                                 android:layout_marginTop="16dp"
                                 android:layout_marginEnd="8dp"
                                 android:layout_marginBottom="16dp"
-                                android:text="asdklöf sadjlöfk saödlf ksjaödlfk sladkf jaslödk fjlöasdkf jslöakdjf laöskdfj "
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toStartOf="@+id/box_location_image"
                                 app:layout_constraintHorizontal_bias="0.0"

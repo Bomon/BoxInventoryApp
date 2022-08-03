@@ -8,158 +8,166 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/background_image"
+    <RelativeLayout
+        android:background="?attr/colorSurface"
         android:layout_width="match_parent"
-        android:alpha="0.6"
-        android:layout_height="match_parent"/>
+        android:transitionName="vehicleTransition"
+        android:layout_height="match_parent">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/background_image"
+            android:layout_width="match_parent"
+            android:alpha="0.6"
+            android:layout_height="match_parent"/>
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Media -->
-            <ImageView
-                android:id="@+id/vehicle_details_image"
-                android:layout_width="match_parent"
-                android:layout_height="194dp"
-                android:contentDescription="@string/content_description_vehicle_image"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/placeholder_with_bg_80" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="8dp"
-                android:padding="16dp">
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_marginTop="8dp"
-                    android:id="@+id/vehicle_details_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/content_description_title"
-                    android:textAppearance="?attr/textAppearanceTitleLarge"
-                    />
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/vehicle_details_callname"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:chipSpacingHorizontal="6dp"
-                    app:chipSpacingVertical="-8dp"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/box_color"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
+                <!-- Media -->
+                <ImageView
+                    android:id="@+id/vehicle_details_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="194dp"
+                    android:contentDescription="@string/content_description_vehicle_image"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/placeholder_with_bg_80" />
 
                 <LinearLayout
-                    android:id="@+id/vehicle_details_parking_spot_container"
-                    android:layout_marginTop ="16dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginRight="4dp"
-                        android:scaleType="fitStart"
-                        app:srcCompat="@drawable/ic_baseline_location_on_24" />
+                    android:orientation="vertical"
+                    android:layout_marginBottom="8dp"
+                    android:padding="16dp">
 
                     <TextView
-                        android:id="@+id/vehicle_details_parking_spot"
+                        android:layout_marginTop="8dp"
+                        android:id="@+id/vehicle_details_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/content_description_description"
+                        android:text="@string/content_description_title"
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
+                        />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/vehicle_details_callname"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:chipSpacingHorizontal="6dp"
+                        app:chipSpacingVertical="-8dp"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/box_color"
+                        app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
+
+                    <LinearLayout
+                        android:id="@+id/vehicle_details_parking_spot_container"
+                        android:layout_marginTop ="16dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginRight="4dp"
+                            android:scaleType="fitStart"
+                            app:srcCompat="@drawable/ic_baseline_location_on_24" />
+
+                        <TextView
+                            android:id="@+id/vehicle_details_parking_spot"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/content_description_description"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="?android:attr/textColorSecondary" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/vehicle_details_divider"
+                    app:dividerInsetStart="8dp"
+                    app:dividerInsetEnd="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/vehicle_details_description"
+                    android:layout_margin="16dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/content_description_description"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/vehicle_details_divider2"
+                    app:dividerInsetStart="8dp"
+                    app:dividerInsetEnd="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="0dp">
+
+                    <TextView
+                        android:id="@+id/vehicle_details_content_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="@string/vehicle_containing_boxes"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?android:attr/textColorSecondary"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/vehicle_details_content_empty_label"
+                        android:layout_width="match_parent"
+                        android:visibility="gone"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="@string/vehicle_empty"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?android:attr/textColorSecondary" />
+                        android:textColor="?android:attr/textColorSecondary"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/vehicle_details_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="16dp"
+                            android:nestedScrollingEnabled="false" />
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/vehicle_details_divider"
-                app:dividerInsetStart="8dp"
-                app:dividerInsetEnd="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+        </ScrollView>
 
-            <TextView
-                android:id="@+id/vehicle_details_description"
-                android:layout_margin="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/content_description_description"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?android:attr/textColorSecondary" />
-
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/vehicle_details_divider2"
-                app:dividerInsetStart="8dp"
-                app:dividerInsetEnd="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingTop="0dp">
-
-                <TextView
-                    android:id="@+id/vehicle_details_content_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="@string/vehicle_containting_boxes"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textColor="?android:attr/textColorSecondary"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/vehicle_details_content_empty_label"
-                    android:layout_width="match_parent"
-                    android:visibility="gone"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="@string/vehicle_empty"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?android:attr/textColorSecondary"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/vehicle_details_content"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="16dp"
-                        android:nestedScrollingEnabled="false" />
-
-                </RelativeLayout>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

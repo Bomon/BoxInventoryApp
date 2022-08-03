@@ -2,7 +2,6 @@ package com.pixlbee.heros.adapters
 
 import android.content.Context
 import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,7 +67,6 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
                     chip.text = tag
                     holder.itemTags.addView(chip)
                     chip.setOnClickListener {
-                        Log.e("Error", "Chip clicked: " + tag)
                         mListener.onItemTagClicked(tag)
                     }
                 }

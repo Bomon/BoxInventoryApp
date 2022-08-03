@@ -214,7 +214,6 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
         mAdapter = VehicleAdapter(mVehiclesList)
         mAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-
         if (returnVehicleInsteadOfShowDetails) {
             mAdapter.setOnVehicleClickListener(object : VehicleAdapter.OnVehicleClickListener {
                 override fun onVehicleClicked(vehicle: VehicleModel, view: View) {
@@ -229,7 +228,7 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
                 override fun onVehicleClicked(vehicle: VehicleModel, view: View) {
                     exitTransition = Hold()
                     val extras = FragmentNavigatorExtras(
-                        view to vehicle.id.toString()
+                        view to vehicle.id
                     )
                     val navController: NavController = Navigation.findNavController(view)
                     navController.navigate(VehiclesFragmentDirections.actionNavigationVehiclesToVehicleDetailFragment(vehicle), extras)
@@ -255,7 +254,7 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
         postponeEnterTransition()
         view.doOnPreDraw { startPostponedEnterTransition() }
 
-        // Trigger reload on first creation. Reason: Initial vehiclees after login may be not visible
+        // Trigger reload on first creation. Reason: Initial vehicles after login may be not visible
         if (isFirstCreate){
             val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
             val task = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("last_Login").setValue(timeStamp)

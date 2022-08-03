@@ -256,7 +256,7 @@ class BoxPdfCreator {
                 headerTable.setWidths(widths)
 
                 val headerLogoLeft = sharedPreferences.getString("pdf_logo_left", "")
-                if (headerLogoLeft != "") {
+                if (headerLogoLeft.toString() != "null" && headerLogoLeft != "") {
                     val headerLogoLeftImg: Image = Image.getInstance(Base64.decode(headerLogoLeft, Base64.DEFAULT))
                     val newHeight = 50f
                     val newWidth = (newHeight / headerLogoLeftImg.height) * headerLogoLeftImg.width
@@ -286,7 +286,7 @@ class BoxPdfCreator {
                 headerTable.addCell(cell1)
 
                 val headerLogoRight = sharedPreferences.getString("pdf_logo_right", "")
-                if (headerLogoRight != null) {
+                if (headerLogoRight.toString() != "null" && headerLogoRight != "") {
                     val headerLogoRightImg: Image = Image.getInstance(Base64.decode(headerLogoRight, Base64.DEFAULT))
                     val newHeight = 50f
                     val newWidth = (newHeight / headerLogoRightImg.height) * headerLogoRightImg.width

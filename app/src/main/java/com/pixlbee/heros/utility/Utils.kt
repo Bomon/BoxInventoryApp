@@ -200,7 +200,7 @@ class Utils {
             when (btnText) {
                 "order_by_id" -> { return R.id.radioButtonOrderId }
                 "order_by_name" -> { return R.id.radioButtonOrderName }
-                "order_by_location" -> { return R.id.radioButtonOrderLocation }
+                "order_by_vehicle" -> { return R.id.radioButtonOrderVehicle }
                 "order_by_status" -> { return R.id.radioButtonOrderStatus }
                 "order_by_completeness" -> { return R.id.radioButtonCompleteness }
                 "order_by_color" -> { return R.id.radioButtonOrderColor }
@@ -216,7 +216,7 @@ class Utils {
             when (btnId) {
                 R.id.radioButtonOrderId -> { return "order_by_id" }
                 R.id.radioButtonOrderName -> { return "order_by_name" }
-                R.id.radioButtonOrderLocation -> { return "order_by_location" }
+                R.id.radioButtonOrderVehicle -> { return "order_by_vehicle" }
                 R.id.radioButtonOrderStatus -> { return "order_by_status" }
                 R.id.radioButtonCompleteness -> { return "order_by_completeness" }
                 R.id.radioButtonOrderColor -> { return "order_by_color" }

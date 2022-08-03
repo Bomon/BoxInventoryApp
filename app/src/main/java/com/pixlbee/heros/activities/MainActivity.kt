@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                                     appUpdateManager.completeUpdate()
                                 }
                             }
-                        snackbar?.anchorView = findViewById(R.id.bottom_nav_view)
+                        snackbar.anchorView = findViewById(R.id.bottom_nav_view)
                         snackbar.show()
                     }
                     installState.installStatus() == InstallStatus.INSTALLED -> appUpdateManager.unregisterListener(this)
@@ -73,8 +73,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkUpdate() {
-        val appUpdateInfoTask = appUpdateManager?.appUpdateInfo
-        appUpdateInfoTask?.addOnSuccessListener { appUpdateInfo ->
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
             if (appUpdateInfo.updateAvailability() === UpdateAvailability.UPDATE_AVAILABLE
                 && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
             ) {
@@ -119,10 +119,15 @@ class MainActivity : AppCompatActivity() {
 
         // fix icon highlight of bottom nav bar on back navigation
         binding.bottomNavView.setupWithNavController(navController)
+        // if icon is clicked again, it will go back to root view
+        binding.bottomNavView.setOnItemReselectedListener { item ->
+            // Pop everything up to the reselected item
+            val reselectedDestinationId = item.itemId
+            navController.popBackStack(reselectedDestinationId, inclusive = false)
+        }
         // add logic to drawer button
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
         setupActionBarWithNavController(navController, appBarConfiguration)
-
         binding.toolbar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this))
 
         val sharedPreferences = this.getSharedPreferences("AppPreferences", MODE_PRIVATE)
@@ -140,6 +145,7 @@ class MainActivity : AppCompatActivity() {
         mNavViewDrawer = findViewById(R.id.nav_view_drawer)
         setupDrawerContent(mNavViewDrawer)
 
+        binding.navHostLoadingSpinner.visibility = View.VISIBLE
         //init firebase
         initFirebaseListener(this, mNavViewDrawer)
     }
@@ -194,7 +200,7 @@ class MainActivity : AppCompatActivity() {
                     val orgName = dataSnapshot.child(orgId).child("name").value.toString()
                     val orgReadPermissions = org.value.toString()
 
-                    FirebaseDatabase.getInstance().reference.keepSynced(false)
+                    //FirebaseDatabase.getInstance().reference.keepSynced(false)
                     FirebaseDatabase.getInstance().getReference(orgId).keepSynced(true)
                     FirebaseDatabase.getInstance().getReference("read_permissions").keepSynced(true)
                     FirebaseDatabase.getInstance().getReference("write_permissions").keepSynced(true)
@@ -294,6 +300,9 @@ class MainActivity : AppCompatActivity() {
                 editor.putString("pdf_logo_right", pdfLogoRight)
 
                 editor.commit()
+
+
+                binding.navHostLoadingSpinner.visibility = View.GONE
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}

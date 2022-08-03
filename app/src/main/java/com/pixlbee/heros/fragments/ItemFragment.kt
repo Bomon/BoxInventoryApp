@@ -214,8 +214,9 @@ class ItemFragment : Fragment() {
 
         val itemContainer: ConstraintLayout = v.findViewById(R.id.item_fragment_container)
 
-        // Transition taget element
-        itemContainer.transitionName = mItemModel.id
+        // Transition target element
+        val subId = arguments?.getSerializable("subId") as String
+        itemContainer.transitionName = mItemModel.id + subId
 
         updateContent()
 

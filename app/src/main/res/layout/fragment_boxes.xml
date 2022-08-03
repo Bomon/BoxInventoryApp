@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_home"
+    android:id="@+id/fragment_boxes"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:layout_height="match_parent"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/RV_home"
+        android:id="@+id/RV_boxes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/card_box"

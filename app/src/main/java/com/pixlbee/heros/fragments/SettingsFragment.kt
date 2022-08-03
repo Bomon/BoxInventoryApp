@@ -21,7 +21,7 @@ import com.pixlbee.heros.utility.Utils
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
-    lateinit var clickedPreference: Preference
+    private lateinit var clickedPreference: Preference
     private lateinit var startSelectImageResult: ActivityResultLauncher<Intent>
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

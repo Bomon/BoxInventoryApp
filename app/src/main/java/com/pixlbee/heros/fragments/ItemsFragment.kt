@@ -2,7 +2,6 @@ package com.pixlbee.heros.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -141,13 +140,13 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         initFirebase()
 
         val itemsAddButton: FloatingActionButton = view.findViewById(R.id.items_add_button)
-        itemsAddButton.setOnClickListener { viwe ->
-            if (viwe != null) {
+        itemsAddButton.setOnClickListener { v ->
+            if (v != null) {
                 if (Utils.checkHasWritePermission(context)) {
                     val itemModel = ItemModel("", "", "", "", "")
                     exitTransition = Hold()
                     val extras = FragmentNavigatorExtras(
-                        viwe to "transition_add_item"
+                        v to "transition_add_item"
                     )
                     findNavController().navigate(
                         ItemsFragmentDirections.actionNavigationItemsToItemEditFragment(
@@ -247,7 +246,6 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroyView() {
-        Log.w("home","destroy")
         super.onDestroyView()
         FirebaseDatabase.getInstance().reference.removeEventListener(mFirebaseListener)
     }

@@ -21,7 +21,7 @@
             android:dialogTitle="@string/pdf_subtitle_title"
             android:key="pdf_subtitle"
             android:summary="@string/pdf_subtitle_summary"
-            android:title="PDF Untertitel" />
+            android:title="@string/pdf_subtitle_title" />
         <com.pixlbee.heros.preferences.ImagePreference
             app:iconSpaceReserved="false"
             android:layout="@layout/image_preference"
