@@ -1,5 +1,6 @@
 package com.pixlbee.heros.fragments
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -89,6 +90,8 @@ class BoxEditFragment : Fragment() {
 
     private lateinit var imageBitmap: Bitmap
     private lateinit var locationImageBitmap: Bitmap
+
+    private lateinit var animationType: String
 
 
     private fun checkFields(): Boolean {
@@ -320,8 +323,16 @@ class BoxEditFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             showDismissDialog()
         }
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+
+        val sharedPreferences = context!!.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        animationType = sharedPreferences.getString("animation_type", "simple").toString()
+        if (animationType == "elegant") {
+            enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+            returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        } else if (animationType == "simple"){
+            enterTransition = MaterialFadeThrough()
+            returnTransition = MaterialFadeThrough()
+        }
 
         // This task is done once on fragment creation
         // Reason: each qrcode / boxId must only exist once. The task is async and so we start it here to have the result when user clicks save
@@ -401,7 +412,9 @@ class BoxEditFragment : Fragment() {
         (activity as AppCompatActivity?)!!.supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         (activity as AppCompatActivity?)!!.supportActionBar!!.setHomeButtonEnabled(false)
 
-        exitTransition = MaterialFadeThrough()
+        if (animationType in listOf("simple", "elegant")) {
+            exitTransition = MaterialFadeThrough()
+        }
 
         val v =  inflater.inflate(R.layout.fragment_box_edit, container, false)
 
@@ -590,7 +603,9 @@ class BoxEditFragment : Fragment() {
 
         boxEditAddButton.setOnClickListener { view ->
             if (view != null) {
-                exitTransition = Hold()
+                if (animationType == "elegant") {
+                    exitTransition = Hold()
+                }
                 // Temp store elements for when item was added
                 mBoxModel.status = Utils.chipListToString(boxEditStatusChips)
                 mBoxModel.color = boxEditColor
@@ -607,7 +622,9 @@ class BoxEditFragment : Fragment() {
 
         boxEditVehicleField.setOnClickListener { view ->
             if (view != null) {
-                exitTransition = Hold()
+                if (animationType == "elegant") {
+                    exitTransition = Hold()
+                }
                 // Temp store elements for when item was added
                 mBoxModel.status = Utils.chipListToString(boxEditStatusChips)
                 mBoxModel.color = boxEditColor

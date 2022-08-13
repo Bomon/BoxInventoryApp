@@ -33,7 +33,6 @@ class SettingsActivity : AppCompatActivity() {
             .replace(R.id.content, SettingsFragment())
             .commit()
 
-
         val sharedPreferences: SharedPreferences = getSharedPreferences("AppPreferences",
             MODE_PRIVATE
         )

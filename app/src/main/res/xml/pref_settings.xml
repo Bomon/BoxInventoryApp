@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory android:title="@string/preferences_title_category_general"
+        app:iconSpaceReserved="false">
 
-    <PreferenceCategory android:title="@string/preferences_title_category_pdf"
+        <ListPreference
+            app:iconSpaceReserved="false"
+            android:defaultValue="pref_color_red_value"
+            android:entries="@array/pref_animation_labels"
+            android:entryValues="@array/pref_animation_values"
+            android:key="animation_type"
+            android:title="@string/setting_animation_title"
+            android:summary="@string/setting_animation_summary" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="settings_category_pdf"
+        android:title="@string/preferences_title_category_pdf"
         app:iconSpaceReserved="false">
         <EditTextPreference
             app:iconSpaceReserved="false"

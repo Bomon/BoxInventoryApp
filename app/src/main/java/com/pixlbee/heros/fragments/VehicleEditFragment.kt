@@ -1,5 +1,6 @@
 package com.pixlbee.heros.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -26,6 +27,7 @@ import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
@@ -49,6 +51,8 @@ class VehicleEditFragment : Fragment() {
     private var isNewVehicle: Boolean = false
 
     private lateinit var imageBitmap: Bitmap
+
+    private lateinit var animationType: String
 
 
     private fun checkFields(): Boolean {
@@ -191,17 +195,27 @@ class VehicleEditFragment : Fragment() {
         (activity as AppCompatActivity?)!!.supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         (activity as AppCompatActivity?)!!.supportActionBar!!.setHomeButtonEnabled(false)
 
-        val transformEnter = MaterialContainerTransform(requireContext(), true)
-        transformEnter.scrimColor = Color.TRANSPARENT
-        sharedElementEnterTransition = transformEnter
+        val sharedPreferences = context!!.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        animationType = sharedPreferences.getString("animation_type", "simple").toString()
 
-        val transformReturn = MaterialContainerTransform(requireContext(), false)
-        transformReturn.scrimColor = Color.TRANSPARENT
-        sharedElementReturnTransition = transformReturn
+        if (animationType == "elegant") {
+            val transformEnter = MaterialContainerTransform(requireContext(), true)
+            transformEnter.scrimColor = Color.TRANSPARENT
+            sharedElementEnterTransition = transformEnter
 
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+            val transformReturn = MaterialContainerTransform(requireContext(), false)
+            transformReturn.scrimColor = Color.TRANSPARENT
+            sharedElementReturnTransition = transformReturn
+
+            exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+            enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+            returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+
+        } else if (animationType == "simple"){
+            enterTransition = MaterialFadeThrough()
+            returnTransition = MaterialFadeThrough()
+            exitTransition = MaterialFadeThrough()
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             showDismissDialog()
@@ -292,7 +306,7 @@ class VehicleEditFragment : Fragment() {
 
         vehicleEditImageField.setOnClickListener {
             ImagePicker.with(thisFragment)
-                .crop(4f, 3f)                    //Crop image(Optional), Check Customization for more option
+                .crop()                    //Crop image(Optional), Check Customization for more option
                 .compress(1024)            //Final image size will be less than 1 MB(Optional)
                 .createIntent { intent ->
                     startForImageResult.launch(intent)

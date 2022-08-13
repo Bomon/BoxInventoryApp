@@ -51,6 +51,8 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
     private var searchQueryText: String = ""
     private var isFirstCreate: Boolean = true
 
+    private lateinit var animationType: String
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_vehicles, menu)
@@ -183,16 +185,23 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
 
         }
 
-        val transformEnter = MaterialContainerTransform(requireContext(), true)
-        transformEnter.scrimColor = Color.TRANSPARENT
-        sharedElementEnterTransition = transformEnter
+        val sharedPreferences = context!!.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        animationType = sharedPreferences.getString("animation_type", "simple").toString()
+        if (animationType == "elegant") {
+            val transformEnter = MaterialContainerTransform(requireContext(), true)
+            transformEnter.scrimColor = Color.TRANSPARENT
+            sharedElementEnterTransition = transformEnter
 
-        val transformReturn = MaterialContainerTransform(requireContext(), false)
-        transformReturn.scrimColor = Color.TRANSPARENT
-        sharedElementReturnTransition = transformReturn
+            val transformReturn = MaterialContainerTransform(requireContext(), false)
+            transformReturn.scrimColor = Color.TRANSPARENT
+            sharedElementReturnTransition = transformReturn
 
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+            enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+            returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        } else if (animationType == "simple"){
+            enterTransition = MaterialFadeThrough()
+            returnTransition = MaterialFadeThrough()
+        }
 
         (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.title_nav_vehicles)
 
@@ -205,7 +214,9 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
         savedInstanceState: Bundle?
     ): View {
 
-        exitTransition = MaterialFadeThrough()
+        if (animationType in listOf("simple", "elegant")) {
+            exitTransition = MaterialFadeThrough()
+        }
 
         viewGroup = container
         val view: View = inflater.inflate(R.layout.fragment_vehicles, container, false)
@@ -226,7 +237,9 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
         } else {
             mAdapter.setOnVehicleClickListener(object: VehicleAdapter.OnVehicleClickListener{
                 override fun onVehicleClicked(vehicle: VehicleModel, view: View) {
-                    exitTransition = Hold()
+                    if (animationType == "elegant") {
+                        exitTransition = Hold()
+                    }
                     val extras = FragmentNavigatorExtras(
                         view to vehicle.id
                     )
@@ -251,8 +264,10 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        postponeEnterTransition()
-        view.doOnPreDraw { startPostponedEnterTransition() }
+        if (animationType == "elegant") {
+            postponeEnterTransition()
+            view.doOnPreDraw { startPostponedEnterTransition() }
+        }
 
         // Trigger reload on first creation. Reason: Initial vehicles after login may be not visible
         if (isFirstCreate){

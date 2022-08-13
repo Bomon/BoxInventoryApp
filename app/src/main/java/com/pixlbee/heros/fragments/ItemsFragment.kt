@@ -1,5 +1,6 @@
 package com.pixlbee.heros.fragments
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
@@ -40,6 +41,8 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var searchView: SearchView
     private lateinit var searchBtn: MenuItem
 
+    private lateinit var animationType: String
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_items, menu)
@@ -72,16 +75,25 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
             (activity as AppCompatActivity?)!!.supportActionBar!!.setHomeButtonEnabled(false)
         }
 
-        val transformEnter = MaterialContainerTransform(requireContext(), true)
-        transformEnter.scrimColor = Color.TRANSPARENT
-        sharedElementEnterTransition = transformEnter
+        val sharedPreferences = context!!.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        animationType = sharedPreferences.getString("animation_type", "simple").toString()
 
-        val transformReturn = MaterialContainerTransform(requireContext(), false)
-        transformReturn.scrimColor = Color.TRANSPARENT
-        sharedElementReturnTransition = transformReturn
+        if (animationType == "elegant") {
+            val transformEnter = MaterialContainerTransform(requireContext(), true)
+            transformEnter.scrimColor = Color.TRANSPARENT
+            sharedElementEnterTransition = transformEnter
 
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+            val transformReturn = MaterialContainerTransform(requireContext(), false)
+            transformReturn.scrimColor = Color.TRANSPARENT
+            sharedElementReturnTransition = transformReturn
+
+            enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+            returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+
+        } else if (animationType == "simple"){
+            enterTransition = MaterialFadeThrough()
+            returnTransition = MaterialFadeThrough()
+        }
     }
 
 
@@ -90,7 +102,9 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        exitTransition = MaterialFadeThrough()
+        if (animationType in listOf("simple", "elegant")){
+            exitTransition = MaterialFadeThrough()
+        }
 
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_items, container, false)
@@ -118,7 +132,9 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         } else {
             mAdapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
                 override fun onItemClicked(item: ItemModel, view: View) {
-                    exitTransition = Hold()
+                    if (animationType == "elegant") {
+                        exitTransition = Hold()
+                    }
                     val extras = FragmentNavigatorExtras(
                         view to item.id
                     )
@@ -144,7 +160,9 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
             if (v != null) {
                 if (Utils.checkHasWritePermission(context)) {
                     val itemModel = ItemModel("", "", "", "", "")
-                    exitTransition = Hold()
+                    if (animationType == "elegant") {
+                        exitTransition = Hold()
+                    }
                     val extras = FragmentNavigatorExtras(
                         v to "transition_add_item"
                     )
@@ -165,8 +183,10 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        postponeEnterTransition()
-        view.doOnPreDraw { startPostponedEnterTransition() }
+        if (animationType == "elegant") {
+            postponeEnterTransition()
+            view.doOnPreDraw { startPostponedEnterTransition() }
+        }
 
         if (returnItemInsteadOfShowDetails) {
             // receive new item from ItemEditFragment

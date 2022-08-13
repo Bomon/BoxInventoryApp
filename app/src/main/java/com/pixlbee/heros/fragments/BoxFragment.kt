@@ -2,6 +2,7 @@ package com.pixlbee.heros.fragments
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.Drawable
@@ -61,6 +62,8 @@ class BoxFragment : Fragment(){
 
     private lateinit var boxSummaryImageField: ImageView
     private lateinit var boxLocationImageField: ImageView
+
+    private lateinit var animationType: String
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -169,17 +172,23 @@ class BoxFragment : Fragment(){
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        val transformEnter = MaterialContainerTransform(requireContext(), true)
-        transformEnter.scrimColor = Color.TRANSPARENT
-        sharedElementEnterTransition = transformEnter
+        val sharedPreferences = context!!.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        animationType = sharedPreferences.getString("animation_type", "simple").toString()
+        if (animationType == "elegant") {
+            val transformEnter = MaterialContainerTransform(requireContext(), true)
+            transformEnter.scrimColor = Color.TRANSPARENT
+            sharedElementEnterTransition = transformEnter
 
-        val transformReturn = MaterialContainerTransform(requireContext(), false)
-        transformReturn.scrimColor = Color.TRANSPARENT
-        sharedElementReturnTransition = transformReturn
+            val transformReturn = MaterialContainerTransform(requireContext(), false)
+            transformReturn.scrimColor = Color.TRANSPARENT
+            sharedElementReturnTransition = transformReturn
 
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        } else if (animationType == "simple") {
+            exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+            enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+            returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        }
+
 
         // Get the arguments from the caller fragment/activity
         mBoxModel = arguments?.getSerializable("boxModel") as BoxModel
@@ -296,7 +305,9 @@ class BoxFragment : Fragment(){
         mBoxItemAdapter = BoxItemAdapter(mBoxModel.id)
         mBoxItemAdapter.setOnBoxItemClickListener(object: BoxItemAdapter.OnBoxItemClickListener{
             override fun onBoxItemClicked(item: BoxItemModel, view: View) {
-                exitTransition = Hold()
+                if (animationType == "elegant") {
+                    exitTransition = Hold()
+                }
                 val extras = FragmentNavigatorExtras(
                     view to item.item_id + item.numeric_id
                 )
@@ -316,7 +327,9 @@ class BoxFragment : Fragment(){
         mVehicleAdapter.setOnVehicleClickListener(object: VehicleAdapter.OnVehicleClickListener{
             override fun onVehicleClicked(vehicle: VehicleModel, view: View) {
                 if (vehicle.id != "-1"){
-                    exitTransition = Hold()
+                    if (animationType == "elegant") {
+                        exitTransition = Hold()
+                    }
                     val extras = FragmentNavigatorExtras(
                         recyclerviewVehicle to "vehicleTransition"
                     )
@@ -542,8 +555,12 @@ class BoxFragment : Fragment(){
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        postponeEnterTransition()
-        view.doOnPreDraw { startPostponedEnterTransition() }
+        val sharedPreferences = context!!.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        val animationType = sharedPreferences.getString("animation_type", "simple")
+        if (animationType == "elegant") {
+            postponeEnterTransition()
+            view.doOnPreDraw { startPostponedEnterTransition() }
+        }
     }
 
 

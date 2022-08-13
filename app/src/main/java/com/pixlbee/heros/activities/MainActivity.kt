@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         appUpdateManager.registerListener(installStateUpdatedListener)
         checkUpdate()
 
-        // Color the status bar
+        // Color the status bar and navigation chin
         window.statusBarColor = resources.getColor(R.color.status_bar_color)
         window.navigationBarColor = SurfaceColors.SURFACE_2.getColor(this)
 
@@ -266,10 +266,10 @@ class MainActivity : AppCompatActivity() {
                         // get write permission status for this org
                         val writeUsers = dataSnapshot.child("write_permissions").child(selectedOrg).value.toString()
                         if (writeUsers.contains(userId)) {
-                            mNavViewDrawer.menu.findItem(R.id.nav_settings).isEnabled = true
+                            //mNavViewDrawer.menu.findItem(R.id.nav_settings).isEnabled = true
                             editor.putBoolean("write_permission", true)
                         } else {
-                            mNavViewDrawer.menu.findItem(R.id.nav_settings).isEnabled = false
+                            //mNavViewDrawer.menu.findItem(R.id.nav_settings).isEnabled = false
                             editor.putBoolean("write_permission", false)
                         }
                     }
@@ -279,10 +279,10 @@ class MainActivity : AppCompatActivity() {
                     // get write permissions
                     val writeUsers = dataSnapshot.child("write_permissions").child(selectedOrg).value.toString()
                     if (writeUsers.contains(userId)) {
-                        mNavViewDrawer.menu.findItem(R.id.nav_settings).isEnabled = true
+                        //mNavViewDrawer.menu.findItem(R.id.nav_settings).isEnabled = true
                         editor.putBoolean("write_permission", true)
                     } else {
-                        mNavViewDrawer.menu.findItem(R.id.nav_settings).isEnabled = false
+                        //mNavViewDrawer.menu.findItem(R.id.nav_settings).isEnabled = false
                         editor.putBoolean("write_permission", false)
                     }
                 }

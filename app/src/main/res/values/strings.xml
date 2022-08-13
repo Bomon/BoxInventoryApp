@@ -174,4 +174,9 @@
     <string name="changelog_1_2_slide4_text">Es wird nun angezeigt, wie viele Gegenstände in einer Box verfügbar sind.\nDurch ein kurzes Wischen (oder im Box-Editor) können Gegenstände als \'entnommen\' markiert werden.\n\nUnvollständige Boxen, werden zudem in der Übersicht mit einem kleinen \'!\' Symbol markiert.</string>
     <string name="changelog_1_2_slide1_title">Neuigkeiten\n- Version 1.2 -</string>
     <string name="error_login_timeout">Verbindung konnte nicht hergestellt werden.</string>
+    <string name="settings_animation_elegant">Elegant</string>
+    <string name="settings_animation_simple">Einfach</string>
+    <string name="settings_animation_off">Aus</string>
+    <string name="setting_animation_title">Animationen</string>
+    <string name="setting_animation_summary">Übergänge zwischen verschiedenen Ansichten</string>
 </resources>

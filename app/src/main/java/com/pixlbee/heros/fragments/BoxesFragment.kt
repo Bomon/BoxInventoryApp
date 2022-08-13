@@ -1,5 +1,6 @@
 package com.pixlbee.heros.fragments
 
+import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import android.view.*
@@ -45,6 +46,8 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var searchView: SearchView
     private lateinit var searchBtn: MenuItem
+
+    private lateinit var animationType: String
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -160,8 +163,15 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
 
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        val sharedPreferences = context!!.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        animationType = sharedPreferences.getString("animation_type", "simple").toString()
+        if (animationType == "elegant") {
+            enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+            returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        } else if (animationType == "simple"){
+            enterTransition = MaterialFadeThrough()
+            returnTransition = MaterialFadeThrough()
+        }
 
     }
 
@@ -171,8 +181,9 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        exitTransition = MaterialFadeThrough()
+        if (animationType in listOf("simple", "elegant")){
+            exitTransition = MaterialFadeThrough()
+        }
 
         viewGroup = container
         val view: View = inflater.inflate(R.layout.fragment_boxes, container, false)
@@ -182,7 +193,9 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
         mAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         mAdapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
             override fun onBoxClicked(box: BoxModel, view: View) {
-                exitTransition = Hold()
+                if (animationType == "elegant"){
+                    exitTransition = MaterialFadeThrough()
+                }
                 val extras = FragmentNavigatorExtras(
                     view to box.id
                 )
@@ -191,7 +204,9 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
             }
 
             override fun onBoxTagClicked(tag: String) {
-                exitTransition = Hold()
+                if (animationType == "elegant"){
+                    exitTransition = Hold()
+                }
                 searchBtn.expandActionView()
                 searchView.setQuery(tag, true)
             }
@@ -278,8 +293,10 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        postponeEnterTransition()
-        view.doOnPreDraw { startPostponedEnterTransition() }
+        if (animationType == "elegant") {
+            postponeEnterTransition()
+            view.doOnPreDraw { startPostponedEnterTransition() }
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package com.pixlbee.heros.fragments
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -23,6 +24,7 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.divider.MaterialDivider
 import com.google.android.material.transition.Hold
 import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -50,6 +52,8 @@ class VehicleDetailFragment : Fragment() {
     private lateinit var vehicleContainedBoxesEmptyLabel: TextView
     private lateinit var vehicleParkingSpotContainer: LinearLayout
     private lateinit var vehicleDescriptionDivider: MaterialDivider
+
+    private lateinit var animationType: String
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -140,16 +144,26 @@ class VehicleDetailFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        val transformEnter = MaterialContainerTransform(requireContext(), true)
-        transformEnter.scrimColor = Color.TRANSPARENT
-        sharedElementEnterTransition = transformEnter
+        val sharedPreferences = context!!.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        animationType = sharedPreferences.getString("animation_type", "simple").toString()
+        if (animationType == "elegant") {
 
-        val transformReturn = MaterialContainerTransform(requireContext(), false)
-        transformReturn.scrimColor = Color.TRANSPARENT
-        sharedElementReturnTransition = transformReturn
+            val transformEnter = MaterialContainerTransform(requireContext(), true)
+            transformEnter.scrimColor = Color.TRANSPARENT
+            sharedElementEnterTransition = transformEnter
 
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+            val transformReturn = MaterialContainerTransform(requireContext(), false)
+            transformReturn.scrimColor = Color.TRANSPARENT
+            sharedElementReturnTransition = transformReturn
+
+            exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+            enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+
+        } else if (animationType == "simple"){
+            enterTransition = MaterialFadeThrough()
+            returnTransition = MaterialFadeThrough()
+            exitTransition = MaterialFadeThrough()
+        }
 
         (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.vehicle_details_title)
 
@@ -241,7 +255,9 @@ class VehicleDetailFragment : Fragment() {
         mAdapter = BoxAdapter(mBoxList)
         mAdapter.setOnBoxClickListener(object: BoxAdapter.OnBoxClickListener{
             override fun onBoxClicked(box: BoxModel, view: View) {
-                exitTransition = Hold()
+                if (animationType == "elegant") {
+                    exitTransition = Hold()
+                }
                 val extras = FragmentNavigatorExtras(
                     view to box.id
                 )
@@ -310,8 +326,10 @@ class VehicleDetailFragment : Fragment() {
 
         initFirebase()
 
-        postponeEnterTransition()
-        view.doOnPreDraw { startPostponedEnterTransition() }
+        if (animationType == "elegant") {
+            postponeEnterTransition()
+            view.doOnPreDraw { startPostponedEnterTransition() }
+        }
 
     }
 

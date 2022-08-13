@@ -81,8 +81,8 @@ class BoxPdfCreator {
                 val runnable = Runnable {
 
                     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-                    val pdfFileName = box_model.id + "_" + timeStamp
-                    file = File(context.cacheDir, "$pdfFileName.pdf")
+                    val pdfFileName = box_model.id + "_" + timeStamp + ".pdf"
+                    file = File(context.cacheDir, pdfFileName)
                     file!!.deleteOnExit()
 
                     val document = Document(RectangleReadOnly(842f,595f), 10f, 10f, 10f, 10f)
@@ -174,7 +174,7 @@ class BoxPdfCreator {
                     )
                     try {
                         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-                        val pdfFileName = box_model.id + "_" + timeStamp
+                        val pdfFileName = box_model.id + "_" + timeStamp  + ".pdf"
                         val downloadFile = File(storageDir, pdfFileName)
                         val fos = FileOutputStream(downloadFile)
                         baos.writeTo(fos)
@@ -350,6 +350,40 @@ class BoxPdfCreator {
                 createTextInTable(titleContainer, title, 70f, Rectangle.ALIGN_LEFT, 0f, 0f)
                 document.add(titleContainer)
 
+
+                // Create QRCode
+                if (qrcodeImg != null) {
+                    qrcodeImg.scaleAbsolute(175f, 175f)
+                    qrcodeImg.setAbsolutePosition(620f, 330f)
+                    document.add(qrcodeImg)
+                }
+
+                // Put logo in QRCode
+                if (qrcodeLogoImg != null) {
+                    qrcodeLogoImg.scaleAbsolute(37.6f, 37.6f)
+                    qrcodeLogoImg.setAbsolutePosition(688.7f, 398.7f)
+                    document.add(qrcodeLogoImg)
+                }
+
+                // Display Box Img
+                if (box_model.image != "") {
+                    val boxImage: Image = Image.getInstance(Base64.decode(box_model.image, Base64.DEFAULT))
+                    var newWidth = 220f
+                    var newHeight = (newWidth / boxImage.width) * boxImage.height
+
+                    // if image gets to high, limit height
+                    if (newHeight > 270) {
+                        newHeight = 270f
+                        newWidth = (newHeight / boxImage.height) * boxImage.width
+                    }
+
+                    boxImage.scaleAbsolute(newWidth, newHeight)
+                    //boxImage.scaleAbsolute(220f, 165f)
+                    boxImage.setAbsolutePosition(605f, 150f - (newHeight-165))
+                    document.add(boxImage)
+                }
+
+
                 // Create content table
                 val contentTable = PdfPTable(4)
                 val contentTableWidths = floatArrayOf(0.5f, 1.5f, 10.5f, 4.5f)
@@ -418,28 +452,6 @@ class BoxPdfCreator {
                 val contentContainer = Paragraph()
                 contentContainer.add(contentTable)
                 document.add(contentTable)
-
-                // Create QRCode
-                if (qrcodeImg != null) {
-                    qrcodeImg.scaleAbsolute(175f, 175f)
-                    qrcodeImg.setAbsolutePosition(620f, 330f)
-                    document.add(qrcodeImg)
-                }
-
-                // Put logo in QRCode
-                if (qrcodeLogoImg != null) {
-                    qrcodeLogoImg.scaleAbsolute(37.6f, 37.6f)
-                    qrcodeLogoImg.setAbsolutePosition(688.7f, 398.7f)
-                    document.add(qrcodeLogoImg)
-                }
-
-                // Display Box Img
-                if (box_model.image != "") {
-                    val boxImage: Image = Image.getInstance(Base64.decode(box_model.image, Base64.DEFAULT))
-                    boxImage.scaleAbsolute(220f, 165f)
-                    boxImage.setAbsolutePosition(605f, 150f)
-                    document.add(boxImage)
-                }
 
             }
             job.join()

@@ -1,5 +1,6 @@
 package com.pixlbee.heros.fragments
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -20,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -44,6 +46,8 @@ class ItemFragment : Fragment() {
     private lateinit var itemTagsField: ChipGroup
     private lateinit var itemImageField: ImageView
     lateinit var itemContainingBoxesEmptyLabel: TextView
+
+    private lateinit var animationType: String
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -137,13 +141,26 @@ class ItemFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        val transform = MaterialContainerTransform()
-        transform.scrimColor = Color.TRANSPARENT
-        sharedElementEnterTransition = transform
-        sharedElementReturnTransition = transform
+        val sharedPreferences = context!!.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        animationType = sharedPreferences.getString("animation_type", "simple").toString()
 
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        if (animationType == "elegant") {
+            val transformEnter = MaterialContainerTransform(requireContext(), true)
+            transformEnter.scrimColor = Color.TRANSPARENT
+            sharedElementEnterTransition = transformEnter
+
+            val transformReturn = MaterialContainerTransform(requireContext(), false)
+            transformReturn.scrimColor = Color.TRANSPARENT
+            sharedElementReturnTransition = transformReturn
+
+            exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+            enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+
+        } else if (animationType == "simple"){
+            enterTransition = MaterialFadeThrough()
+            returnTransition = MaterialFadeThrough()
+            exitTransition = MaterialFadeThrough()
+        }
 
         (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.item_details_title)
 
@@ -295,8 +312,10 @@ class ItemFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        postponeEnterTransition()
-        view.doOnPreDraw { startPostponedEnterTransition() }
+        if (animationType == "elegant") {
+            postponeEnterTransition()
+            view.doOnPreDraw { startPostponedEnterTransition() }
+        }
     }
 
 

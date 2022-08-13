@@ -10,6 +10,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
+import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.firebase.database.DataSnapshot
@@ -27,6 +28,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.sharedPreferencesName = "AppPreferences"
         setPreferencesFromResource(R.xml.pref_settings, rootKey)
+
+        if (!Utils.checkHasWritePermission(context)) {
+            val pdfSettingsCategory: PreferenceCategory? = preferenceScreen.findPreference("settings_category_pdf")
+            pdfSettingsCategory?.isVisible = false
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

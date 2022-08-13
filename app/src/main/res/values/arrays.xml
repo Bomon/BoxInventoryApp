@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Label ordering must match values -->
+    <array name="pref_animation_labels">
+        <item>@string/settings_animation_elegant</item>
+        <item>@string/settings_animation_simple</item>
+        <item>@string/settings_animation_off</item>
+    </array>
+
+    <array name="pref_animation_values">
+        <item>elegant</item>
+        <item>simple</item>
+        <item>off</item>
+    </array>
+</resources>
