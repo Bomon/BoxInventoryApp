@@ -14,7 +14,7 @@ android {
         applicationId 'com.pixlbee.heros'
         minSdk 26
         targetSdk 32
-        versionCode 1
+        versionCode 4
         versionName "1.2"
 
         resConfigs "en", "de"

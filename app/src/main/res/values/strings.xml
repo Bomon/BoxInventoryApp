@@ -123,7 +123,7 @@
     <string name="qrcode_change_org_btn">Wechseln</string>
     <string name="title_nav_vehicles">Fahrzeuge</string>
     <string name="content_description_vehicle_image">Fahrzeug Foto</string>
-    <string name="vehicle_conainting_boxes">Geladene Boxen</string>
+    <string name="vehicle_containing_boxes">Geladene Boxen</string>
     <string name="vehicle_empty">Keine Boxen auf Fahrzeug</string>
     <string name="vehicle_edit_title">Fahrzeugdaten</string>
     <string name="vehicle_edit_name">Name *</string>
