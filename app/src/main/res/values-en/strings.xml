@@ -165,4 +165,5 @@
     <string name="changelog_1_2_slide4_title">Equipment Availability</string>
     <string name="changelog_1_2_slide4_text">It is now shown how many items are available in a box.\nItems can be marked as \'taken\' by a quick swipe (or in the box editor).\n\nIncomplete boxes are also marked with a small \'!\' icon in the overview.</string>
     <string name="error_login_timeout">Could not establish connection</string>
+    <string name="title_item_selection">Choose equipment</string>
 </resources>

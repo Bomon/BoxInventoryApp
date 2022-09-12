@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.core.view.doOnPreDraw
@@ -24,28 +25,34 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.pixlbee.heros.R
-import com.pixlbee.heros.adapters.ItemAdapter
+import com.pixlbee.heros.adapters.ItemSelectionAdapter
 import com.pixlbee.heros.models.ItemModel
 import com.pixlbee.heros.utility.Utils
 import java.util.*
 
 
-open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
+open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
 
     var mItemList: ArrayList<ItemModel> = ArrayList<ItemModel>()
-    lateinit var mAdapter: ItemAdapter
+    lateinit var mAdapter: ItemSelectionAdapter
     private lateinit var mFirebaseListener: ValueEventListener
     private var searchQueryText: String = ""
     private lateinit var searchView: SearchView
     private lateinit var searchBtn: MenuItem
+    private lateinit var confirmBtn: MenuItem
 
     private lateinit var animationType: String
+    var isMultiSelectMode: Boolean = false
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_items, menu)
-        searchBtn = menu.findItem(R.id.items_btn_search)
+        inflater.inflate(R.menu.menu_items_selection, menu)
+        searchBtn = menu.findItem(R.id.items_selection_btn_search)
+        confirmBtn = menu.findItem(R.id.items_selection_btn_confirm)
         searchView = MenuItemCompat.getActionView(searchBtn) as SearchView
+
+        confirmBtn.isVisible = false
+
         searchView.setOnQueryTextListener(this)
         searchBtn.setOnActionExpandListener(object :
             MenuItem.OnActionExpandListener {
@@ -61,11 +68,21 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                 return true // Return true to expand action view
             }
         })
+
+        confirmBtn.setOnMenuItemClickListener {
+            val navController: NavController = findNavController()
+            var itemIds = mAdapter.getSelectedItems()
+            navController.previousBackStackEntry?.savedStateHandle?.set("itemIdList", itemIds)
+            navController.popBackStack()
+        }
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        (activity as AppCompatActivity?)!!.supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity?)!!.supportActionBar!!.setHomeButtonEnabled(false)
 
         val sharedPreferences = context!!.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
         animationType = sharedPreferences.getString("animation_type", "simple").toString()
@@ -102,19 +119,25 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         val view: View = inflater.inflate(R.layout.fragment_items, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_items) as RecyclerView
 
-        mAdapter = ItemAdapter()
+        mAdapter = ItemSelectionAdapter()
         mAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-        mAdapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
-            override fun onItemClicked(item: ItemModel, view: View) {
-                if (animationType == "elegant") {
-                    exitTransition = Hold()
+        mAdapter.setOnItemClickListener(object: ItemSelectionAdapter.OnItemClickListener{
+            override fun onItemClicked(item: ItemModel, v: View, position: Int, isLongClick: Boolean) {
+                val itemId = item.id
+                if (isLongClick) {
+                    isMultiSelectMode = true
+                    confirmBtn.isVisible = true
                 }
-                val extras = FragmentNavigatorExtras(
-                    view to item.id
-                )
-                val navController: NavController = Navigation.findNavController(view)
-                navController.navigate(ItemsFragmentDirections.actionNavigationItemsToItemFragment(item), extras)
+                if (isMultiSelectMode) {
+                    mAdapter.toggleSelection(position)
+                } else {
+                    //adapter.setFilter(itemList)
+                    val navController: NavController = Navigation.findNavController(view)
+                    // push the selected item back to BoxEditFragment
+                    navController.previousBackStackEntry?.savedStateHandle?.set("itemIdList", listOf(itemId))
+                    navController.popBackStack()
+                }
             }
 
             override fun onItemTagClicked(tag: String) {
@@ -159,6 +182,15 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         if (animationType == "elegant") {
             postponeEnterTransition()
             view.doOnPreDraw { startPostponedEnterTransition() }
+        }
+
+        // receive new item from ItemEditFragment
+        val navController = findNavController()
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<ItemModel>("item")?.observe(
+            viewLifecycleOwner) { result ->
+            // Push this back to the BoxEditFragment
+            navController.previousBackStackEntry?.savedStateHandle?.set("item_id", result.id)
+            navController.navigateUp()
         }
     }
 

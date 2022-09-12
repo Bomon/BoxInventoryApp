@@ -179,4 +179,6 @@
     <string name="settings_animation_off">Aus</string>
     <string name="setting_animation_title">Animationen</string>
     <string name="setting_animation_summary">Übergänge zwischen verschiedenen Ansichten</string>
+    <string name="title_item_selection">Ausrüstung wählen</string>
+    <string name="btn_confirm">Bestätigen</string>
 </resources>

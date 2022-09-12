@@ -42,10 +42,6 @@
         <action
             android:id="@+id/action_navigation_items_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
-        <argument
-            android:name="return_item_instead_of_show_details"
-            app:argType="boolean"
-            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/boxFragment"
@@ -82,11 +78,11 @@
             app:argType="boolean"
             android:defaultValue="false" />
         <action
-            android:id="@+id/action_boxEditFragment_to_navigation_items"
-            app:destination="@id/navigation_items" />
-        <action
             android:id="@+id/action_boxEditFragment_to_navigation_vehicles"
             app:destination="@id/navigation_vehicles" />
+        <action
+            android:id="@+id/action_boxEditFragment_to_itemsSelectionFragment"
+            app:destination="@id/itemsSelectionFragment" />
     </fragment>
     <fragment
         android:id="@+id/itemFragment"
@@ -167,4 +163,12 @@
         android:id="@+id/settingsFragment"
         android:name="com.pixlbee.heros.fragments.SettingsFragment"
         android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/itemsSelectionFragment"
+        android:name="com.pixlbee.heros.fragments.ItemsSelectionFragment"
+        android:label="@string/title_item_selection" >
+        <action
+            android:id="@+id/action_itemsSelectionFragment_to_itemEditFragment"
+            app:destination="@id/itemEditFragment" />
+    </fragment>
 </navigation>

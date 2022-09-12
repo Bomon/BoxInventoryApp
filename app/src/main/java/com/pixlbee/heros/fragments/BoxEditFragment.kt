@@ -386,10 +386,13 @@ class BoxEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         navController = Navigation.findNavController(view)
         // Receive data from ItemAddFragment (selected Item)
-        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>("item_id")?.observe(
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<MutableList<String>>("itemIdList")?.observe(
             viewLifecycleOwner) { result ->
-            addSelectedItem(result)
+            for (item in result){
+                addSelectedItem(item)
+            }
         }
+        navController.currentBackStackEntry?.savedStateHandle?.remove<MutableList<String>>("itemIdList")
         navController.currentBackStackEntry?.savedStateHandle?.getLiveData<VehicleModel>("vehicleModel")?.observe(
             viewLifecycleOwner) { result ->
             mVehicle = result
@@ -613,9 +616,7 @@ class BoxEditFragment : Fragment() {
 
                 val extras = FragmentNavigatorExtras(view to "transition_to_items")
                 findNavController().navigate(
-                    BoxEditFragmentDirections.actionBoxEditFragmentToNavigationItems(
-                        returnItemInsteadOfShowDetails = true
-                    ), extras
+                    BoxEditFragmentDirections.actionBoxEditFragmentToItemsSelectionFragment(), extras
                 )
             }
         }
