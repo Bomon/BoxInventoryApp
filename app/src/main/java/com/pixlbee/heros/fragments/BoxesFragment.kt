@@ -44,6 +44,8 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var exitToast: Toast
     private var searchQueryText: String = ""
 
+    val vehicleIdNameLookup: HashMap<String, String> = HashMap()
+
     private lateinit var searchView: SearchView
     private lateinit var searchBtn: MenuItem
 
@@ -60,7 +62,7 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 // Do something when collapsed
                 searchQueryText = ""
-                mAdapter.setFilter(filterAndSort(mBoxList))
+                setFilterAndSort(mBoxList)
                 return true // Return true to collapse action view
             }
 
@@ -74,7 +76,7 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextChange(newText: String): Boolean {
         searchQueryText = newText
-        mAdapter.setFilter(filterAndSort(mBoxList))
+        setFilterAndSort(mBoxList)
         return true
     }
 
@@ -142,7 +144,7 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
                         editor.putString("settings_box_order_by", Utils.getSortSettingForButton( radioGroup.checkedRadioButtonId ))
                         editor.commit()
 
-                        mAdapter.setFilter(filterAndSort(mBoxList))
+                        setFilterAndSort(mBoxList)
                         dialog.dismiss()
                     }
 
@@ -303,13 +305,21 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun initFirebase() {
         mFirebaseListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
+                vehicleIdNameLookup.clear()
+                val vehicles = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles")
+                for (vehicle: DataSnapshot in vehicles.children) {
+                    var vehicleId = vehicle.child("id").value.toString()
+                    var vehicleName = vehicle.child("name").value.toString()
+                    vehicleIdNameLookup[vehicleId] = vehicleName
+                }
+
                 mBoxList.clear()
                 val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                 for (box: DataSnapshot in boxes.children){
                     val boxModel = Utils.readBoxModelFromDataSnapshot(context, box)
                     mBoxList.add(boxModel)
                 }
-                mAdapter.setFilter(filterAndSort(mBoxList))
+                setFilterAndSort(mBoxList)
             }
             override fun onCancelled(databaseError: DatabaseError) {}
         }
@@ -322,20 +332,24 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
-    private fun filterAndSort(models: List<BoxModel>): List<BoxModel> {
+    private fun setFilterAndSort(models: List<BoxModel>) {
         val query = searchQueryText.lowercase(Locale.getDefault())
         val filteredModelList: MutableList<BoxModel> = ArrayList()
         // filter list according to query
         for (model in models) {
             if (model.id.lowercase().contains(query)) {
                 filteredModelList.add(model)
-            // TODO: This is no longer working as vehicle is only ID now and not name
-            //} else if (model.in_vehicle.lowercase().contains(query)) {
-            //    filteredModelList.add(model)
             } else if (model.name.lowercase().contains(query)) {
                 filteredModelList.add(model)
             } else if (model.status.lowercase().contains(query)) {
                 filteredModelList.add(model)
+            } else {
+                for (contentItem in model.content) {
+                    if (contentItem.invnum.lowercase().contains(query)) {
+                        filteredModelList.add(model)
+                        break
+                    }
+                }
             }
         }
         val sharedPreferences = context!!.getSharedPreferences("AppPreferences", MODE_PRIVATE)
@@ -367,7 +381,9 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
             }
             R.id.radioButtonOrderVehicle -> {
                 filteredModelList.sortWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(it.in_vehicle) }
+                    compareBy(String.CASE_INSENSITIVE_ORDER) { Utils.replaceUmlauteForSorting(
+                        vehicleIdNameLookup[it.in_vehicle].toString()
+                    ) }
                 )
                 if (savedOrderAscDescBtnId == R.id.radioButtonOrderDescending)
                     filteredModelList.reverse()
@@ -397,7 +413,62 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         }
 
-        return filteredModelList
+        mAdapter.setFilter(filteredModelList)
+
+        // serach for vehicle name / callname afterwards, as this is async it may take longer and will update search results
+        asyncSearchVehicleName(models, filteredModelList)
+    }
+
+
+    private fun asyncSearchVehicleName(models: List<BoxModel>, filteredModels: MutableList<BoxModel>) {
+        var query = searchQueryText.lowercase(Locale.getDefault())
+        query = query.lowercase(Locale.getDefault())
+
+        val vehiclesRef =
+            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!))
+                .child("vehicles")
+        vehiclesRef.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val vehicles: DataSnapshot? = task.result
+                if (vehicles != null) {
+                    var resultsUpdated = false
+                    var foundVehicleIds = ArrayList<String>()
+                    // search all vehicles for queried name or callname
+                    for (vehicle: DataSnapshot in vehicles.children) {
+                        val name = vehicle.child("name").value.toString()
+                        val callname = vehicle.child("callname").value.toString()
+
+                        if (query in name || query in callname) {
+                            val vehicleId = vehicle.child("id").value.toString()
+                            foundVehicleIds.add(vehicleId)
+                        }
+                    }
+
+                    // Add found vehicles
+                    for (mBoxModel in models) {
+                        if (foundVehicleIds.contains(mBoxModel.in_vehicle)) {
+                            if (mBoxModel !in filteredModels) {
+                                resultsUpdated = true
+                                filteredModels.add(mBoxModel)
+                            }
+                        }
+                    }
+
+                    // only update search results if there were changes
+                    if (resultsUpdated) {
+                        filteredModels.sortWith(
+                            compareBy(String.CASE_INSENSITIVE_ORDER) {
+                                var name = it.name.lowercase(Locale.getDefault()).replace("ä", "ae")
+                                name = name.replace("ö", "oe")
+                                name = name.replace("ü", "ue")
+                                name
+                            }
+                        )
+                        mAdapter.setFilter(filteredModels)
+                    }
+                }
+            }
+        }
     }
 
 

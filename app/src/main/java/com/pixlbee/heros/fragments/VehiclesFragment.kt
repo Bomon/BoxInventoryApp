@@ -204,7 +204,6 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
         }
 
         (activity as AppCompatActivity).supportActionBar?.title = resources.getString(R.string.title_nav_vehicles)
-
     }
 
 

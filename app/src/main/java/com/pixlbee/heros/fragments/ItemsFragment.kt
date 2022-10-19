@@ -243,8 +243,9 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
             if (task.isSuccessful) {
                 val boxes: DataSnapshot? = task.result
                 if (boxes != null) {
+                    var resultsUpdated = false
                     var foundItemIds = ArrayList<String>()
-                    // search all boxes for items with the invnum
+                    // search all boxes for queried invnum
                     for (box: DataSnapshot in boxes.children) {
                         for (item: DataSnapshot in box.child("content").children) {
                             val contentInvNumber = item.child("invnum").value.toString()
@@ -257,20 +258,26 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                     // Add found items
                     for (mItemModel in models) {
                         if (foundItemIds.contains(mItemModel.id)){
-                            filteredModels.add(mItemModel)
+                            if (mItemModel !in filteredModels) {
+                                resultsUpdated = true
+                                filteredModels.add(mItemModel)
+                            }
                         }
                     }
 
-                    filteredModels.sortWith(
-                        compareBy(String.CASE_INSENSITIVE_ORDER) {
-                            var name = it.name.lowercase(Locale.getDefault()).replace("ä","ae")
-                            name = name.replace("ö","oe")
-                            name = name.replace("ü","ue")
-                            name
-                        }
-                    )
+                    // only update search results if there were changes
+                    if (resultsUpdated){
+                        filteredModels.sortWith(
+                            compareBy(String.CASE_INSENSITIVE_ORDER) {
+                                var name = it.name.lowercase(Locale.getDefault()).replace("ä","ae")
+                                name = name.replace("ö","oe")
+                                name = name.replace("ü","ue")
+                                name
+                            }
+                        )
 
-                    mAdapter.setFilter(filteredModels)
+                        mAdapter.setFilter(filteredModels)
+                    }
                 }
             }
         }
