@@ -4,11 +4,9 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.*
+import android.graphics.Color
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
@@ -21,7 +19,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -35,13 +32,12 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.pixlbee.heros.R
-import com.pixlbee.heros.adapters.BoxItemAdapter
+import com.pixlbee.heros.adapters.BoxCompartmentAdapter
 import com.pixlbee.heros.adapters.VehicleAdapter
 import com.pixlbee.heros.models.*
 import com.pixlbee.heros.utility.BoxPdfCreator
 import com.pixlbee.heros.utility.Utils
 import com.stfalcon.imageviewer.StfalconImageViewer
-import java.lang.Integer.max
 import java.util.*
 
 
@@ -50,9 +46,10 @@ class BoxFragment : Fragment(){
     private lateinit var mVehicleAdapter: VehicleAdapter
     private lateinit var mVehicle: VehicleModel
     private lateinit var mBoxModel: BoxModel
-    lateinit var mBoxItemAdapter: BoxItemAdapter
+    lateinit var mBoxCompartmentAdapter: BoxCompartmentAdapter
     private lateinit var mFirebaseListener: ValueEventListener
     var mItemList: ArrayList<BoxItemModel> = ArrayList()
+    var mCompartmentList: ArrayList<CompartmentModel> = ArrayList()
 
     private lateinit var boxNameField: TextView
     private lateinit var boxDescriptionField: TextView
@@ -117,6 +114,7 @@ class BoxFragment : Fragment(){
                         val bundle = Bundle()
                         bundle.putSerializable("boxModel", mBoxModel)
                         bundle.putSerializable("items", mItemList.toTypedArray())
+                        bundle.putSerializable("compartments", mCompartmentList.toTypedArray())
                         bundle.putSerializable("vehicleModel", mVehicle)
                         bundle.putSerializable("isNewBox", false)
                         val navController: NavController = Navigation.findNavController(view!!)
@@ -300,11 +298,11 @@ class BoxFragment : Fragment(){
         // Transition target element
         boxContainer.transitionName = mBoxModel.id
 
-        //Init Items View
-        val recyclerview = v.findViewById<View>(R.id.box_summary_content) as RecyclerView
-        mBoxItemAdapter = BoxItemAdapter(mBoxModel.id)
-        mBoxItemAdapter.setOnBoxItemClickListener(object: BoxItemAdapter.OnBoxItemClickListener{
-            override fun onBoxItemClicked(item: BoxItemModel, view: View) {
+        //Init Compartments View
+        val rvCompartments = v.findViewById<View>(R.id.box_compartments) as RecyclerView
+        mBoxCompartmentAdapter = BoxCompartmentAdapter(mBoxModel.id)
+        mBoxCompartmentAdapter.setOnCompartmentItemClickListener(object: BoxCompartmentAdapter.OnCompartmentItemClickListener{
+            override fun onCompartmentItemClicked(item: BoxItemModel, view: View) {
                 if (animationType == "elegant") {
                     exitTransition = Hold()
                 }
@@ -317,8 +315,8 @@ class BoxFragment : Fragment(){
                 navController.navigate(BoxFragmentDirections.actionBoxFragmentToItemFragment(itemModel, item.numeric_id), extras)
             }
         })
-        recyclerview.layoutManager = LinearLayoutManager(activity)
-        recyclerview.adapter = mBoxItemAdapter
+        rvCompartments.layoutManager = LinearLayoutManager(activity)
+        rvCompartments.adapter = mBoxCompartmentAdapter
 
         // Init vehicle view
         val recyclerviewVehicle = v.findViewById<View>(R.id.box_summary_vehicle_rv) as RecyclerView
@@ -364,135 +362,6 @@ class BoxFragment : Fragment(){
                 .show(true)
         }
 
-
-        // Swipe functionality
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT + ItemTouchHelper.LEFT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            private val clearPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
-
-
-            private fun clearCanvas(c: Canvas?, left: Float, top: Float, right: Float, bottom: Float) {
-                c?.drawRect(left, top, right, bottom, clearPaint)
-            }
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                if (Utils.checkHasWritePermission(context, false)){
-
-                    val itemView = viewHolder.itemView
-                    val itemHeight = itemView.bottom - itemView.top
-                    val isCanceled = dX == 0f && !isCurrentlyActive
-
-                    if (isCanceled) {
-                        clearCanvas(c, itemView.left + dX, itemView.top.toFloat(), itemView.left.toFloat(), itemView.bottom.toFloat())
-                        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                        return
-                    }
-
-                    if (dX>0){
-                        val backgroundLeft = GradientDrawable()
-                        //val backgroundLeftColor = ResourcesCompat.getColor(resources, R.color.thw_blue, context?.theme)
-
-                        val backgroundLeftColor = context!!.obtainStyledAttributes(
-                            TypedValue().data,
-                            intArrayOf(com.google.android.material.R.attr.colorPrimaryContainer)
-                        ).getColor(0, 0)
-
-                        backgroundLeft.setColor(backgroundLeftColor)
-                        backgroundLeft.cornerRadius = 40F
-                        backgroundLeft.setBounds(itemView.left + 27, itemView.top + 10, itemView.left + (itemView.right-itemView.left)/2, itemView.bottom - 10)
-                        backgroundLeft.draw(c)
-
-                        val iconColor = context!!.obtainStyledAttributes(
-                            TypedValue().data,
-                            intArrayOf(com.google.android.material.R.attr.colorOnPrimaryContainer)
-                        ).getColor(0, 0)
-                        val editIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_baseline_exposure_plus_1_24)
-                        editIcon!!.setTint(iconColor)
-                        val intrinsicWidth = editIcon.intrinsicWidth
-                        val intrinsicHeight = editIcon.intrinsicHeight
-                        // Calculate position of minus icon
-                        val editIconTop = itemView.top + (itemHeight - intrinsicHeight) / 2
-                        val editIconMargin = (itemHeight - intrinsicHeight)
-                        val editIconLeft = itemView.left - intrinsicWidth + 150
-                        val editIconRight = itemView.left + 150
-                        val editIconBottom = editIconTop + intrinsicHeight
-                        // Draw the minus icon
-                        editIcon.setBounds(editIconLeft, editIconTop, editIconRight, editIconBottom)
-                        editIcon.draw(c)
-
-                    } else {
-                        val backgroundRight = GradientDrawable()
-                        //val backgroundRightColor = ResourcesCompat.getColor(resources, R.color.thw_blue, context?.theme)
-
-                        val backgroundRightColor = context!!.obtainStyledAttributes(
-                            TypedValue().data,
-                            intArrayOf(com.google.android.material.R.attr.colorPrimaryContainer)
-                        ).getColor(0, 0)
-
-                        backgroundRight.setColor(backgroundRightColor)
-                        backgroundRight.cornerRadius = 40F
-                        backgroundRight.setBounds(itemView.left + (itemView.right-itemView.left)/2, itemView.top + 10, itemView.right-27, itemView.bottom - 10)
-                        backgroundRight.draw(c)
-
-                        val iconColor = context!!.obtainStyledAttributes(
-                            TypedValue().data,
-                            intArrayOf(com.google.android.material.R.attr.colorOnPrimaryContainer)
-                        ).getColor(0, 0)
-                        val editIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_baseline_exposure_neg_1_24)
-                        editIcon!!.setTint(iconColor)
-                        val intrinsicWidth = editIcon.intrinsicWidth
-                        val intrinsicHeight = editIcon.intrinsicHeight
-                        // Calculate position of plus icon
-                        val editIconTop = itemView.top + (itemHeight - intrinsicHeight) / 2
-                        val editIconMargin = (itemHeight - intrinsicHeight)
-                        val editIconLeft = itemView.right - intrinsicWidth - 100
-                        val editIconRight = itemView.right - 100
-                        val editIconBottom = editIconTop + intrinsicHeight
-                        // Draw the plus icon
-                        editIcon.setBounds(editIconLeft, editIconTop, editIconRight, editIconBottom)
-                        editIcon.draw(c)
-                    }
-                    super.onChildDraw(c, recyclerView, viewHolder, dX/3, dY, actionState, isCurrentlyActive)
-                } else {
-                    super.onChildDraw(c, recyclerView, viewHolder, 0f, dY, actionState, isCurrentlyActive)
-                }
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                if (Utils.checkHasWritePermission(context, false)){
-                    val position = viewHolder.bindingAdapterPosition
-
-                    var newTakenAmount = "0"
-                    if (direction == ItemTouchHelper.RIGHT){
-                        newTakenAmount = max(0, mItemList[position].item_amount_taken.toInt() - 1).toString()
-                    } else {
-                        newTakenAmount = kotlin.math.min(
-                            mItemList[position].item_amount.toInt(),
-                            mItemList[position].item_amount_taken.toInt() + 1
-                        ).toString()
-                    }
-                    mItemList[position].item_amount_taken = newTakenAmount
-
-                    mBoxItemAdapter.updateAmountTaken(position, newTakenAmount)
-                }
-            }
-        }).attachToRecyclerView(recyclerview)
-
         (activity as AppCompatActivity).supportActionBar?.title = mBoxModel.id
 
         initFirebase()
@@ -504,16 +373,41 @@ class BoxFragment : Fragment(){
     private fun initFirebase(){
         mFirebaseListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
+
+                // store which compartments were expanded (e.g. needed if go back from selection)
+                var expandedCompartments: ArrayList<String> = ArrayList<String>()
+                for (c in mCompartmentList) {
+                    if (c.is_expanded) {
+                        expandedCompartments.add(c.name)
+                    }
+                }
+
+                // clear old lists
+                mItemList.clear()
+                mCompartmentList.clear()
+                // Add default compartment
+                mCompartmentList.add(CompartmentModel(
+                    "",
+                    ArrayList<BoxItemModel>(),
+                    "" in expandedCompartments)
+                )
+
                 val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                 for (box: DataSnapshot in boxes.children){
                     if (box.child("id").value.toString() == mBoxModel.id){
                         mBoxModel = Utils.readBoxModelFromDataSnapshot(context, box)
+                        for (compartment: DataSnapshot in box.child("compartments").children) {
+                            mCompartmentList.add(CompartmentModel(
+                                compartment.child("name").value.toString(),
+                                ArrayList<BoxItemModel>(),
+                                compartment.child("name").value.toString() in expandedCompartments)
+                            )
+                        }
                         updateContent()
                         break
                     }
                 }
 
-                mItemList.clear()
                 val items = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("items")
                 for (contentItem: ContentItem in mBoxModel.content){
                     for (item: DataSnapshot in items.children){
@@ -527,7 +421,7 @@ class BoxFragment : Fragment(){
                             numericId = (UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE).toString()
                         }
                         if (itemId == contentItem.id) {
-                            mItemList.add(BoxItemModel(
+                            var newItem = BoxItemModel(
                                 numericId,
                                 contentItem.id,
                                 contentItem.amount,
@@ -537,12 +431,25 @@ class BoxFragment : Fragment(){
                                 contentItem.color,
                                 image,
                                 description,
-                                tags
-                            ))
+                                tags,
+                                contentItem.compartment
+                            )
+
+                            var compartmentName = if (contentItem.compartment == "null") "" else contentItem.compartment
+
+                            mItemList.add(newItem)
+                            mCompartmentList.filter {it.name == compartmentName}[0].content.add(newItem)
+                            //for (compartment: CompartmentModel in mCompartmentList) {
+                            //    if contentItem.compartment == ""
+                            //    if (compartment.name == contentItem.compartment){
+                            //        compartment.content.add(newItem)
+                            //    }
+                            //}
                         }
+
                     }
                 }
-                mBoxItemAdapter.setFilter(mItemList)
+                mBoxCompartmentAdapter.setFilter(mCompartmentList)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}

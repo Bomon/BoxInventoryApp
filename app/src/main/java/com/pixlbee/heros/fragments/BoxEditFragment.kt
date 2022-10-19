@@ -171,7 +171,7 @@ class BoxEditFragment : Fragment() {
                             val itemList = mBoxItemEditAdapter.getCurrentStatus()
                             val updatedContentItems = ArrayList<ContentItem>()
                             for (item: BoxItemModel in itemList) {
-                                val newItem = ContentItem(item.numeric_id, "", item.item_amount, item.item_amount_taken, item.item_id, item.item_invnum, item.item_color)
+                                val newItem = ContentItem(item.numeric_id, "", item.item_amount, item.item_amount_taken, item.item_id, item.item_invnum, item.item_color, item.item_compartment)
                                 updatedContentItems.add(newItem)
                                 FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("content").push().setValue(newItem)
                             }
@@ -213,7 +213,7 @@ class BoxEditFragment : Fragment() {
         val itemList = mBoxItemEditAdapter.getCurrentStatus()
         val newContentItems = ArrayList<ContentItem>()
         for (item: BoxItemModel in itemList) {
-            val newItem = ContentItem(item.numeric_id,"", item.item_amount, item.item_amount_taken, item.item_id, item.item_invnum, item.item_color)
+            val newItem = ContentItem(item.numeric_id,"", item.item_amount, item.item_amount_taken, item.item_id, item.item_invnum, item.item_color, item.item_compartment)
             newContentItems.add(newItem)
         }
         mBoxModel.content = newContentItems
@@ -721,7 +721,8 @@ class BoxEditFragment : Fragment() {
                                 ContextCompat.getColor(requireContext(), R.color.default_item_color),
                                 itemImage,
                                 itemDescription,
-                                itemTags
+                                itemTags,
+                                ""
                             ))
                             mBoxItemEditAdapter.addToItemList(mItemList)
                             return@addOnCompleteListener

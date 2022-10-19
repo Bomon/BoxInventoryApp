@@ -9,7 +9,8 @@ data class ContentItem(
     val amount_taken: String = "0",
     val id: String = "",
     val invnum: String = "",
-    val color: Int = -1
+    val color: Int = -1,
+    val compartment: String = ""
 )
 
 class BoxModel(

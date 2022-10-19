@@ -52,7 +52,7 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 // Do something when collapsed
                 searchQueryText = ""
-                mAdapter.setFilter(filterAndSort(mItemList))
+                setFilterAndSort(mItemList)
                 return true // Return true to collapse action view
             }
 
@@ -176,7 +176,7 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                     val tags = box.child("tags").value.toString()
                     mItemList.add(ItemModel(id, name, description, tags, image))
                 }
-                mAdapter.setFilter(filterAndSort(mItemList))
+                setFilterAndSort(mItemList)
                 mAdapter.notifyDataSetChanged()
             }
 
@@ -187,7 +187,7 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextChange(newText: String): Boolean {
         searchQueryText = newText
-        mAdapter.setFilter(filterAndSort(mItemList))
+        setFilterAndSort(mItemList)
         //activity?.runOnUiThread {
         //    adapter.notifyDataSetChanged()
         //}
@@ -199,7 +199,7 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         return false
     }
 
-    private fun filterAndSort(models: List<ItemModel>): List<ItemModel> {
+    private fun setFilterAndSort(models: List<ItemModel>) {
         var query = searchQueryText.lowercase(Locale.getDefault())
         query = query.lowercase(Locale.getDefault())
         val filteredModelList: MutableList<ItemModel> = ArrayList()
@@ -224,8 +224,59 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         )
 
-        return filteredModelList
+        mAdapter.setFilter(filteredModelList)
+
+        // search for inv nums can take longer, so we do this afterwards
+        if (query.length > 2) {
+            asyncSearchInvNum(models, filteredModelList)
+        }
+
     }
+
+
+    private fun asyncSearchInvNum(models: List<ItemModel>, filteredModels: MutableList<ItemModel>) {
+        var query = searchQueryText.lowercase(Locale.getDefault())
+        query = query.lowercase(Locale.getDefault())
+
+        val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
+        boxesRef.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val boxes: DataSnapshot? = task.result
+                if (boxes != null) {
+                    var foundItemIds = ArrayList<String>()
+                    // search all boxes for items with the invnum
+                    for (box: DataSnapshot in boxes.children) {
+                        for (item: DataSnapshot in box.child("content").children) {
+                            val contentInvNumber = item.child("invnum").value.toString()
+                            if (query in contentInvNumber){
+                                val itemId = item.child("id").value.toString()
+                                foundItemIds.add(itemId)
+                            }
+                        }
+                    }
+                    // Add found items
+                    for (mItemModel in models) {
+                        if (foundItemIds.contains(mItemModel.id)){
+                            filteredModels.add(mItemModel)
+                        }
+                    }
+
+                    filteredModels.sortWith(
+                        compareBy(String.CASE_INSENSITIVE_ORDER) {
+                            var name = it.name.lowercase(Locale.getDefault()).replace("ä","ae")
+                            name = name.replace("ö","oe")
+                            name = name.replace("ü","ue")
+                            name
+                        }
+                    )
+
+                    mAdapter.setFilter(filteredModels)
+                }
+            }
+        }
+
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

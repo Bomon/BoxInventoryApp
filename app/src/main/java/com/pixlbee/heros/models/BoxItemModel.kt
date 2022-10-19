@@ -14,5 +14,6 @@ class BoxItemModel(
     var item_color: Int,
     var item_image: String,
     var item_description: String,
-    var item_tags: String
+    var item_tags: String,
+    var item_compartment: String
 ): Parcelable

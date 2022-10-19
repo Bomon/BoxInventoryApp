@@ -181,4 +181,5 @@
     <string name="setting_animation_summary">Übergänge zwischen verschiedenen Ansichten</string>
     <string name="title_item_selection">Ausrüstung wählen</string>
     <string name="btn_confirm">Bestätigen</string>
+    <string name="error_item_already_exists_name">Es existiert bereits ein Gegenstand mit diesem Namen</string>
 </resources>

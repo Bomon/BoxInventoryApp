@@ -1,6 +1,7 @@
 package com.pixlbee.heros.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -116,8 +117,9 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
     }
 
 
-    fun updateAmountTaken(position: Int, newTakenAmount: String) {
-        val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")
+    fun updateAmountTaken(position: Int, newTakenAmount: String, iContext: Context) {
+        Log.e("Error", "Update amount of" + position.toString())
+        val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(iContext)).child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val boxes: DataSnapshot? = task.result
@@ -130,7 +132,7 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
                                 val itemId = item.child("numeric_id").value.toString()
                                 if (mItemList[position].numeric_id == itemId) {
                                     val itemKey: String = item.key.toString()
-                                    FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")
+                                    FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(iContext)).child("boxes")
                                         .child(boxKey).child("content").child(itemKey)
                                         .child("amount_taken").setValue(newTakenAmount)
                                     break

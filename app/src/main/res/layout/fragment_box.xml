@@ -223,6 +223,19 @@
                                 android:layout_height="wrap_content">
 
                                 <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/box_compartments"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginBottom="16dp"
+                                    android:nestedScrollingEnabled="false" />
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <androidx.recyclerview.widget.RecyclerView
                                     android:id="@+id/box_summary_content"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"

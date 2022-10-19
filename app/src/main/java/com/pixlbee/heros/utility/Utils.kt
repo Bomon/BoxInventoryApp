@@ -97,7 +97,8 @@ class Utils {
                         itemColor = ContextCompat.getColor(context, R.color.default_item_color)
                     }
                 }
-                contentList.add(ContentItem(itemNumericId, c.key.toString(), itemAmount, itemAmountTaken, itemId, itemInvNum, itemColor))
+                val itemCompartment = c.child("compartment").value.toString()
+                contentList.add(ContentItem(itemNumericId, c.key.toString(), itemAmount, itemAmountTaken, itemId, itemInvNum, itemColor, itemCompartment))
             }
             return BoxModel(
                 numericId,

@@ -53,6 +53,8 @@ class ItemEditFragment : Fragment() {
     private lateinit var itemEditTagsChips: ChipGroup
     private lateinit var itemEditImageSpinner: ProgressBar
 
+    private var allItemNamesList: ArrayList<String> = ArrayList()
+
     private var isNewItem: Boolean = false
 
     private lateinit var imageBitmap: Bitmap
@@ -68,8 +70,30 @@ class ItemEditFragment : Fragment() {
             status = false
             Toast.makeText(context, resources.getString(R.string.error_item_edit_field), Toast.LENGTH_SHORT).show()
         }
+        if (itemEditNameField.text.toString() in allItemNamesList) {
+            itemEditNameLabel.isErrorEnabled = true
+            itemEditNameLabel.error = resources.getString(R.string.error_item_already_exists_name)
+            status = false
+        }
 
         return status
+    }
+
+    private fun initItemNameList(){
+        val itemsRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items")
+        itemsRef.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val items: DataSnapshot? = task.result
+                if (items != null) {
+                    allItemNamesList.clear()
+                    for (item: DataSnapshot in items.children) {
+                        if (item.child("name").value.toString() != mItemModel.name){
+                            allItemNamesList.add(item.child("name").value.toString())
+                        }
+                    }
+                }
+            }
+        }
     }
 
 
@@ -223,6 +247,10 @@ class ItemEditFragment : Fragment() {
             returnTransition = MaterialFadeThrough()
             exitTransition = MaterialFadeThrough()
         }
+
+        // This task is done once on fragment creation
+        // Reason: each item name must only exist once. The task is async and so we start it here to have the result when user clicks save
+        initItemNameList()
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             showDismissDialog()
