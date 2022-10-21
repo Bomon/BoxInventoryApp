@@ -12,7 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
-import com.github.dhaval2404.imagepicker.ImagePicker
+import com.github.drjacky.imagepicker.ImagePicker
+import com.github.drjacky.imagepicker.constant.ImageProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
@@ -85,10 +86,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if (preference.key == "pdf_logo_left" || preference.key == "pdf_logo_right") {
             clickedPreference = preference
 
-            ImagePicker.with(this)
-                .crop()                    //Crop image(Optional), Check Customization for more option
-                .compress(2048)            //Final image size will be less than 1 MB(Optional)
-                .createIntent { intent ->
+            ImagePicker.with(activity as AppCompatActivity)
+                .crop()
+                .cropFreeStyle()
+                .provider(ImageProvider.BOTH)
+                .createIntentFromDialog { intent ->
                     (preference as ImagePreference).showSpinner()
                     startSelectImageResult.launch(intent)
                 }

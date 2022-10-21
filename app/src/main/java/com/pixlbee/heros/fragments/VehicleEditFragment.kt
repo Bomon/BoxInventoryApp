@@ -24,7 +24,8 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.github.dhaval2404.imagepicker.ImagePicker
+import com.github.drjacky.imagepicker.ImagePicker
+import com.github.drjacky.imagepicker.constant.ImageProvider
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialFadeThrough
@@ -305,10 +306,11 @@ class VehicleEditFragment : Fragment() {
 
 
         vehicleEditImageField.setOnClickListener {
-            ImagePicker.with(thisFragment)
-                .crop()                    //Crop image(Optional), Check Customization for more option
-                .compress(1024)            //Final image size will be less than 1 MB(Optional)
-                .createIntent { intent ->
+            ImagePicker.with(activity as AppCompatActivity)
+                .crop()
+                .cropFreeStyle()
+                .provider(ImageProvider.BOTH)
+                .createIntentFromDialog { intent ->
                     startForImageResult.launch(intent)
                     vehicleEditImageSpinner.visibility = View.VISIBLE
                 }

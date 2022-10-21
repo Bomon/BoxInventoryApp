@@ -25,7 +25,8 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.github.dhaval2404.imagepicker.ImagePicker
+import com.github.drjacky.imagepicker.ImagePicker
+import com.github.drjacky.imagepicker.constant.ImageProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -550,10 +551,11 @@ class BoxEditFragment : Fragment() {
             }
 
         boxEditImageField.setOnClickListener {
-            ImagePicker.with(thisFragment)
-                .crop()                    //Crop image(Optional), Check Customization for more option
-                .compress(2048)            //Final image size will be less than 1 MB(Optional)
-                .createIntent { intent ->
+            ImagePicker.with(activity as AppCompatActivity)
+                .crop()
+                .cropFreeStyle()
+                .provider(ImageProvider.BOTH)
+                .createIntentFromDialog  { intent ->
                     boxEditImageSpinner.visibility = View.VISIBLE
                     startForMainImageResult.launch(intent)
                 }
@@ -580,10 +582,11 @@ class BoxEditFragment : Fragment() {
 
 
         boxEditLocationImageField.setOnClickListener {
-            ImagePicker.with(thisFragment)
-                .crop()                    //Crop image(Optional), Check Customization for more option
-                .compress(2048)            //Final image size will be less than 1 MB(Optional)
-                .createIntent { intent ->
+            ImagePicker.with(activity as AppCompatActivity)
+                .crop()
+                .cropFreeStyle()
+                .provider(ImageProvider.BOTH)
+                .createIntentFromDialog { intent ->
                     boxEditLocationImageSpinner.visibility = View.VISIBLE
                     startForLocationImageResult.launch(intent)
                 }

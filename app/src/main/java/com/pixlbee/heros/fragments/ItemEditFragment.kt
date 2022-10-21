@@ -26,7 +26,8 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.github.dhaval2404.imagepicker.ImagePicker
+import com.github.drjacky.imagepicker.ImagePicker
+import com.github.drjacky.imagepicker.constant.ImageProvider
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputLayout
@@ -371,10 +372,11 @@ class ItemEditFragment : Fragment() {
 
 
         itemEditImageField.setOnClickListener {
-            ImagePicker.with(thisFragment)
-                .crop()                    //Crop image(Optional), Check Customization for more option
-                .compress(2048)            //Final image size will be less than 1 MB(Optional)
-                .createIntent { intent ->
+            ImagePicker.with(activity as AppCompatActivity)
+                .crop()
+                .cropFreeStyle()
+                .provider(ImageProvider.BOTH)
+                .createIntentFromDialog { intent ->
                     startForImageResult.launch(intent)
                     itemEditImageSpinner.visibility = View.VISIBLE
                 }

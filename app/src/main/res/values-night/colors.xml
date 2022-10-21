@@ -53,8 +53,8 @@
     </array>
 
     <color name="ucrop_color_widget_active">@color/status_bar_color</color>
-    <color name="dialog_choose_icon_color">@color/md_theme_light_primary</color>
-    <color name="dialog_choose_text_color">@color/md_theme_light_onSurface</color>
+    <color name="dialog_choose_icon_color">@color/md_theme_dark_primary</color>
+    <color name="dialog_choose_text_color">@color/md_theme_dark_onSurface</color>
 
     <color name="thw_blue">#003399</color>
     <color name="thw_yellow">#FFFF00</color>

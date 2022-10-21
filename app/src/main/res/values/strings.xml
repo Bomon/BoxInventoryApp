@@ -182,4 +182,34 @@
     <string name="title_item_selection">Ausrüstung wählen</string>
     <string name="btn_confirm">Bestätigen</string>
     <string name="error_item_already_exists_name">Es existiert bereits ein Gegenstand mit diesem Namen</string>
+
+
+    <string name="title_choose_image_provider">Auswählen</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="title_gallery">Galerie</string>
+    <string name="title_camera">Kamera</string>
+    <string name="message_gallery_permission_denied">Speicher Berechtigung wird benötigt, um Bilder auszuwählen. Bitte erteilen Sie die Berechtigung unter Einstellungen > Apps > Heros Gitterbox > Berechtigungen.</string>
+    <string name="message_camera_permission_denied">Kamera und Speicher Berechtigung werden benötigt, um Fotos aufzunehmen. Bitte erteilen Sie beide Berechtigungen unter Einstellungen > Apps > Heros Gitterbox > Berechtigungen.</string>
+    <string name="permission_gallery_denied">
+        <![CDATA[Speicher Berechtigung wird benötigt, um Bilder auszuwählen. Bitte erteilen Sie die Berechtigung unter Einstellungen > Apps > Heros Gitterbox > Berechtigungen.]]></string>
+    <string name="permission_camera_extended_denied">
+        <![CDATA[Kamera und Speicher Berechtigung werden benötigt, um Fotos aufzunehmen. Bitte erteilen Sie beide Berechtigungen unter Einstellungen > Apps > Heros Gitterbox > Berechtigungen.]]></string>
+    <string name="permission_camera_denied">
+        <![CDATA[Berechtigung wird benötigt, um Fotos aufzunehmen. Bitte erteilen Sie die Berechtigung unter Einstellungen > Apps > Heros Gitterbox > Berechtigungen.]]></string>
+
+    <string name="error_failed_to_create_camera_image_file">Fehler beim Aufnehmen des Bildes</string>
+    <string name="error_failed_pick_gallery_image">Fehler bei der Auswahl in der Gallerie</string>
+    <string name="error_failed_to_crop_image">Fehler beim Zuschneiden</string>
+    <string name="error_failed_to_compress_image">Fehler bei Bild Komprimierung</string>
+    <string name="error_task_cancelled">Aufgabe abgebrochen</string>
+    <string name="error_camera_app_not_found">Kamera App wurde nicht gefunden</string>
+
+    <!-- uCrop string resource start -->
+    <string name="ucrop_label_original">Original</string>
+    <string name="ucrop_label_edit_photo">Foto bearbeiten</string>
+
+    <string name="ucrop_menu_crop">Zuschneiden</string>
+    <string name="ucrop_rotate">Rotieren</string>
+    <string name="ucrop_scale">Skalieren</string>
+    <string name="ucrop_crop">Zuschneiden</string>
 </resources>
