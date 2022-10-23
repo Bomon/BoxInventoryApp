@@ -167,6 +167,9 @@
         android:id="@+id/itemsSelectionFragment"
         android:name="com.pixlbee.heros.fragments.ItemsSelectionFragment"
         android:label="@string/title_item_selection" >
+        <argument
+            android:name="targetCompartmentName"
+            app:argType="string" />
         <action
             android:id="@+id/action_itemsSelectionFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />

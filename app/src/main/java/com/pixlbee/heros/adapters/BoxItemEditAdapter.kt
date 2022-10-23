@@ -244,7 +244,7 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
     }
 
 
-    fun moveItem(from: Int, to: Int) {
+    fun moveItem(from: Int, to: Int): ArrayList<BoxItemModel> {
         val fromLocation = mItemModel[from]
         mItemModel.removeAt(from)
         if (to < from) {
@@ -252,6 +252,7 @@ class BoxItemEditAdapter(mDataList: ArrayList<BoxItemModel>) : RecyclerView.Adap
         } else {
             mItemModel.add(to, fromLocation)
         }
+        return mItemModel
     }
 
 

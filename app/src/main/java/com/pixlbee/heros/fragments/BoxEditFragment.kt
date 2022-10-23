@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -21,7 +22,6 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -39,23 +39,18 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
-import com.pixlbee.heros.adapters.BoxItemEditAdapter
+import com.pixlbee.heros.adapters.BoxCompartmentEditAdapter
 import com.pixlbee.heros.adapters.VehicleAdapter
-import com.pixlbee.heros.models.BoxItemModel
-import com.pixlbee.heros.models.BoxModel
-import com.pixlbee.heros.models.ContentItem
-import com.pixlbee.heros.models.VehicleModel
+import com.pixlbee.heros.models.*
 import com.pixlbee.heros.utility.Utils
 import dev.sasikanth.colorsheet.ColorSheet
-import java.time.Instant
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
 class BoxEditFragment : Fragment() {
 
     private lateinit var mBoxModel: BoxModel
-    private lateinit var mItemList: ArrayList<BoxItemModel>
+    private var mCompartmentList: ArrayList<CompartmentModel> = ArrayList()
     private lateinit var mVehicle: VehicleModel
 
     private lateinit var boxEditImageField: ImageView
@@ -84,7 +79,7 @@ class BoxEditFragment : Fragment() {
     private var idList: ArrayList<String> = ArrayList()
 
     private var isNewBox: Boolean = false
-    private lateinit var mBoxItemEditAdapter: BoxItemEditAdapter
+    private lateinit var mBoxCompartmentEditAdapter: BoxCompartmentEditAdapter
     private lateinit var mVehicleAdapter: VehicleAdapter
 
     private lateinit var navController: NavController
@@ -169,12 +164,14 @@ class BoxEditFragment : Fragment() {
                             }
 
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("content").removeValue()
-                            val itemList = mBoxItemEditAdapter.getCurrentStatus()
+                            val compartmentList = mBoxCompartmentEditAdapter.getCurrentStatus()
                             val updatedContentItems = ArrayList<ContentItem>()
-                            for (item: BoxItemModel in itemList) {
-                                val newItem = ContentItem(item.numeric_id, "", item.item_amount, item.item_amount_taken, item.item_id, item.item_invnum, item.item_color, item.item_compartment)
-                                updatedContentItems.add(newItem)
-                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("content").push().setValue(newItem)
+                            for (compartment: CompartmentModel in compartmentList) {
+                                for (item: BoxItemModel in compartment.content) {
+                                    val newItem = ContentItem(item.numeric_id, "", item.item_amount, item.item_amount_taken, item.item_id, item.item_invnum, item.item_color, compartment.name)
+                                    updatedContentItems.add(newItem)
+                                    FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("content").push().setValue(newItem)
+                                }
                             }
                             // This is just a workaround
                             // Problem: when ID is changed, Box Fragment no longer can find the right box
@@ -211,11 +208,13 @@ class BoxEditFragment : Fragment() {
         if (::locationImageBitmap.isInitialized){
             mBoxModel.location_image = Utils.getEncoded64ImageStringFromBitmap(locationImageBitmap)
         }
-        val itemList = mBoxItemEditAdapter.getCurrentStatus()
+        val compartmentList = mBoxCompartmentEditAdapter.getCurrentStatus()
         val newContentItems = ArrayList<ContentItem>()
-        for (item: BoxItemModel in itemList) {
-            val newItem = ContentItem(item.numeric_id,"", item.item_amount, item.item_amount_taken, item.item_id, item.item_invnum, item.item_color, item.item_compartment)
-            newContentItems.add(newItem)
+        for (compartment: CompartmentModel in compartmentList){
+            for (item: BoxItemModel in compartment.content) {
+                val newItem = ContentItem(item.numeric_id,"", item.item_amount, item.item_amount_taken, item.item_id, item.item_invnum, item.item_color, compartment.name)
+                newContentItems.add(newItem)
+            }
         }
         mBoxModel.content = newContentItems
         FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").push().setValue(mBoxModel)
@@ -340,11 +339,20 @@ class BoxEditFragment : Fragment() {
         initQrCodeList()
         initBoxIdList()
 
-        // Get the arguments from the caller fragment/activity
+        // Get the arguments from the caller fragment/activity and init compartment list
         mBoxModel = arguments?.getSerializable("boxModel") as BoxModel
         val itemListArray: Array<BoxItemModel> =
             arguments?.getSerializable("items") as Array<BoxItemModel>
-        mItemList = itemListArray.toCollection(ArrayList())
+
+        mCompartmentList.add(CompartmentModel("", ArrayList<BoxItemModel>(), false))
+        for (item in itemListArray) {
+            // Add compartment if not exist
+            if (item.item_compartment !in (mCompartmentList.map {model -> model.name })) {
+                mCompartmentList.add(CompartmentModel(item.item_compartment, ArrayList<BoxItemModel>(), false))
+            }
+            mCompartmentList.filter { model -> model.name == item.item_compartment }[0].content.add(item)
+        }
+
         mVehicle = arguments?.getSerializable("vehicleModel") as VehicleModel?
             ?: VehicleModel(
                 "-1",
@@ -389,11 +397,15 @@ class BoxEditFragment : Fragment() {
         // Receive data from ItemAddFragment (selected Item)
         navController.currentBackStackEntry?.savedStateHandle?.getLiveData<MutableList<String>>("itemIdList")?.observe(
             viewLifecycleOwner) { result ->
-            for (item in result){
-                addSelectedItem(item)
+            navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>("targetCompartmentName")?.observe(viewLifecycleOwner) { targetCompartment ->
+                for (item in result){
+                    addSelectedItem(item, targetCompartment)
+                }
             }
         }
         navController.currentBackStackEntry?.savedStateHandle?.remove<MutableList<String>>("itemIdList")
+
+        // Receive data from VehicleAddFragment (selected vehicle)
         navController.currentBackStackEntry?.savedStateHandle?.getLiveData<VehicleModel>("vehicleModel")?.observe(
             viewLifecycleOwner) { result ->
             mVehicle = result
@@ -528,8 +540,6 @@ class BoxEditFragment : Fragment() {
             boxEditLocationImageField.setImageBitmap(Utils.stringToBitMap(mBoxModel.location_image))
         }
 
-        val thisFragment = this
-
 
         val startForMainImageResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -600,30 +610,67 @@ class BoxEditFragment : Fragment() {
         recyclerviewVehicle.adapter = mVehicleAdapter
         mVehicleAdapter.setFilter(listOf(mVehicle))
 
-        //Init Items View
-        val recyclerview = v.findViewById<View>(R.id.box_edit_content) as RecyclerView
-        //box_item_edit_adapter = BoxItemEditAdapter(itemList, false, this)
-        mBoxItemEditAdapter = BoxItemEditAdapter(mItemList)
-        recyclerview.layoutManager = LinearLayoutManager(activity)
-        recyclerview.adapter = mBoxItemEditAdapter
-
-        boxEditAddButton.setOnClickListener { view ->
-            if (view != null) {
+        //Init Compartment View
+        val rvCompartments = v.findViewById<View>(R.id.box_edit_compartments) as RecyclerView
+        mBoxCompartmentEditAdapter = BoxCompartmentEditAdapter(mBoxModel.id)
+        rvCompartments.layoutManager = LinearLayoutManager(activity)
+        rvCompartments.adapter = mBoxCompartmentEditAdapter
+        mBoxCompartmentEditAdapter.setFilter(mCompartmentList)
+        mBoxCompartmentEditAdapter.setOnCompartmentItemAddListener(object: BoxCompartmentEditAdapter.OnCompartmentItemAddListener{
+            override fun onCompartmentItemAdd(targetCompartmentName: String, view: View) {
                 if (animationType == "elegant") {
                     exitTransition = Hold()
                 }
                 // Temp store elements for when item was added
                 mBoxModel.status = Utils.chipListToString(boxEditStatusChips)
                 mBoxModel.color = boxEditColor
-                mItemList = mBoxItemEditAdapter.getCurrentStatus()
+                mCompartmentList = mBoxCompartmentEditAdapter.getCurrentStatus()
 
                 val extras = FragmentNavigatorExtras(view to "transition_to_items")
                 findNavController().navigate(
-                    BoxEditFragmentDirections.actionBoxEditFragmentToItemsSelectionFragment(), extras
+                    BoxEditFragmentDirections.actionBoxEditFragmentToItemsSelectionFragment(targetCompartmentName), extras
                 )
+            }
+        })
+
+        boxEditAddButton.setOnClickListener { view ->
+            if (view != null) {
+                val builder = MaterialAlertDialogBuilder(context!!)
+                builder.setTitle(context!!.resources.getString(R.string.dialog_add_compartment_title))
+
+                val viewInflated: View = LayoutInflater.from(context)
+                    .inflate(R.layout.dialog_create_compartment, container, false)
+                val input = viewInflated.findViewById<View>(R.id.dialog_input_compartment_name) as EditText
+                val container = viewInflated.findViewById<View>(R.id.dialog_input_compartment_name_container) as TextInputLayout
+
+                builder.setView(viewInflated)
+                builder.setPositiveButton(context!!.resources.getString(R.string.dialog_add), null)
+                builder.setNegativeButton(context!!.resources.getString(R.string.dialog_cancel)) { dialog, _ -> dialog.cancel() }
+
+                val mAlertDialog: AlertDialog = builder.create()
+                mAlertDialog.setOnShowListener {
+                    val b: Button = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                    b.setOnClickListener {
+                        val inputText = input.text.toString()
+                        if (inputText != "") {
+                            mCompartmentList.add(CompartmentModel(inputText, ArrayList<BoxItemModel>(), false))
+                            mBoxCompartmentEditAdapter.setFilter(mCompartmentList)
+                            mAlertDialog.dismiss()
+                        } else {
+                            if (inputText == "") {
+                                container.isErrorEnabled = true
+                                container.error =
+                                    context!!.resources.getString(R.string.error_dialog_field_empty)
+                            }
+                        }
+                    }
+                }
+                mAlertDialog.show()
+
             }
         }
 
+        //Init Vehicle View
         boxEditVehicleField.setOnClickListener { view ->
             if (view != null) {
                 if (animationType == "elegant") {
@@ -632,7 +679,7 @@ class BoxEditFragment : Fragment() {
                 // Temp store elements for when item was added
                 mBoxModel.status = Utils.chipListToString(boxEditStatusChips)
                 mBoxModel.color = boxEditColor
-                mItemList = mBoxItemEditAdapter.getCurrentStatus()
+                mCompartmentList = mBoxCompartmentEditAdapter.getCurrentStatus()
 
                 val extras = FragmentNavigatorExtras(view to "transition_to_vehicles")
                 findNavController().navigate(
@@ -643,13 +690,14 @@ class BoxEditFragment : Fragment() {
             }
         }
 
-
+        /*// init move
         val itemTouchHelper by lazy {
             val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END, 0) {
 
                 override fun onMove(recyclerView: RecyclerView,
                                     viewHolder: RecyclerView.ViewHolder,
                                     target: RecyclerView.ViewHolder): Boolean {
+                    if ((target as BoxCompartmentEditAdapter.BoxItemViewHolder).isExpanded) return false
                     val adapter = recyclerView.adapter as BoxItemEditAdapter
                     val from = viewHolder.adapterPosition
                     val to = target.adapterPosition
@@ -693,15 +741,14 @@ class BoxEditFragment : Fragment() {
 
             ItemTouchHelper(simpleItemTouchCallback)
         }
-        itemTouchHelper.attachToRecyclerView(recyclerview)
+        itemTouchHelper.attachToRecyclerView(rvCompartments) */
 
 
         return v
     }
 
 
-    private fun addSelectedItem(item_id: String?) {
-        val tempKey = DateTimeFormatter.ISO_INSTANT.format(Instant.now()).toString()
+    private fun addSelectedItem(item_id: String?, targetCompartment: String) {
         val itemsRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items")
         itemsRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -714,20 +761,24 @@ class BoxEditFragment : Fragment() {
                             val itemImage = item.child("images").value.toString()
                             val itemDescription = item.child("description").value.toString()
                             val itemTags = item.child("tags").value.toString()
-                            mItemList.add(BoxItemModel(
-                                (UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE).toString(),
-                                item_id,
-                                "1",
-                                "0",
-                                "",
-                                itemName,
-                                ContextCompat.getColor(requireContext(), R.color.default_item_color),
-                                itemImage,
-                                itemDescription,
-                                itemTags,
-                                ""
-                            ))
-                            mBoxItemEditAdapter.addToItemList(mItemList)
+                            for (compartment in mCompartmentList) {
+                                if (compartment.name == targetCompartment) {
+                                    compartment.content.add(BoxItemModel(
+                                        (UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE).toString(),
+                                        item_id,
+                                        "1",
+                                        "0",
+                                        "",
+                                        itemName,
+                                        ContextCompat.getColor(requireContext(), R.color.default_item_color),
+                                        itemImage,
+                                        itemDescription,
+                                        itemTags,
+                                        targetCompartment
+                                    ))
+                                }
+                            }
+                            mBoxCompartmentEditAdapter.setFilter(mCompartmentList)
                             return@addOnCompleteListener
                         }
                     }
@@ -736,6 +787,5 @@ class BoxEditFragment : Fragment() {
         }
         //addItem(item_id.toString())
     }
-
 
 }

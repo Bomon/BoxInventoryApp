@@ -40,6 +40,7 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var searchView: SearchView
     private lateinit var searchBtn: MenuItem
     private lateinit var confirmBtn: MenuItem
+    private lateinit var targetCompartmentName: String
 
     private lateinit var animationType: String
     var isMultiSelectMode: Boolean = false
@@ -73,6 +74,7 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
             val navController: NavController = findNavController()
             var itemIds = mAdapter.getSelectedItems()
             navController.previousBackStackEntry?.savedStateHandle?.set("itemIdList", itemIds)
+            navController.previousBackStackEntry?.savedStateHandle?.set("targetCompartmentName", targetCompartmentName)
             navController.popBackStack()
         }
     }
@@ -103,6 +105,8 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
             enterTransition = MaterialFadeThrough()
             returnTransition = MaterialFadeThrough()
         }
+
+        targetCompartmentName = arguments?.getString("targetCompartmentName", "") ?: ""
     }
 
 
@@ -136,6 +140,7 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
                     val navController: NavController = Navigation.findNavController(view)
                     // push the selected item back to BoxEditFragment
                     navController.previousBackStackEntry?.savedStateHandle?.set("itemIdList", listOf(itemId))
+                    navController.previousBackStackEntry?.savedStateHandle?.set("targetCompartmentName", targetCompartmentName)
                     navController.popBackStack()
                 }
             }

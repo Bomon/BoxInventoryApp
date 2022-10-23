@@ -212,4 +212,7 @@
     <string name="ucrop_rotate">Rotieren</string>
     <string name="ucrop_scale">Skalieren</string>
     <string name="ucrop_crop">Zuschneiden</string>
+    <string name="dialog_add_compartment_title">Fach Erstellen</string>
+    <string name="dialog_compartment_name">Bezeichnung</string>
+    <string name="error_dialog_field_empty">Feld darf nicht leer sein</string>
 </resources>

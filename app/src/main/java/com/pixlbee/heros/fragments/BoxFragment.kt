@@ -396,13 +396,6 @@ class BoxFragment : Fragment(){
                 for (box: DataSnapshot in boxes.children){
                     if (box.child("id").value.toString() == mBoxModel.id){
                         mBoxModel = Utils.readBoxModelFromDataSnapshot(context, box)
-                        for (compartment: DataSnapshot in box.child("compartments").children) {
-                            mCompartmentList.add(CompartmentModel(
-                                compartment.child("name").value.toString(),
-                                ArrayList<BoxItemModel>(),
-                                compartment.child("name").value.toString() in expandedCompartments)
-                            )
-                        }
                         updateContent()
                         break
                     }
@@ -421,6 +414,8 @@ class BoxFragment : Fragment(){
                             numericId = (UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE).toString()
                         }
                         if (itemId == contentItem.id) {
+                            var compartmentName = if (contentItem.compartment == "null") "" else contentItem.compartment
+
                             var newItem = BoxItemModel(
                                 numericId,
                                 contentItem.id,
@@ -432,19 +427,17 @@ class BoxFragment : Fragment(){
                                 image,
                                 description,
                                 tags,
-                                contentItem.compartment
+                                compartmentName
                             )
 
-                            var compartmentName = if (contentItem.compartment == "null") "" else contentItem.compartment
+                            // Add compartment if not exist
+                            if (compartmentName !in (mCompartmentList.map {model -> model.name })) {
+                                mCompartmentList.add(CompartmentModel(contentItem.compartment, ArrayList<BoxItemModel>(), false))
+                            }
+                            mCompartmentList.filter { model -> model.name == compartmentName }[0].content.add(newItem)
+
 
                             mItemList.add(newItem)
-                            mCompartmentList.filter {it.name == compartmentName}[0].content.add(newItem)
-                            //for (compartment: CompartmentModel in mCompartmentList) {
-                            //    if contentItem.compartment == ""
-                            //    if (compartment.name == contentItem.compartment){
-                            //        compartment.content.add(newItem)
-                            //    }
-                            //}
                         }
 
                     }
