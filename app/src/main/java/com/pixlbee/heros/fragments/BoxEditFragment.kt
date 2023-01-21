@@ -8,6 +8,7 @@ import android.os.StrictMode
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.activity.addCallback
@@ -78,6 +79,10 @@ class BoxEditFragment : Fragment() {
     private var qrList: ArrayList<String> = ArrayList()
     private var idList: ArrayList<String> = ArrayList()
 
+    private var newTempCompartments: ArrayList<String> = ArrayList()
+
+    private var movedItemTracker: ArrayList<ItemMoveModel> = ArrayList()
+
     private var isNewBox: Boolean = false
     private lateinit var mBoxCompartmentEditAdapter: BoxCompartmentEditAdapter
     private lateinit var mVehicleAdapter: VehicleAdapter
@@ -88,6 +93,8 @@ class BoxEditFragment : Fragment() {
     private lateinit var locationImageBitmap: Bitmap
 
     private lateinit var animationType: String
+
+    private lateinit var rvCompartments: RecyclerView
 
 
     private fun checkFields(): Boolean {
@@ -125,10 +132,17 @@ class BoxEditFragment : Fragment() {
     }
 
 
+    public fun moveItem(movedItem: ItemMoveModel) {
+        if (!movedItemTracker.map { model -> model.item.numeric_id }.contains(movedItem.item.numeric_id)) {
+            movedItemTracker.add(movedItem)
+        }
+    }
+
+
     private fun applyChanges(): Boolean {
         val fieldsOk: Boolean = checkFields()
         if (!fieldsOk) return false
-
+        val tempContext = requireContext()
         val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -137,42 +151,57 @@ class BoxEditFragment : Fragment() {
                     for (box: DataSnapshot in boxes.children) {
                         val id = box.child("id").value.toString()
                         if (id == mBoxModel.id) {
+                            // Update Box Fields
                             val boxKey: String = box.key.toString()
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("id").setValue(boxEditIdField.text.toString().trim())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("name").setValue(boxEditNameField.text.toString().trim())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("description").setValue(boxEditDescriptionField.text.toString().trim())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("type").setValue(boxEditTypeField.text.toString().trim())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("qrcode").setValue(boxEditQrcodeField.text.toString().trim())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("in_vehicle").setValue(mVehicle.id)
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("location_details").setValue(boxEditLocationDetailsField.text.toString().trim())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("color").setValue(boxEditColor)
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("id").setValue(boxEditIdField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("name").setValue(boxEditNameField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("description").setValue(boxEditDescriptionField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("type").setValue(boxEditTypeField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("qrcode").setValue(boxEditQrcodeField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("in_vehicle").setValue(mVehicle.id)
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("location_details").setValue(boxEditLocationDetailsField.text.toString().trim())
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("color").setValue(boxEditColor)
 
+                            // Update Status Chips
                             val chipString = Utils.chipListToString(boxEditStatusChips)
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("status").setValue(chipString)
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("status").setValue(chipString)
 
+                            // Update main image
                             if (::imageBitmap.isInitialized){
                                 val updatedImage = Utils.getEncoded64ImageStringFromBitmap(imageBitmap)
-                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("image").setValue(
+                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("image").setValue(
                                     updatedImage)
                             }
 
-
+                            // Update Location image
                             if (::locationImageBitmap.isInitialized){
                                 val updatedLocationImage = Utils.getEncoded64ImageStringFromBitmap(locationImageBitmap)
-                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("location_image").setValue(
+                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("location_image").setValue(
                                     updatedLocationImage)
                             }
 
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("content").removeValue()
+                            // Update compartment items
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("content").removeValue()
                             val compartmentList = mBoxCompartmentEditAdapter.getCurrentStatus()
                             val updatedContentItems = ArrayList<ContentItem>()
                             for (compartment: CompartmentModel in compartmentList) {
                                 for (item: BoxItemModel in compartment.content) {
                                     val newItem = ContentItem(item.numeric_id, "", item.item_amount, item.item_amount_taken, item.item_id, item.item_invnum, item.item_color, compartment.name)
                                     updatedContentItems.add(newItem)
-                                    FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes").child(boxKey).child("content").push().setValue(newItem)
+                                    FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("content").push().setValue(newItem)
                                 }
                             }
+                            var allCompartmentList = (compartmentList.map { c -> c.name }).filter { c -> c != "" }.joinToString(";")
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("compartmentList").setValue(allCompartmentList)
+
+                            // Insert items that were moved out of the box
+                            for (movedItem in movedItemTracker) {
+                                Log.e("Error", "Moving item " + movedItem.item.item_name + " to " + movedItem.target_box_id)
+                                var newItem = movedItem.item
+                                var newContentItem = ContentItem(newItem.numeric_id, "", newItem.item_amount, newItem.item_amount_taken, newItem.item_id, newItem.item_invnum, newItem.item_color, movedItem.target_compartment)
+                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(movedItem.target_box_key).child("content").push().setValue(newContentItem)
+                            }
+
                             // This is just a workaround
                             // Problem: when ID is changed, Box Fragment no longer can find the right box
                             // Hence we go directly back to home after editing where the box is updated
@@ -345,6 +374,10 @@ class BoxEditFragment : Fragment() {
             arguments?.getSerializable("items") as Array<BoxItemModel>
 
         mCompartmentList.add(CompartmentModel("", ArrayList<BoxItemModel>(), false))
+        for (c in mBoxModel.compartments) {
+            mCompartmentList.add(CompartmentModel(c, ArrayList<BoxItemModel>(), false))
+        }
+
         for (item in itemListArray) {
             // Add compartment if not exist
             if (item.item_compartment !in (mCompartmentList.map {model -> model.name })) {
@@ -611,8 +644,8 @@ class BoxEditFragment : Fragment() {
         mVehicleAdapter.setFilter(listOf(mVehicle))
 
         //Init Compartment View
-        val rvCompartments = v.findViewById<View>(R.id.box_edit_compartments) as RecyclerView
-        mBoxCompartmentEditAdapter = BoxCompartmentEditAdapter(mBoxModel.id)
+        rvCompartments = v.findViewById<View>(R.id.box_edit_compartments) as RecyclerView
+        mBoxCompartmentEditAdapter = BoxCompartmentEditAdapter(mBoxModel.id, this)
         rvCompartments.layoutManager = LinearLayoutManager(activity)
         rvCompartments.adapter = mBoxCompartmentEditAdapter
         mBoxCompartmentEditAdapter.setFilter(mCompartmentList)
@@ -652,8 +685,9 @@ class BoxEditFragment : Fragment() {
                     val b: Button = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
                     b.setOnClickListener {
                         val inputText = input.text.toString()
-                        if (inputText != "") {
+                        if (inputText != "" && !inputText.contains(";") && inputText !in mCompartmentList.map { t -> t.name } && inputText !in newTempCompartments) {
                             mCompartmentList.add(CompartmentModel(inputText, ArrayList<BoxItemModel>(), false))
+                            newTempCompartments.add(inputText)
                             mBoxCompartmentEditAdapter.setFilter(mCompartmentList)
                             mAlertDialog.dismiss()
                         } else {
@@ -661,6 +695,14 @@ class BoxEditFragment : Fragment() {
                                 container.isErrorEnabled = true
                                 container.error =
                                     context!!.resources.getString(R.string.error_dialog_field_empty)
+                            } else if (inputText == ";") {
+                                    container.isErrorEnabled = true
+                                    container.error =
+                                        context!!.resources.getString(R.string.error_dialog_field_illegal)
+                            } else if (inputText in mCompartmentList.map { t -> t.name }) {
+                                container.isErrorEnabled = true
+                                container.error =
+                                    context!!.resources.getString(R.string.error_dialog_compartment_already_exists)
                             }
                         }
                     }
@@ -786,6 +828,10 @@ class BoxEditFragment : Fragment() {
             }
         }
         //addItem(item_id.toString())
+    }
+
+    fun getNewCompartments(): ArrayList<String> {
+        return newTempCompartments
     }
 
 }

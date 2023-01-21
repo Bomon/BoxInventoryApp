@@ -19,6 +19,7 @@
             android:name="com.pixlbee.heros.activities.StartupActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,20 +30,24 @@
             android:name="com.pixlbee.heros.activities.LoginActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
         </activity>
         <activity
             android:name="com.pixlbee.heros.activities.MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
         </activity>
         <activity
             android:name="com.pixlbee.heros.activities.SettingsActivity"
             android:label="@string/activity_settings_title"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.pixlbee.heros.activities.MainActivity">
         </activity>
         <activity android:name="com.pixlbee.heros.activities.HerosAppIntro"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" />
         <provider
             android:name="androidx.core.content.FileProvider"

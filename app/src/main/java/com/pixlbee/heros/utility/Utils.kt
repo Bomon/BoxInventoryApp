@@ -100,6 +100,13 @@ class Utils {
                 val itemCompartment = c.child("compartment").value.toString()
                 contentList.add(ContentItem(itemNumericId, c.key.toString(), itemAmount, itemAmountTaken, itemId, itemInvNum, itemColor, itemCompartment))
             }
+
+            val compartments = box.child("compartmentList").value.toString()
+            var compartmentList = ArrayList<String>()
+            if (compartments != "null") {
+                val compartmentList = ArrayList(compartments.split(";"))
+            }
+
             return BoxModel(
                 numericId,
                 id,
@@ -113,7 +120,8 @@ class Utils {
                 locationImage,
                 color,
                 status,
-                contentList
+                contentList,
+                compartmentList
             )
         }
 

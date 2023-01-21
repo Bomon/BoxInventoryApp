@@ -1,24 +1,29 @@
 package com.pixlbee.heros.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
+import com.pixlbee.heros.fragments.BoxEditFragment
+import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.CompartmentModel
+import com.pixlbee.heros.models.ItemMoveModel
 import com.pixlbee.heros.utility.Animations
+import com.pixlbee.heros.utility.Utils
 
 
-class BoxCompartmentEditAdapter(boxId: String) : RecyclerView.Adapter<BoxCompartmentEditAdapter.BoxItemViewHolder>() {
+class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) : RecyclerView.Adapter<BoxCompartmentEditAdapter.BoxItemViewHolder>() {
 
     private lateinit var mContext: Context
     private var mCompartmentList: ArrayList<CompartmentModel> = ArrayList()
@@ -26,15 +31,16 @@ class BoxCompartmentEditAdapter(boxId: String) : RecyclerView.Adapter<BoxCompart
     private lateinit var animationType: String
 
     private lateinit var mListener: BoxCompartmentEditAdapter.OnCompartmentItemAddListener
+    private lateinit var mParentFragment: BoxEditFragment
 
 
     init {
         mBoxId = boxId
+        mParentFragment = parentFragment
         setHasStableIds(true)
     }
 
     fun getCurrentStatus(): ArrayList<CompartmentModel> {
-
         return mCompartmentList
     }
 
@@ -64,7 +70,50 @@ class BoxCompartmentEditAdapter(boxId: String) : RecyclerView.Adapter<BoxCompart
         holder.compartmentName.text = compartment.name
         holder.compartmentContainer.transitionName = compartment.name
 
-        holder.mBoxItemEditAdapter = BoxItemEditAdapter(ArrayList())
+        var adapter = BoxItemEditAdapter(ArrayList(), mBoxId, compartment.name, mParentFragment)
+
+        adapter.setOnItemRemoveListener(object: BoxItemEditAdapter.OnItemRemoveListener {
+            override fun onItemRemove(compartmentName: String, numericItemId: String, view: View) {
+                for (c in mCompartmentList) {
+                    if (c.name == compartmentName) {
+                        c.content.removeIf {e -> e.numeric_id == numericItemId}
+                    }
+                }
+            }
+        })
+
+        fun moveItem(movedItem: ItemMoveModel) {
+            var newItem = movedItem.item
+            newItem.item_compartment = movedItem.target_compartment
+            // move inside box
+            if (movedItem.target_box_id == movedItem.src_box_id) {
+                for (c in mCompartmentList) {
+                    if (c.name == movedItem.target_compartment) {
+                        c.content.add(newItem)
+                        adapter.setFilter(compartment.content)
+                    }
+                    if (c.name == movedItem.src_compartment) {
+                        c.content.removeIf { e -> e.numeric_id == newItem.numeric_id }
+                    }
+                }
+            } else {  // move item out of box
+                for (c in mCompartmentList) {
+                    if (c.name == movedItem.src_compartment) {
+                        c.content.removeIf { e -> e.numeric_id == newItem.numeric_id }
+                    }
+                }
+                mParentFragment.moveItem(movedItem)
+            }
+            notifyDataSetChanged()
+        }
+
+        adapter.setOnItemMoveListener(object: BoxItemEditAdapter.OnItemMoveListener {
+            override fun onItemMove(movedItem: ItemMoveModel, view: View) {
+                moveItem(movedItem)
+            }
+        })
+
+        holder.mBoxItemEditAdapter = adapter
         holder.recyclerview.layoutManager = LinearLayoutManager(mContext)
         holder.recyclerview.adapter = holder.mBoxItemEditAdapter
 
@@ -90,9 +139,167 @@ class BoxCompartmentEditAdapter(boxId: String) : RecyclerView.Adapter<BoxCompart
         // On Item Added
         holder.compartmentAddItemButton.setOnClickListener { view ->
             if (view != null) {
-                Log.e("Error", "Add item to comaprtment " + compartment.name)
                 mListener.onCompartmentItemAdd(compartment.name, view)
             }
+        }
+
+        holder.compartmentDeleteButton.setOnClickListener { view ->
+            if (view != null) {
+                val builder = MaterialAlertDialogBuilder(mContext)
+                builder.setTitle(mContext.resources.getString(R.string.dialog_delete_compartment_title))
+
+                val viewInflated: View = LayoutInflater.from(mContext)
+                    .inflate(R.layout.dialog_delete_compartment, holder.itemView as ViewGroup?, false)
+
+                val moveContainer = viewInflated.findViewById<View>(R.id.dialog_del_move_menu) as LinearLayout
+
+                val radioBtnDelete = viewInflated.findViewById<View>(R.id.dialog_del_comp_radio_delete) as RadioButton
+                val radioBtnMove = viewInflated.findViewById<View>(R.id.dialog_del_comp_radio_move) as RadioButton
+
+                val targetBoxSelect = viewInflated.findViewById<View>(R.id.dialog_del_comp_dropdown_box) as AutoCompleteTextView
+                val targetCompartmentSelect = viewInflated.findViewById<View>(R.id.dialog_del_comp_dropdown_compartment) as AutoCompleteTextView
+
+                moveContainer.visibility = View.GONE
+
+                radioBtnDelete.setOnClickListener {
+                    moveContainer.visibility = View.GONE
+                }
+                radioBtnMove.setOnClickListener {
+                    moveContainer.visibility = View.VISIBLE
+                }
+
+                val allBoxes: HashMap<String, String> = HashMap()
+                var allBoxCompartments: ArrayList<String> = ArrayList()
+                var defaultBox: String = ""
+                var defaultCompartment: String = compartment.name
+
+                var targetBoxId = mBoxId
+                var targetBoxKey = ""
+                var targetCompartment = compartment.name
+
+
+                val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")
+                boxesRef.get().addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val boxes: DataSnapshot? = task.result
+                        if (boxes != null) {
+                            for (box: DataSnapshot in boxes.children) {
+                                val boxKey = box.key.toString()
+                                val boxName = box.child("name").value.toString()
+                                val boxId = box.child("id").value.toString()
+                                allBoxes["$boxId - $boxName"] = boxKey
+                                if (boxId == mBoxId) {
+                                    defaultBox = "$boxId - $boxName"
+                                    for (item: DataSnapshot in box.child("content").children){
+                                        val compartment = item.child("compartment").value.toString()
+                                        if (compartment !in allBoxCompartments) {
+                                            allBoxCompartments.add(compartment)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        for (newCompartment in mParentFragment.getNewCompartments()){
+                            allBoxCompartments.add(newCompartment)
+                        }
+
+                        val arrayAdapterCompartment = ArrayAdapter(mContext, R.layout.dropdown_item, allBoxCompartments)
+                        targetCompartmentSelect.setText(defaultCompartment, false)
+                        targetCompartmentSelect.setAdapter(arrayAdapterCompartment)
+
+                        val arrayAdapterBox = ArrayAdapter(mContext, R.layout.dropdown_item, allBoxes.keys.toList())
+                        targetBoxSelect.setText(defaultBox, false)
+                        targetBoxSelect.setAdapter(arrayAdapterBox)
+
+                        targetBoxSelect.onItemClickListener =
+                            AdapterView.OnItemClickListener { parent, view, position, id ->
+                                var clickedBox = parent.adapter.getItem(position)
+                                val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")
+                                boxesRef.get().addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        val boxes: DataSnapshot? = task.result
+                                        if (boxes != null) {
+                                            for (box: DataSnapshot in boxes.children) {
+                                                val boxName = box.child("name").value.toString()
+                                                val boxId = box.child("id").value.toString()
+                                                val boxTitle = "$boxId - $boxName"
+                                                val boxKey = box.key.toString()
+                                                targetBoxId = boxId
+                                                targetBoxKey = boxKey
+                                                if (clickedBox == boxTitle) {
+                                                    allBoxCompartments.clear()
+                                                    for (item: DataSnapshot in box.child("content").children){
+                                                        var compartment = item.child("compartment").value.toString()
+                                                        compartment = if (compartment.toString() == "null") "" else compartment
+                                                        if (compartment !in allBoxCompartments) {
+                                                            allBoxCompartments.add(compartment)
+                                                        }
+                                                    }
+                                                    // If we are in our box, add new temp compartments
+                                                    if (boxId == mBoxId) {
+                                                        for (newCompartment in mParentFragment.getNewCompartments()){
+                                                            allBoxCompartments.add(newCompartment)
+                                                        }
+                                                    }
+                                                    targetCompartmentSelect.setText(allBoxCompartments[0], false)
+                                                    arrayAdapterCompartment.notifyDataSetChanged()
+                                                    break
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        targetCompartmentSelect.onItemClickListener =
+                            AdapterView.OnItemClickListener { parent, view, position, id ->
+                                var clickedCompartment = parent.adapter.getItem(position)
+                                targetCompartment = clickedCompartment.toString()
+                            }
+                    }
+                }
+
+                builder.setView(viewInflated)
+                builder.setPositiveButton(mContext.resources.getString(R.string.dialog_ok), null)
+                builder.setNegativeButton(mContext.resources.getString(R.string.dialog_cancel)) { dialog, _ -> dialog.cancel() }
+
+                val mAlertDialog: AlertDialog = builder.create()
+                mAlertDialog.setOnShowListener {
+                    val b: Button = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                    b.setOnClickListener {
+                        // On Move
+                        if (radioBtnMove.isChecked) {
+                            var itemsToMove = ArrayList<ItemMoveModel>()
+                            if (mBoxId != targetBoxId || compartment.name != targetCompartment) {
+                                for (item in compartment.content) {
+                                    var movedItem: ItemMoveModel = ItemMoveModel(
+                                        item,
+                                        mBoxId,
+                                        compartment.name,
+                                        targetBoxId,
+                                        targetCompartment,
+                                        targetBoxKey
+                                    )
+                                    itemsToMove.add(movedItem)
+                                }
+                                for (item in itemsToMove) {
+                                    moveItem(item)
+                                }
+                                mCompartmentList.removeAt(position)
+                                notifyDataSetChanged()
+                            }
+                        // On Delete
+                        } else {
+                            mCompartmentList.removeAt(position)
+                            notifyDataSetChanged()
+                        }
+                        mAlertDialog.dismiss()
+                    }
+                }
+                mAlertDialog.show()
+            }
+
         }
 
         holder.isExpanded = compartment.is_expanded
@@ -159,13 +366,14 @@ class BoxCompartmentEditAdapter(boxId: String) : RecyclerView.Adapter<BoxCompart
         val recyclerview = itemView.findViewById<View>(R.id.compartment_content) as RecyclerView
         val compartmentArrow: ImageView = itemView.findViewById<ImageView>(R.id.compartment_arrow)
         val compartmentAddItemButton: MaterialButton = itemView.findViewById<MaterialButton>(R.id.compartment_add_item_button)
+        val compartmentDeleteButton: MaterialButton = itemView.findViewById<MaterialButton>(R.id.compartment_delete_button)
         val rvContainer: RelativeLayout = itemView.findViewById<RelativeLayout>(R.id.compartment_content_container)
         var isExpanded: Boolean = false
 
         lateinit var mBoxItemEditAdapter: BoxItemEditAdapter
 
         fun expandContent(p0: View?) {
-            compartmentArrow.animate().setDuration(200).rotation(180F)
+            compartmentArrow.animate().setDuration(100).rotation(180F)
             Animations.expand(rvContainer)
             //recyclerview.visibility = View.VISIBLE
             //recyclerview.alpha = 0.0f
@@ -176,7 +384,7 @@ class BoxCompartmentEditAdapter(boxId: String) : RecyclerView.Adapter<BoxCompart
         }
 
         fun collapseContent(p0: View?) {
-            compartmentArrow.animate().setDuration(200).rotation(0F)
+            compartmentArrow.animate().setDuration(100).rotation(0F)
             Animations.collapse(rvContainer)
             //recyclerview.visibility = View.GONE
             //recyclerview.alpha = 1.0f
@@ -193,6 +401,16 @@ class BoxCompartmentEditAdapter(boxId: String) : RecyclerView.Adapter<BoxCompart
 
     fun setOnCompartmentItemAddListener(mListener: OnCompartmentItemAddListener) {
         this.mListener = mListener
+    }
+
+
+    fun addItem(newItem: BoxItemModel) {
+        for (c in mCompartmentList) {
+            if (c.name == newItem.item_compartment) {
+                c.content.add(newItem)
+            }
+        }
+        this.notifyDataSetChanged()
     }
 
 

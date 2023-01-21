@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
@@ -145,11 +146,10 @@ class BoxFragment : Fragment(){
 
     private fun checkPermission(): Boolean {
         // checking of permissions.
-        val permission1 =
-            ContextCompat.checkSelfPermission(context!!, WRITE_EXTERNAL_STORAGE)
         val permission2 =
             ContextCompat.checkSelfPermission(context!!, READ_EXTERNAL_STORAGE)
-        return permission1 == PackageManager.PERMISSION_GRANTED && permission2 == PackageManager.PERMISSION_GRANTED
+        Log.e("Error", (permission2 == PackageManager.PERMISSION_GRANTED).toString())
+        return permission2 == PackageManager.PERMISSION_GRANTED
     }
 
 
@@ -396,6 +396,9 @@ class BoxFragment : Fragment(){
                 for (box: DataSnapshot in boxes.children){
                     if (box.child("id").value.toString() == mBoxModel.id){
                         mBoxModel = Utils.readBoxModelFromDataSnapshot(context, box)
+                        for (c in mBoxModel.compartments) {
+                            mCompartmentList.add(CompartmentModel(c, ArrayList<BoxItemModel>(), c in expandedCompartments))
+                        }
                         updateContent()
                         break
                     }
@@ -414,7 +417,7 @@ class BoxFragment : Fragment(){
                             numericId = (UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE).toString()
                         }
                         if (itemId == contentItem.id) {
-                            var compartmentName = if (contentItem.compartment == "null") "" else contentItem.compartment
+                            var compartmentName = if (contentItem.compartment.toString() == "null") "" else contentItem.compartment
 
                             var newItem = BoxItemModel(
                                 numericId,

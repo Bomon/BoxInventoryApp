@@ -204,4 +204,5 @@
     <string name="ucrop_crop">Crop</string>
     <string name="dialog_add_compartment_title">Create Compartment</string>
     <string name="dialog_compartment_name">Name</string>
+    <string name="error_dialog_compartment_already_exists">There already exists a compartment with this name</string>
 </resources>

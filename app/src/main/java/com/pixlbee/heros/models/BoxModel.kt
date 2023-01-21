@@ -26,5 +26,6 @@ class BoxModel(
     var location_image: String,
     var color: Int,
     var status: String,
-    var content: ArrayList<ContentItem>
+    var content: ArrayList<ContentItem>,
+    var compartments: ArrayList<String>
 ): Serializable

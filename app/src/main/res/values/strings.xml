@@ -215,4 +215,17 @@
     <string name="dialog_add_compartment_title">Fach Erstellen</string>
     <string name="dialog_compartment_name">Bezeichnung</string>
     <string name="error_dialog_field_empty">Feld darf nicht leer sein</string>
+    <string name="error_dialog_compartment_already_exists">Es gibt bereits ein Fach mit dieser Bezeichnung</string>
+    <string name="dialog_move_item_title">Verschieben</string>
+    <string name="dialog_box">Box</string>
+    <string name="dialog_compartment">Fach</string>
+    <string name="dialog_move">Verschieben</string>
+    <string name="dialog_close">Schließen</string>
+    <string name="dialog_edit_item_title">Bearbeiten</string>
+    <string name="error_dialog_field_illegal">Das Feld enthält ungültige Zeichen</string>
+    <string name="radio_btn_delete">Löschen</string>
+    <string name="radio_btn_move">Verschieben</string>
+    <string name="dialog_delete_compartment_descr">Was soll mit den beinhalteten Gegenständen passiern?</string>
+    <string name="dialog_delete_compartment_title">Fach Löschen</string>
+    <string name="dialog_ok">Ausführen</string>
 </resources>

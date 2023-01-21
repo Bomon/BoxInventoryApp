@@ -104,7 +104,8 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
                             "",
                             ContextCompat.getColor(requireContext(), R.color.default_box_color),
                             "",
-                            ArrayList<ContentItem>()
+                            ArrayList<ContentItem>(),
+                            ArrayList<String>()
                         )
                         bundle.putSerializable("boxModel", boxModel)
                         bundle.putSerializable("items", ArrayList<BoxItemModel>().toTypedArray())

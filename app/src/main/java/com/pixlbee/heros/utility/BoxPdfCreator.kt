@@ -81,7 +81,7 @@ class BoxPdfCreator {
                 val runnable = Runnable {
 
                     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-                    val pdfFileName = box_model.id + "_" + timeStamp + ".pdf"
+                    val pdfFileName = box_model.id.replace("/", "_") + "_" + timeStamp + ".pdf"
                     file = File(context.cacheDir, pdfFileName)
                     file!!.deleteOnExit()
 
