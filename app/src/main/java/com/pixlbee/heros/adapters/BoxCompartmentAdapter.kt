@@ -32,6 +32,7 @@ class BoxCompartmentAdapter(boxId: String) : RecyclerView.Adapter<BoxCompartment
     private var mCompartmentList: ArrayList<CompartmentModel> = ArrayList()
     private lateinit var mBoxId: String
     private lateinit var animationType: String
+    private var skipUpdate = false
 
     private lateinit var mListener: BoxCompartmentAdapter.OnCompartmentItemClickListener
 
@@ -209,6 +210,7 @@ class BoxCompartmentAdapter(boxId: String) : RecyclerView.Adapter<BoxCompartment
                     }
                     mItemList[position].item_amount_taken = newTakenAmount
 
+                    skipUpdate = true;
                     holder.mBoxItemAdapter.updateAmountTaken(position, newTakenAmount, mContext)
                 }
             }
@@ -266,9 +268,16 @@ class BoxCompartmentAdapter(boxId: String) : RecyclerView.Adapter<BoxCompartment
 
 
     fun setFilter(compartmentItems: ArrayList<CompartmentModel>) {
-        mCompartmentList.clear()
-        mCompartmentList.addAll(compartmentItems)
-        this.notifyDataSetChanged()
+        // skip update is only true if a swipe was performed on an item
+        // reason is that a full mCompartmentList Update would redraw the whole box
+        // if we disable this update, we get a smooth back-swipe transition of the item
+        if (skipUpdate) {
+            skipUpdate = false
+        } else {
+            mCompartmentList.clear()
+            mCompartmentList.addAll(compartmentItems)
+            this.notifyDataSetChanged()
+        }
     }
 
 }
