@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
-            tools:context=".fragments.ItemsFragment">
+            tools:context=".fragments.ItemsAllFragment">
 
             <ProgressBar
                 android:id="@+id/pBar"
@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            tools:context=".fragments.ItemsFragment">
+            tools:context=".fragments.ItemsAllFragment">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/loading_done"

@@ -228,4 +228,8 @@
     <string name="dialog_delete_compartment_descr">Was soll mit den beinhalteten Gegenständen passiern?</string>
     <string name="dialog_delete_compartment_title">Fach Löschen</string>
     <string name="dialog_ok">Ausführen</string>
+    <string name="items_tab_all">Alle</string>
+    <string name="items_tab_taken">Entnommen</string>
+    <string name="item_availability_table_box">Box</string>
+    <string name="item_availability_table_taken">Entnommen</string>
 </resources>

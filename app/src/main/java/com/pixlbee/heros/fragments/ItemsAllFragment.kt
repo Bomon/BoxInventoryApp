@@ -3,8 +3,8 @@ package com.pixlbee.heros.fragments
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.core.view.doOnPreDraw
@@ -25,66 +25,50 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.pixlbee.heros.R
-import com.pixlbee.heros.adapters.ItemSelectionAdapter
+import com.pixlbee.heros.adapters.ItemAdapter
 import com.pixlbee.heros.models.ItemModel
 import com.pixlbee.heros.utility.Utils
 import java.util.*
 
 
-open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
+open class ItemsAllFragment() : Fragment(), SearchView.OnQueryTextListener {
 
     var mItemList: ArrayList<ItemModel> = ArrayList<ItemModel>()
-    lateinit var mAdapter: ItemSelectionAdapter
+    lateinit var mAdapter: ItemAdapter
     private lateinit var mFirebaseListener: ValueEventListener
     private var searchQueryText: String = ""
     private lateinit var searchView: SearchView
     private lateinit var searchBtn: MenuItem
-    private lateinit var confirmBtn: MenuItem
-    private lateinit var targetCompartmentName: String
 
     private lateinit var animationType: String
-    var isMultiSelectMode: Boolean = false
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_items_selection, menu)
-        searchBtn = menu.findItem(R.id.items_selection_btn_search)
-        confirmBtn = menu.findItem(R.id.items_selection_btn_confirm)
-        searchView = MenuItemCompat.getActionView(searchBtn) as SearchView
+        // don't inflate menu, but use the one from parent
+        if (menu.findItem(R.id.items_btn_search) != null) {
+            searchBtn = menu.findItem(R.id.items_btn_search)
+            searchView = MenuItemCompat.getActionView(searchBtn) as SearchView
+            searchView.setOnQueryTextListener(this)
+            searchBtn.setOnActionExpandListener(object :
+                MenuItem.OnActionExpandListener {
+                override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                    // Do something when collapsed
+                    searchQueryText = ""
+                    setFilterAndSort(mItemList)
+                    return true // Return true to collapse action view
+                }
 
-        confirmBtn.isVisible = false
-
-        searchView.setOnQueryTextListener(this)
-        searchBtn.setOnActionExpandListener(object :
-            MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                // Do something when collapsed
-                searchQueryText = ""
-                mAdapter.setFilter(filterAndSort(mItemList))
-                return true // Return true to collapse action view
-            }
-
-            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-                // Do something when expanded
-                return true // Return true to expand action view
-            }
-        })
-
-        confirmBtn.setOnMenuItemClickListener {
-            val navController: NavController = findNavController()
-            var itemIds = mAdapter.getSelectedItems()
-            navController.previousBackStackEntry?.savedStateHandle?.set("itemIdList", itemIds)
-            navController.previousBackStackEntry?.savedStateHandle?.set("targetCompartmentName", targetCompartmentName)
-            navController.popBackStack()
+                override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                    // Do something when expanded
+                    return true // Return true to expand action view
+                }
+            })
         }
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        (activity as AppCompatActivity?)!!.supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-        (activity as AppCompatActivity?)!!.supportActionBar!!.setHomeButtonEnabled(false)
 
         val sharedPreferences = context!!.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
         animationType = sharedPreferences.getString("animation_type", "simple").toString()
@@ -105,8 +89,6 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
             enterTransition = MaterialFadeThrough()
             returnTransition = MaterialFadeThrough()
         }
-
-        targetCompartmentName = arguments?.getString("targetCompartmentName", "") ?: ""
     }
 
 
@@ -123,26 +105,19 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
         val view: View = inflater.inflate(R.layout.fragment_items_all, container, false)
         val recyclerview = view.findViewById<View>(R.id.RV_items) as RecyclerView
 
-        mAdapter = ItemSelectionAdapter()
+        mAdapter = ItemAdapter()
         mAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-        mAdapter.setOnItemClickListener(object: ItemSelectionAdapter.OnItemClickListener{
-            override fun onItemClicked(item: ItemModel, v: View, position: Int, isLongClick: Boolean) {
-                val itemId = item.id
-                if (isLongClick) {
-                    isMultiSelectMode = true
-                    confirmBtn.isVisible = true
+        mAdapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
+            override fun onItemClicked(item: ItemModel, view: View) {
+                if (animationType == "elegant") {
+                    exitTransition = Hold()
                 }
-                if (isMultiSelectMode) {
-                    mAdapter.toggleSelection(position)
-                } else {
-                    //adapter.setFilter(itemList)
-                    val navController: NavController = Navigation.findNavController(view)
-                    // push the selected item back to BoxEditFragment
-                    navController.previousBackStackEntry?.savedStateHandle?.set("itemIdList", listOf(itemId))
-                    navController.previousBackStackEntry?.savedStateHandle?.set("targetCompartmentName", targetCompartmentName)
-                    navController.popBackStack()
-                }
+                val extras = FragmentNavigatorExtras(
+                    view to item.id
+                )
+                val navController: NavController = Navigation.findNavController(view)
+                navController.navigate(ItemsOverviewFragmentDirections.actionNavigationItemsToItemFragment(item), extras)
             }
 
             override fun onItemTagClicked(tag: String) {
@@ -188,15 +163,6 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
             postponeEnterTransition()
             view.doOnPreDraw { startPostponedEnterTransition() }
         }
-
-        // receive new item from ItemEditFragment
-        val navController = findNavController()
-        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<ItemModel>("item")?.observe(
-            viewLifecycleOwner) { result ->
-            // Push this back to the BoxEditFragment
-            navController.previousBackStackEntry?.savedStateHandle?.set("item_id", result.id)
-            navController.navigateUp()
-        }
     }
 
 
@@ -213,7 +179,7 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
                     val tags = box.child("tags").value.toString()
                     mItemList.add(ItemModel(id, name, description, tags, image))
                 }
-                mAdapter.setFilter(filterAndSort(mItemList))
+                setFilterAndSort(mItemList)
                 mAdapter.notifyDataSetChanged()
             }
 
@@ -224,7 +190,7 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextChange(newText: String): Boolean {
         searchQueryText = newText
-        mAdapter.setFilter(filterAndSort(mItemList))
+        setFilterAndSort(mItemList)
         //activity?.runOnUiThread {
         //    adapter.notifyDataSetChanged()
         //}
@@ -236,7 +202,7 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
         return false
     }
 
-    private fun filterAndSort(models: List<ItemModel>): List<ItemModel> {
+    private fun setFilterAndSort(models: List<ItemModel>) {
         var query = searchQueryText.lowercase(Locale.getDefault())
         query = query.lowercase(Locale.getDefault())
         val filteredModelList: MutableList<ItemModel> = ArrayList()
@@ -261,10 +227,69 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         )
 
-        return filteredModelList
+        mAdapter.setFilter(filteredModelList)
+
+        // search for inv nums can take longer, so we do this afterwards
+        if (query.length > 2) {
+            asyncSearchInvNum(models, filteredModelList)
+        }
+
     }
 
+
+    private fun asyncSearchInvNum(models: List<ItemModel>, filteredModels: MutableList<ItemModel>) {
+        var query = searchQueryText.lowercase(Locale.getDefault())
+        query = query.lowercase(Locale.getDefault())
+
+        val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
+        boxesRef.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val boxes: DataSnapshot? = task.result
+                if (boxes != null) {
+                    var resultsUpdated = false
+                    var foundItemIds = ArrayList<String>()
+                    // search all boxes for queried invnum
+                    for (box: DataSnapshot in boxes.children) {
+                        for (item: DataSnapshot in box.child("content").children) {
+                            val contentInvNumber = item.child("invnum").value.toString()
+                            if (query in contentInvNumber){
+                                val itemId = item.child("id").value.toString()
+                                foundItemIds.add(itemId)
+                            }
+                        }
+                    }
+                    // Add found items
+                    for (mItemModel in models) {
+                        if (foundItemIds.contains(mItemModel.id)){
+                            if (mItemModel !in filteredModels) {
+                                resultsUpdated = true
+                                filteredModels.add(mItemModel)
+                            }
+                        }
+                    }
+
+                    // only update search results if there were changes
+                    if (resultsUpdated){
+                        filteredModels.sortWith(
+                            compareBy(String.CASE_INSENSITIVE_ORDER) {
+                                var name = it.name.lowercase(Locale.getDefault()).replace("ä","ae")
+                                name = name.replace("ö","oe")
+                                name = name.replace("ü","ue")
+                                name
+                            }
+                        )
+
+                        mAdapter.setFilter(filteredModels)
+                    }
+                }
+            }
+        }
+
+    }
+
+
     override fun onDestroyView() {
+        Log.e("Error", "Destroy All Fragmebt")
         super.onDestroyView()
         FirebaseDatabase.getInstance().reference.removeEventListener(mFirebaseListener)
     }

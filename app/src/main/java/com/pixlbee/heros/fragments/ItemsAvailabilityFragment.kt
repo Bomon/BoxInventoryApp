@@ -3,6 +3,7 @@ package com.pixlbee.heros.fragments
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.ArrayMap
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
@@ -11,10 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.transition.Hold
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialFadeThrough
@@ -24,16 +23,17 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.pixlbee.heros.R
-import com.pixlbee.heros.adapters.ItemAdapter
+import com.pixlbee.heros.adapters.ItemAvailabilityAdapter
+import com.pixlbee.heros.models.ItemAvailabilityModel
 import com.pixlbee.heros.models.ItemModel
 import com.pixlbee.heros.utility.Utils
 import java.util.*
 
 
-open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
+open class ItemsAvailabilityFragment() : Fragment(), SearchView.OnQueryTextListener {
 
-    var mItemList: ArrayList<ItemModel> = ArrayList<ItemModel>()
-    lateinit var mAdapter: ItemAdapter
+    var mItemList: ArrayList<ItemAvailabilityModel> = ArrayList<ItemAvailabilityModel>()
+    lateinit var mAdapter: ItemAvailabilityAdapter
     private lateinit var mFirebaseListener: ValueEventListener
     private var searchQueryText: String = ""
     private lateinit var searchView: SearchView
@@ -41,26 +41,27 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var animationType: String
 
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_items, menu)
-        searchBtn = menu.findItem(R.id.items_btn_search)
-        searchView = MenuItemCompat.getActionView(searchBtn) as SearchView
-        searchView.setOnQueryTextListener(this)
-        searchBtn.setOnActionExpandListener(object :
-            MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                // Do something when collapsed
-                searchQueryText = ""
-                setFilterAndSort(mItemList)
-                return true // Return true to collapse action view
-            }
+        // don't inflate menu, but use the one from parent
+        if (menu.findItem(R.id.items_btn_search) != null) {
+            searchBtn = menu.findItem(R.id.items_btn_search)
+            searchView = MenuItemCompat.getActionView(searchBtn) as SearchView
+            searchView.setOnQueryTextListener(this)
+            searchBtn.setOnActionExpandListener(object :
+                MenuItem.OnActionExpandListener {
+                override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                    // Do something when collapsed
+                    searchQueryText = ""
+                    setFilterAndSort(mItemList)
+                    return true // Return true to collapse action view
+                }
 
-            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-                // Do something when expanded
-                return true // Return true to expand action view
-            }
-        })
+                override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                    // Do something when expanded
+                    return true // Return true to expand action view
+                }
+            })
+        }
     }
 
 
@@ -99,22 +100,22 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         }
 
         // Inflate the layout for this fragment
-        val view: View = inflater.inflate(R.layout.fragment_items, container, false)
-        val recyclerview = view.findViewById<View>(R.id.RV_items) as RecyclerView
+        val view: View = inflater.inflate(R.layout.fragment_items_availability, container, false)
+        val recyclerview = view.findViewById<View>(R.id.RV_items_availability) as RecyclerView
 
-        mAdapter = ItemAdapter()
+        mAdapter = ItemAvailabilityAdapter()
         mAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-        mAdapter.setOnItemClickListener(object: ItemAdapter.OnItemClickListener{
-            override fun onItemClicked(item: ItemModel, view: View) {
+        mAdapter.setOnItemClickListener(object: ItemAvailabilityAdapter.OnItemClickListener{
+            override fun onItemClicked(item: ItemAvailabilityModel, view: View) {
                 if (animationType == "elegant") {
                     exitTransition = Hold()
                 }
                 val extras = FragmentNavigatorExtras(
-                    view to item.id
+                    view to item.item.id
                 )
                 val navController: NavController = Navigation.findNavController(view)
-                navController.navigate(ItemsFragmentDirections.actionNavigationItemsToItemFragment(item), extras)
+                navController.navigate(ItemsOverviewFragmentDirections.actionNavigationItemsToItemFragment(item.item), extras)
             }
 
             override fun onItemTagClicked(tag: String) {
@@ -127,27 +128,6 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         recyclerview.adapter = mAdapter
 
         initFirebase()
-
-        val itemsAddButton: FloatingActionButton = view.findViewById(R.id.items_add_button)
-        itemsAddButton.setOnClickListener { v ->
-            if (v != null) {
-                if (Utils.checkHasWritePermission(context)) {
-                    val itemModel = ItemModel("", "", "", "", "")
-                    if (animationType == "elegant") {
-                        exitTransition = Hold()
-                    }
-                    val extras = FragmentNavigatorExtras(
-                        v to "transition_add_item"
-                    )
-                    findNavController().navigate(
-                        ItemsFragmentDirections.actionNavigationItemsToItemEditFragment(
-                            itemModel,
-                            true
-                        ), extras
-                    )
-                }
-            }
-        }
 
         return view
     }
@@ -167,15 +147,44 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         mFirebaseListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 mItemList.clear()
-                val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("items")
+
+                var itemMap = ArrayMap<String, ItemAvailabilityModel>()
+                val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                 for (box: DataSnapshot in boxes.children){
-                    val description = box.child("description").value.toString()
-                    val id = box.child("id").value.toString()
-                    val image = box.child("image").value.toString()
-                    val name = box.child("name").value.toString()
-                    val tags = box.child("tags").value.toString()
-                    mItemList.add(ItemModel(id, name, description, tags, image))
+                    val boxId = box.child("id").value.toString()
+                    for (boxContent: DataSnapshot in box.child("content").children) {
+                        val contentItemId = boxContent.child("id").value.toString()
+                        var itemAmountTaken = boxContent.child("amount_taken").value.toString()
+                        if (itemAmountTaken == "null"){
+                            itemAmountTaken = "0"
+                        }
+                        if (itemAmountTaken != "0"){
+                            // Create entry if not exist
+                            if (!itemMap.containsKey(contentItemId)) {
+                                var initialItemModel = ItemModel(contentItemId, "", "", "", "")
+                                var initialTakenMap = ArrayMap<String, Int>()
+                                initialTakenMap[boxId] = itemAmountTaken.toInt()
+                                itemMap[contentItemId] = ItemAvailabilityModel(initialItemModel, initialTakenMap)
+                            // Add to entry
+                            } else {
+                                itemMap[contentItemId]?.taken?.put(boxId, itemAmountTaken.toInt())
+                            }
+                        }
+                    }
                 }
+
+                val items = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("items")
+                for (item: DataSnapshot in items.children){
+                    val id = item.child("id").value.toString()
+                    if (itemMap.keys.contains(id)) {
+                        itemMap[id]?.item!!.name = item.child("name").value.toString()
+                        itemMap[id]?.item!!.description = item.child("description").value.toString()
+                        itemMap[id]?.item!!.tags = item.child("tags").value.toString()
+                        itemMap[id]?.item!!.image = item.child("image").value.toString()
+                    }
+                }
+
+                mItemList = ArrayList(itemMap.values)
                 setFilterAndSort(mItemList)
                 mAdapter.notifyDataSetChanged()
             }
@@ -199,25 +208,25 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
         return false
     }
 
-    private fun setFilterAndSort(models: List<ItemModel>) {
+    private fun setFilterAndSort(models: List<ItemAvailabilityModel>) {
         var query = searchQueryText.lowercase(Locale.getDefault())
         query = query.lowercase(Locale.getDefault())
-        val filteredModelList: MutableList<ItemModel> = ArrayList()
+        val filteredModelList: MutableList<ItemAvailabilityModel> = ArrayList()
         for (item_model in models) {
-            if (item_model.description.lowercase().contains(query)) {
+            if (item_model.item.description.lowercase().contains(query)) {
                 filteredModelList.add(item_model)
-            } else if (item_model.id.lowercase().contains(query)) {
+            } else if (item_model.item.id.lowercase().contains(query)) {
                 filteredModelList.add(item_model)
-            } else if (item_model.name.lowercase().contains(query)) {
+            } else if (item_model.item.name.lowercase().contains(query)) {
                 filteredModelList.add(item_model)
-            } else if (item_model.tags.lowercase().contains(query)) {
+            } else if (item_model.item.tags.lowercase().contains(query)) {
                 filteredModelList.add(item_model)
             }
         }
 
         filteredModelList.sortWith(
             compareBy(String.CASE_INSENSITIVE_ORDER) {
-                var name = it.name.lowercase(Locale.getDefault()).replace("ä","ae")
+                var name = it.item.name.lowercase(Locale.getDefault()).replace("ä","ae")
                 name = name.replace("ö","oe")
                 name = name.replace("ü","ue")
                 name
@@ -234,7 +243,7 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
-    private fun asyncSearchInvNum(models: List<ItemModel>, filteredModels: MutableList<ItemModel>) {
+    private fun asyncSearchInvNum(models: List<ItemAvailabilityModel>, filteredModels: MutableList<ItemAvailabilityModel>) {
         var query = searchQueryText.lowercase(Locale.getDefault())
         query = query.lowercase(Locale.getDefault())
 
@@ -257,7 +266,7 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                     }
                     // Add found items
                     for (mItemModel in models) {
-                        if (foundItemIds.contains(mItemModel.id)){
+                        if (foundItemIds.contains(mItemModel.item.id)){
                             if (mItemModel !in filteredModels) {
                                 resultsUpdated = true
                                 filteredModels.add(mItemModel)
@@ -269,7 +278,7 @@ open class ItemsFragment : Fragment(), SearchView.OnQueryTextListener {
                     if (resultsUpdated){
                         filteredModels.sortWith(
                             compareBy(String.CASE_INSENSITIVE_ORDER) {
-                                var name = it.name.lowercase(Locale.getDefault()).replace("ä","ae")
+                                var name = it.item.name.lowercase(Locale.getDefault()).replace("ä","ae")
                                 name = name.replace("ö","oe")
                                 name = name.replace("ü","ue")
                                 name

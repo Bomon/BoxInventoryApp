@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
-    tools:context=".fragments.ItemsFragment">
+    tools:context=".fragments.ItemsAllFragment">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/box_edit_card_scroll"

@@ -33,9 +33,9 @@
 
     <fragment
         android:id="@+id/navigation_items"
-        android:name="com.pixlbee.heros.fragments.ItemsFragment"
+        android:name="com.pixlbee.heros.fragments.ItemsOverviewFragment"
         android:label="@string/title_nav_items"
-        tools:layout="@layout/fragment_items" >
+        tools:layout="@layout/fragment_items_all" >
         <action
             android:id="@+id/action_navigation_items_to_itemFragment"
             app:destination="@id/itemFragment" />
@@ -174,4 +174,8 @@
             android:id="@+id/action_itemsSelectionFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/itemsOverviewFragment"
+        android:name="com.pixlbee.heros.fragments.ItemsOverviewFragment"
+        android:label="ItemsOverviewFragment" />
 </navigation>

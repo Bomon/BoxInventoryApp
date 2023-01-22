@@ -38,6 +38,7 @@ import com.pixlbee.heros.utility.Utils
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private var returnVehicleInsteadOfShowDetails: Boolean = false
@@ -52,7 +53,6 @@ class VehiclesFragment : Fragment(), SearchView.OnQueryTextListener {
     private var isFirstCreate: Boolean = true
 
     private lateinit var animationType: String
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_vehicles, menu)

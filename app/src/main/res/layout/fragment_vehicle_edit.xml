@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
     android:transitionName="transition_add_item"
-    tools:context=".fragments.ItemsFragment">
+    tools:context=".fragments.ItemsAllFragment">
 
     <ScrollView
         android:id="@+id/item_edit_card_scroll"

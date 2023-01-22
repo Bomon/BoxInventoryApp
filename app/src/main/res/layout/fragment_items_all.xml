@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:transitionName="transition_to_items"
     android:background="?attr/colorSurface"
-    tools:context=".fragments.ItemsFragment">
+    tools:context=".fragments.ItemsAllFragment">
 
     <ImageView
         android:scaleType="centerCrop"
