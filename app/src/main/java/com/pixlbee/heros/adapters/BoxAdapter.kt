@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -113,7 +114,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
                     val chip = Chip(mContext)
                     chip.text = tag
                     chip.minHeight = 1
-                    chip.setTextAppearance(R.style.BoxStatusChip)
+                    chip.setTextAppearance(R.style.SmallTextChip)
                     holder.boxStatusTags.addView(chip)
                     if (tagClickable){
                         chip.setOnClickListener {
@@ -122,6 +123,8 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
                     }
                 }
             }
+        } else {
+            holder.boxStatusContainer.visibility = View.GONE
         }
 
         // show incomplete icon if box has items taken out
@@ -148,6 +151,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
         var boxVehicle: TextView = itemView.findViewById(R.id.box_vehicle)
         var boxImg: ImageView = itemView.findViewById(R.id.box_img)
         var boxStatusTags: ChipGroup = itemView.findViewById(R.id.box_status)
+        var boxStatusContainer: LinearLayout = itemView.findViewById(R.id.box_status_container)
         var boxContainer: MaterialCardView = itemView.findViewById(R.id.box_card_small)
         var boxColor: View = itemView.findViewById(R.id.box_color)
         var boxIncompleteIcon: ImageView = itemView.findViewById(R.id.box_incomplete_icon)
@@ -157,6 +161,7 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
 
             if (compactView) {
                 boxStatusTags.visibility = View.GONE
+                boxStatusContainer.visibility = View.GONE
             }
         }
 

@@ -66,6 +66,7 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
                     val chip = Chip(context)
                     chip.text = tag
                     holder.itemTags.addView(chip)
+                    chip.setTextAppearance(R.style.SmallTextChip)
                     chip.setOnClickListener {
                         mListener.onItemTagClicked(tag)
                     }

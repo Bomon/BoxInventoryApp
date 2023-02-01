@@ -65,7 +65,13 @@ class BoxCompartmentAdapter(boxId: String) : RecyclerView.Adapter<BoxCompartment
     override fun onBindViewHolder(holder: BoxItemViewHolder, position: Int) {
         val compartment = mCompartmentList[position]
 
-        holder.compartmentName.text = compartment.name
+        // Set display name of default compartment
+        if (compartment.name == "") {
+            holder.compartmentName.text = mContext.resources.getString(R.string.compartment_default_name)
+        } else {
+            holder.compartmentName.text = compartment.name
+        }
+
         holder.compartmentContainer.transitionName = compartment.name
 
         holder.mBoxItemAdapter = BoxItemAdapter(mBoxId)

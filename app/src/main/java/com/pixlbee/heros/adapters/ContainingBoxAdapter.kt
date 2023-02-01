@@ -129,7 +129,7 @@ class ContainingBoxAdapter(
                         val chip = Chip(mContext)
                         chip.text = tag
                         chip.minHeight = 1
-                        chip.setTextAppearance(R.style.BoxStatusChip)
+                        chip.setTextAppearance(R.style.SmallTextChip)
                         boxStatus.addView(chip)
                     }
                 }

@@ -129,6 +129,7 @@ class MainActivity : AppCompatActivity() {
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.toolbar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this))
+        //binding.toolbar.setBackgroundColor(resources.getColor(R.color.transparent))
 
         val sharedPreferences = this.getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val currentUser = sharedPreferences.getString("current_user", "USER")

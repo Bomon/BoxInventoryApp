@@ -10,7 +10,7 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
-    <style name="BoxStatusChip" parent="TextAppearance.MaterialComponents.Chip">
+    <style name="SmallTextChip" parent="TextAppearance.MaterialComponents.Chip">
         <item name="android:textStyle">normal</item>
     </style>
     <style name="numberPickerTextStyle" parent="NumberPicker.EditTextStyle">

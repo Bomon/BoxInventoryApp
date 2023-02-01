@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/box_fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,17 +9,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <ImageView
+    <!--<ImageView
         android:scaleType="centerCrop"
         app:srcCompat="@drawable/background_image"
         android:layout_width="match_parent"
         android:alpha="0.6"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"/> -->
+
+    <!-- Media -->
+
+    <ImageView
+        android:id="@+id/box_summary_image"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:contentDescription="@string/content_description_box_image"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/placeholder_with_bg_80" />
 
     <ScrollView
         android:id="@+id/box_scroll_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -28,159 +40,168 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Media -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <ImageView
-                android:scaleType="centerCrop"
-                android:id="@+id/box_summary_image"
-                android:layout_width="match_parent"
-                android:layout_height="194dp"
-                android:contentDescription="@string/content_description_box_image"
-                app:srcCompat="@drawable/placeholder_with_bg_80" />
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/headerCard"
+                style="?attr/materialCardViewElevatedStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginBottom="-30dp"
+                android:clickable="false"
+                app:strokeWidth="3dp"
+                app:strokeColor="@color/thw_blue"
+                app:cardElevation="10dp"
+                app:layout_constraintBottom_toTopOf="@+id/materialCardView3"
+                tools:layout_editor_absoluteX="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <View
-                        android:id="@+id/box_summary_color"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:layout_marginTop="11dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@drawable/round_bg"
-                        android:backgroundTint="@color/default_box_color"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingBottom="8dp">
+
+                        <View
+                            android:id="@+id/box_summary_color"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_marginTop="3dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="@drawable/round_bg"
+                            android:backgroundTint="@color/default_box_color" />
+
+                        <TextView
+                            android:id="@+id/box_summary_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/content_description_title"
+                            android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+                    </LinearLayout>
 
                     <TextView
-                        android:layout_marginTop="8dp"
                         android:id="@+id/box_summary_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/content_description_title"
-                        android:textAppearance="?attr/textAppearanceTitleLarge"
-                        />
+                        android:text="@string/content_description_description"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?android:attr/textColorSecondary" />
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/box_summary_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/content_description_description"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?android:attr/textColorSecondary" />
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/box_summary_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    app:chipSpacingHorizontal="6dp"
-                    app:chipSpacingVertical="-8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/box_color"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
-
-            </LinearLayout>
-
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/divider"
-                app:dividerInsetStart="8dp"
-                app:dividerInsetEnd="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+            </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
+                android:id="@+id/box_summary_image_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/materialCardView3"
+                style="?attr/materialCardViewElevatedStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:clickable="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/box_summary_image_overlay">
 
-                <TextView
-                    android:id="@+id/box_summary_vehicle_label"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/vehicle_location_label"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textColor="?android:attr/textColorSecondary"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:paddingTop="40dp"
+                    android:orientation="vertical">
 
-
-                <RelativeLayout
-                    android:layout_marginTop="16dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/box_summary_vehicle_rv"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:nestedScrollingEnabled="false" />
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="8dp"
+                        android:paddingHorizontal="16dp"
+                        android:orientation="vertical"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
-                </RelativeLayout>
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/box_summary_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:chipSpacingHorizontal="6dp"
+                            app:chipSpacingVertical="-8dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/box_color"
+                            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-            </LinearLayout>
-<!--
-                        <com.google.android.material.divider.MaterialDivider
-                            android:id="@+id/divider1"
-                            app:dividerInsetStart="8dp"
-                            app:dividerInsetEnd="8dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
--->
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <TextView
+                            android:id="@+id/box_summary_description"
+                            android:layout_width="wrap_content"
+                            android:paddingTop="8dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/content_description_description"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textColor="?android:attr/textColorSecondary" />
+
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/materialCardView5"
+                        style="?attr/materialCardViewElevatedStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:layout_margin="10dp"
+                        app:cardElevation="5dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/box_summary_image_overlay">
+
+                        <LinearLayout
+                            android:id="@+id/ll2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:paddingTop="0dp"
-                            android:paddingHorizontal="16dp">
+                            android:orientation="vertical">
 
                             <TextView
-                                android:id="@+id/box_summary_location_details_label"
-                                android:layout_width="0dp"
+                                android:padding="16dp"
+                                android:id="@+id/box_summary_vehicle_label"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
-                                android:layout_marginEnd="8dp"
-                                android:text="@string/location_details"
+                                android:text="@string/vehicle_location_label"
                                 android:textAppearance="?attr/textAppearanceTitleMedium"
                                 android:textColor="?android:attr/textColorSecondary"
-                                app:layout_constraintEnd_toStartOf="@+id/box_location_image"
-                                app:layout_constraintHorizontal_bias="0.0"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <com.google.android.material.imageview.ShapeableImageView
-                                android:id="@+id/box_location_image"
-                                android:layout_width="80dp"
-                                android:layout_height="80dp"
-                                android:layout_marginTop="16dp"
-                                android:layout_marginBottom="16dp"
-                                android:contentDescription="@string/content_description_location_image"
-                                android:scaleType="centerCrop"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                                app:srcCompat="@drawable/placeholder_with_bg_80" />
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/box_summary_vehicle_rv"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:nestedScrollingEnabled="false" />
+
+                            </RelativeLayout>
 
                             <TextView
+                                android:paddingHorizontal="16dp"
+                                android:paddingTop="16dp"
                                 android:id="@+id/box_summary_location_details"
-                                android:layout_width="0dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginBottom="16dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toStartOf="@+id/box_location_image"
                                 app:layout_constraintHorizontal_bias="0.0"
@@ -188,18 +209,42 @@
                                 app:layout_constraintTop_toBottomOf="@+id/box_summary_location_details_label"
                                 app:layout_constraintVertical_bias="0.0" />
 
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="16dp"
+                                android:orientation="vertical"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+                            </LinearLayout>
+
+                        </LinearLayout>
 
 
+                    </com.google.android.material.card.MaterialCardView>
 
-                        <com.google.android.material.divider.MaterialDivider
-                            android:id="@+id/divider2"
-                            app:dividerInsetStart="8dp"
-                            app:dividerInsetEnd="8dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="16dp"
+                        android:orientation="vertical"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/materialCardView6"
+                        style="?attr/materialCardViewElevatedStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:clickable="false"
+                        app:cardElevation="10dp"
+                        android:fillViewport="true"
+                        android:layout_weight="1.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/box_summary_image_overlay">
 
                         <LinearLayout
+                            android:id="@+id/ll3"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
@@ -231,23 +276,15 @@
 
                             </RelativeLayout>
 
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content">
-
-                                <androidx.recyclerview.widget.RecyclerView
-                                    android:id="@+id/box_summary_content"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginBottom="16dp"
-                                    android:nestedScrollingEnabled="false" />
-
-                            </RelativeLayout>
-
                         </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    </LinearLayout>
+                </LinearLayout>
 
-                </ScrollView>
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

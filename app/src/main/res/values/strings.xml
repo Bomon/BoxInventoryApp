@@ -232,4 +232,5 @@
     <string name="items_tab_taken">Entnommen</string>
     <string name="item_availability_table_box">Box</string>
     <string name="item_availability_table_taken">Entnommen</string>
+    <string name="compartment_default_name">Standard</string>
 </resources>

@@ -13,6 +13,7 @@
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.2435" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_build_circle_24.xml" value="0.243" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_cancel_24.xml" value="0.342" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_cell_tower_24.xml" value="0.344" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_check_24.xml" value="0.342" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_delete_24.xml" value="0.3795" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_download_24.xml" value="0.3795" />
@@ -29,6 +30,7 @@
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_inventory_24.xml" value="0.2905" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_keyboard_arrow_down_24.xml" value="0.203" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_keyboard_arrow_up_24.xml" value="0.203" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_label_24.xml" value="0.344" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_location_on_24.xml" value="0.3745" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_logout_24.xml" value="0.325" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_move_up_24.xml" value="0.2895" />
@@ -49,8 +51,10 @@
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_launcher_monochrome.xml" value="0.127" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_logo.xml" value="0.3155" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.243" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_outline_label_24.xml" value="0.344" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_placeholder.xml" value="0.396" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_thw.xml" value="0.3795" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_twotone_label_24.xml" value="0.344" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/repeating_bg.xml" value="0.2075" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/round_bg.xml" value="0.3035" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/rv_divider.xml" value="0.194" />
@@ -67,9 +71,10 @@
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_compartment_in_box_edit.xml" value="0.375" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_item.xml" value="0.5824493731918997" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_item_availability.xml" value="0.31657608695652173" />
-        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_item_in_box.xml" value="0.5" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_item_in_box.xml" value="0.33" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_item_in_box_edit.xml" value="0.42864583333333334" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_item_in_box_edit_old.xml" value="0.37916666666666665" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_item_in_box_old.xml" value="0.2695035460992908" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_item_selection.xml" value="0.67" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_vehicle.xml" value="0.31867633726201267" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_vehicle_compact.xml" value="0.5" />
@@ -87,8 +92,9 @@
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/drawer_header.xml" value="0.20339412360688958" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/dropdown_item.xml" value="0.2921195652173913" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/element_number_picker.xml" value="0.5" />
-        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/fragment_box.xml" value="0.33" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/fragment_box.xml" value="0.28888888888888886" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/fragment_box_edit.xml" value="0.33" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/fragment_boxes.xml" value="0.27853260869565216" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/fragment_home.xml" value="0.10277777777777777" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/fragment_item_details.xml" value="0.18333333333333332" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/fragment_item_edit.xml" value="0.2504528985507246" />
@@ -112,6 +118,7 @@
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/menu/main_menu.xml" value="0.38645833333333335" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/menu/menu_box.xml" value="0.3963541666666667" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/menu/menu_box_edit.xml" value="0.1" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/menu/menu_boxes.xml" value="0.28888888888888886" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/menu/menu_home.xml" value="0.3963541666666667" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/menu/menu_item.xml" value="0.42916666666666664" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/menu/menu_item_edit.xml" value="0.40370370370370373" />

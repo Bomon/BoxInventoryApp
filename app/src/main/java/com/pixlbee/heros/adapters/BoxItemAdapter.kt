@@ -63,7 +63,8 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
             holder.itemAmount.text = "$itemAvailAmount / $itemAmount"
         }
         holder.itemName.text = mItemList[position].item_name
-        holder.itemColor.background.setTint(mItemList[position].item_color)
+        //holder.itemColor.background.setTint(mItemList[position].item_color)
+        holder.itemContainer.strokeColor = mItemList[position].item_color
 
         holder.itemInvnums.removeAllViews()
         for (tag in mItemList[position].item_invnum.split(";")){
@@ -88,7 +89,7 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
 
 
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
-        var itemColor: View = itemView.findViewById(R.id.item_color)
+        //var itemColor: View = itemView.findViewById(R.id.item_color)
         var itemAmount: TextView = itemView.findViewById(R.id.item_amount)
         var itemName: TextView = itemView.findViewById(R.id.item_name)
         var itemInvnums: ChipGroup = itemView.findViewById(R.id.item_invnums)
@@ -118,7 +119,7 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
 
 
     fun updateAmountTaken(position: Int, newTakenAmount: String, iContext: Context) {
-        Log.e("Error", "Update amount of" + position.toString())
+        Log.e("Error", "update amount")
         val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(iContext)).child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {

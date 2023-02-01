@@ -59,12 +59,13 @@ class ItemAvailabilityAdapter : RecyclerView.Adapter<ItemAvailabilityAdapter.Ite
 
         holder.itemTags.removeAllViews()
         if(mItemList[position].item.tags != ""){
-            holder.itemTagsContainer.visibility = View.VISIBLE
+            holder.itemTags.visibility = View.VISIBLE
             for (tag in mItemList[position].item.tags.split(";")){
                 if (tag != ""){
                     val chip = Chip(context)
                     chip.text = tag
                     holder.itemTags.addView(chip)
+                    chip.setTextAppearance(R.style.SmallTextChip)
                     chip.setOnClickListener {
                         mListener.onItemTagClicked(tag)
                     }

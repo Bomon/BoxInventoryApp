@@ -39,7 +39,11 @@ class VehicleAdapter(var content: ArrayList<VehicleModel>, private var compactVi
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VehicleViewHolder {
         mContext = parent.context
         val layoutInflater = LayoutInflater.from(parent.context)
-        val view = layoutInflater.inflate(R.layout.card_vehicle_compact, parent, false)
+        val view = if (compactView) {
+            layoutInflater.inflate(R.layout.card_vehicle_compact, parent, false)
+        } else {
+            layoutInflater.inflate(R.layout.card_vehicle, parent, false)
+        }
         return VehicleViewHolder(view, mListener, compactView)
     }
 
@@ -55,16 +59,16 @@ class VehicleAdapter(var content: ArrayList<VehicleModel>, private var compactVi
         holder.vehicleCallname.text = mVehicleList[position].callname
         holder.vehicleParkingSpot.text = mVehicleList[position].parking_spot
 
-        if (mVehicleList[position].callname == "") {
-            holder.vehicleCallname.visibility = View.GONE
+        if (mVehicleList[position].callname != "" && !compactView) {
+            holder.vehicleCallnameContainer.visibility = View.VISIBLE
         } else {
-            holder.vehicleCallname.visibility = View.VISIBLE
+            holder.vehicleCallnameContainer.visibility = View.GONE
         }
 
-        if (mVehicleList[position].parking_spot == "") {
-            holder.vehicleParkingSpotContainer.visibility = View.GONE
+        if (mVehicleList[position].parking_spot != "") {
+            holder.vehicleParkingSpotContainer.visibility = View.VISIBLE
         } else {
-            //holder.vehicleParkingSpotContainer.visibility = View.VISIBLE
+            holder.vehicleParkingSpotContainer.visibility = View.GONE
         }
 
         if (mVehicleList[position].image != ""){
@@ -82,6 +86,7 @@ class VehicleAdapter(var content: ArrayList<VehicleModel>, private var compactVi
 
         var vehicleName: TextView = itemView.findViewById(R.id.vehicle_name)
         var vehicleCallname: TextView = itemView.findViewById(R.id.vehicle_callname)
+        var vehicleCallnameContainer: LinearLayout = itemView.findViewById(R.id.vehicle_callname_container)
         var vehicleParkingSpot: TextView = itemView.findViewById(R.id.vehicle_parking_spot)
         var vehicleImg: ImageView = itemView.findViewById(R.id.vehicle_img)
         var vehicleContainer: MaterialCardView = itemView.findViewById(R.id.vehicle_card_small)

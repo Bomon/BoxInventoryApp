@@ -1,4 +1,6 @@
 <com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/vehicle_card_small"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -7,9 +9,9 @@
     android:layout_marginRight="8dp"
     android:layout_marginBottom="4dp"
     android:clickable="true"
-    style="?attr/materialCardViewElevatedStyle"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    app:cardElevation="-5dp"
+    app:strokeWidth="0.5dp"
+    style="?attr/materialCardViewElevatedStyle">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,7 +19,7 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/vehicle_img"
-            android:layout_width="130dp"
+            android:layout_width="100dp"
             android:layout_height="0dp"
             android:contentDescription="@string/content_description_box_image"
             android:scaleType="centerCrop"
@@ -33,10 +35,10 @@
             android:id="@+id/linearLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:minHeight="90dp"
+            android:minHeight="70dp"
             android:layout_marginStart="8dp"
             android:orientation="vertical"
-            android:padding="16dp"
+            android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/vehicle_img"
             app:layout_constraintTop_toTopOf="parent">
@@ -50,17 +52,31 @@
                 android:text="@string/content_description_title"
                 android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-            <TextView
-                android:id="@+id/vehicle_callname"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/vehicle_callname_container"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="@string/content_description_description"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?android:attr/textColorSecondary" />
+                android:layout_width="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/vehicle_callname_icon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginRight="4dp"
+                    android:scaleType="fitStart"
+                    app:srcCompat="@drawable/ic_baseline_cell_tower_24" />
+
+                <TextView
+                    android:id="@+id/vehicle_callname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/content_description_description"
+                    android:textAppearance="?attr/textAppearanceCaption" />
+
+            </LinearLayout>
 
             <LinearLayout
-                android:visibility="gone"
                 android:id="@+id/vehicle_parking_spot_container"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
@@ -68,8 +84,8 @@
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/vehicle_parking_spot_icon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_marginRight="4dp"
                     android:scaleType="fitStart"
                     app:srcCompat="@drawable/ic_baseline_location_on_24" />
@@ -80,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:text="@string/content_description_description"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textAppearance="?attr/textAppearanceCaption"
                     android:textColor="?android:attr/textColorSecondary" />
 
             </LinearLayout>

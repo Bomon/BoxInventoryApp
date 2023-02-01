@@ -1,4 +1,6 @@
 <com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/box_card_small"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -7,9 +9,7 @@
     android:layout_marginRight="8dp"
     android:layout_marginBottom="4dp"
     android:clickable="true"
-    style="?attr/materialCardViewElevatedStyle"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    style="?attr/materialCardViewElevatedStyle">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -20,8 +20,8 @@
             android:layout_width="3dp"
             android:layout_height="0dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:background="@color/default_box_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,15 +44,14 @@
             android:id="@+id/box_incomplete_icon"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:contentDescription="@string/content_description_box_image"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/box_img"
-            app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintEnd_toStartOf="@+id/box_img"
+            app:layout_constraintTop_toTopOf="@+id/box_img"
+            app:layout_constraintVertical_bias="0.0"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
             app:srcCompat="@drawable/ic_baseline_error_outline_24" />
 
@@ -61,7 +60,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             app:layout_constraintEnd_toStartOf="@+id/box_img"
             app:layout_constraintStart_toEndOf="@+id/box_color"
             app:layout_constraintTop_toTopOf="parent">
@@ -79,9 +79,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="@string/content_description_description"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textAppearance="?attr/textAppearanceCaption"
                 android:textColor="?android:attr/textColorSecondary" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -116,9 +115,10 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/box_status_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_marginStart="16dp"
             android:layout_marginTop="-16dp"
             android:layout_marginEnd="16dp"
@@ -128,6 +128,14 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/box_color"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/box_vehicle_icon123"
+                android:layout_width="32dp"
+                android:layout_height="20dp"
+                android:scaleType="fitStart"
+                android:layout_marginTop="14dp"
+                app:srcCompat="@drawable/ic_twotone_label_24" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/box_status"

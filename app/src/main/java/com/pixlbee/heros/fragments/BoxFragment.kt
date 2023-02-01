@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,7 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.transition.Hold
@@ -52,13 +54,16 @@ class BoxFragment : Fragment(){
     var mItemList: ArrayList<BoxItemModel> = ArrayList()
     var mCompartmentList: ArrayList<CompartmentModel> = ArrayList()
 
+    private lateinit var boxIdField: TextView
     private lateinit var boxNameField: TextView
     private lateinit var boxDescriptionField: TextView
     private lateinit var boxLocationDetailsField: TextView
     private lateinit var boxStatusField: ChipGroup
     private lateinit var boxColorField: View
+    private lateinit var boxHeaderCard: MaterialCardView
 
     private lateinit var boxSummaryImageField: ImageView
+    private lateinit var boxSummaryImageFieldOverlay: LinearLayout
     private lateinit var boxLocationImageField: ImageView
 
     private lateinit var animationType: String
@@ -234,8 +239,10 @@ class BoxFragment : Fragment(){
 
         //box_id_field.text = box_id
         boxNameField.text = boxName
+        boxIdField.text = boxId
         boxDescriptionField.text = boxDescription
         boxColorField.background.setTint(boxColor)
+        boxHeaderCard.strokeColor = boxColor
 
         if(boxDescription == "")
             boxDescriptionField.visibility = View.GONE
@@ -249,13 +256,16 @@ class BoxFragment : Fragment(){
 
         //box_notes_field.text = box_notes
         boxLocationDetailsField.text = if (boxLocationDetails == "null") "" else boxLocationDetails
+        if (listOf("", "null").contains(boxLocationDetails)) {
+            boxLocationDetailsField.visibility = View.GONE
+        }
 
         boxStatusField.removeAllViews()
         for (tag in boxStatus.split(";")){
             if (tag != ""){
                 val chip = Chip(context)
                 chip.text = tag
-                chip.setTextAppearance(R.style.BoxStatusChip)
+                chip.setTextAppearance(R.style.SmallTextChip)
                 boxStatusField.addView(chip)
             }
         }
@@ -267,12 +277,12 @@ class BoxFragment : Fragment(){
             boxSummaryImageField.setImageBitmap(Utils.stringToBitMap(boxImg))
         }
 
-        if (boxLocationImg == "") {
+        /*if (boxLocationImg == "") {
             Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(boxLocationImageField)
         } else {
             boxLocationImageField.scaleType=ImageView.ScaleType.CENTER_CROP
             boxLocationImageField.setImageBitmap(Utils.stringToBitMap(boxLocationImg))
-        }
+        }*/
 
         (activity as AppCompatActivity).supportActionBar?.title = boxId
     }
@@ -282,17 +292,19 @@ class BoxFragment : Fragment(){
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
-
         val v =  inflater.inflate(R.layout.fragment_box, container, false)
 
         // Get the activity and widget
         boxNameField = v.findViewById(R.id.box_summary_name)
+        boxIdField = v.findViewById(R.id.box_summary_id)
         boxDescriptionField = v.findViewById(R.id.box_summary_description)
         boxLocationDetailsField = v.findViewById(R.id.box_summary_location_details)
         boxStatusField = v.findViewById(R.id.box_summary_status)
         boxSummaryImageField = v.findViewById(R.id.box_summary_image)
-        boxLocationImageField = v.findViewById(R.id.box_location_image)
+        //boxLocationImageField = v.findViewById(R.id.box_location_image)
         boxColorField = v.findViewById(R.id.box_summary_color)
+        boxSummaryImageFieldOverlay = v.findViewById(R.id.box_summary_image_overlay)
+        boxHeaderCard = v.findViewById(R.id.headerCard)
         val boxContainer: View = v.findViewById(R.id.box_fragment_container)
 
         // Transition target element
@@ -321,7 +333,7 @@ class BoxFragment : Fragment(){
         // Init vehicle view
         val recyclerviewVehicle = v.findViewById<View>(R.id.box_summary_vehicle_rv) as RecyclerView
         recyclerviewVehicle.transitionName = "vehicleTransition"
-        mVehicleAdapter = VehicleAdapter(ArrayList<VehicleModel>())
+        mVehicleAdapter = VehicleAdapter(ArrayList<VehicleModel>(), true)
         mVehicleAdapter.setOnVehicleClickListener(object: VehicleAdapter.OnVehicleClickListener{
             override fun onVehicleClicked(vehicle: VehicleModel, view: View) {
                 if (vehicle.id != "-1"){
@@ -340,7 +352,7 @@ class BoxFragment : Fragment(){
         recyclerviewVehicle.adapter = mVehicleAdapter
 
         //Init Image Fullscreen on click
-        boxSummaryImageField.setOnClickListener {
+        boxSummaryImageFieldOverlay.setOnClickListener {
             val drawables: ArrayList<Drawable> = ArrayList()
             drawables.add(boxSummaryImageField.drawable)
 
@@ -351,7 +363,7 @@ class BoxFragment : Fragment(){
                 .show(true)
         }
 
-        boxLocationImageField.setOnClickListener {
+        /*.setOnClickListener {
             val drawables: ArrayList<Drawable> = ArrayList()
             drawables.add(boxLocationImageField.drawable)
 
@@ -360,7 +372,7 @@ class BoxFragment : Fragment(){
             ) { imageView, image -> Glide.with(it.context).load(image).into(imageView) }
                 .withTransitionFrom(boxLocationImageField)
                 .show(true)
-        }
+        }*/
 
         (activity as AppCompatActivity).supportActionBar?.title = mBoxModel.id
 
@@ -445,6 +457,12 @@ class BoxFragment : Fragment(){
 
                     }
                 }
+
+                // if there is only one compartment, expand it by default
+                if (mCompartmentList.size == 1) {
+                    mCompartmentList[0].is_expanded = true
+                }
+
                 mBoxCompartmentAdapter.setFilter(mCompartmentList)
             }
 
