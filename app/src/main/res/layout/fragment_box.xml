@@ -4,7 +4,6 @@
     android:id="@+id/box_fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -26,7 +25,7 @@
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/placeholder_with_bg_80" />
+        app:srcCompat="@drawable/placeholder_with_bg_80_elevated" />
 
     <ScrollView
         android:id="@+id/box_scroll_container"
@@ -111,11 +110,13 @@
             </LinearLayout>
 
             <com.google.android.material.card.MaterialCardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/materialCardView3"
                 style="?attr/materialCardViewElevatedStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="false"
+                card_view:cardCornerRadius="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/box_summary_image_overlay">
 
@@ -234,7 +235,7 @@
                         android:id="@+id/materialCardView6"
                         style="?attr/materialCardViewElevatedStyle"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
                         android:layout_marginTop="6dp"
                         android:clickable="false"
                         app:cardElevation="10dp"

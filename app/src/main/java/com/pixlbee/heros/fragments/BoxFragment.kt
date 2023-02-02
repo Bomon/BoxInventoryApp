@@ -271,7 +271,7 @@ class BoxFragment : Fragment(){
         }
 
         if (boxImg == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(boxSummaryImageField)
+            Glide.with(this).load(R.drawable.placeholder_with_bg_80_elevated).into(boxSummaryImageField)
         } else {
             boxSummaryImageField.scaleType=ImageView.ScaleType.CENTER_CROP
             boxSummaryImageField.setImageBitmap(Utils.stringToBitMap(boxImg))

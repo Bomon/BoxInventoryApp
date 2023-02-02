@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
+    android:background="@color/status_bar_color"
     tools:openDrawer="start">
 
     <LinearLayout
@@ -20,7 +21,8 @@
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
-                android:background="?attr/colorOnSurfaceInverse"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark"
+                android:background="@color/status_bar_color"
                 android:layout_height="wrap_content"
                 app:layout_scrollFlags="scroll|enterAlways"
                 android:layout_width="match_parent"/>
@@ -31,6 +33,8 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/nav_background_curved"
+            android:clipToOutline="true"
             tools:context=".activities.MainActivity">
 
             <fragment

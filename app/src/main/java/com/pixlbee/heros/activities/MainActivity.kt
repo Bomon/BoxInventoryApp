@@ -128,7 +128,9 @@ class MainActivity : AppCompatActivity() {
         // add logic to drawer button
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
         setupActionBarWithNavController(navController, appBarConfiguration)
-        binding.toolbar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this))
+        //binding.toolbar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this))
+        //binding.toolbar.setBackgroundColor(resources.getColor(R.color.status_bar_color))
+        //binding.toolbar.setTitleTextColor(resources.getColor(R.color.md_theme_dark_onSurface, theme))
         //binding.toolbar.setBackgroundColor(resources.getColor(R.color.transparent))
 
         val sharedPreferences = this.getSharedPreferences("AppPreferences", MODE_PRIVATE)

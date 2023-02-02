@@ -16,4 +16,14 @@
     <style name="numberPickerTextStyle" parent="NumberPicker.EditTextStyle">
         <item name="android:textStyle">bold</item>
     </style>
+    <style name="ToolbarTheme" parent="Theme.AppCompat">
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="fontFamily">@font/roboto</item>
+        <item name="android:background">@color/md_white_1000</item>
+        <item name="android:textSize">@color/md_white_1000</item>
+        <item name="iconTint">@color/md_white_1000</item>
+        <item name="android:colorForeground">@color/md_white_1000</item>
+        <item name="android:textColor">@color/md_white_1000</item>
+        <item name="android:textColorSecondary">@color/md_white_1000</item>
+    </style>
 </resources>

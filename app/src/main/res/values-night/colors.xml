@@ -97,7 +97,9 @@
     <color name="md_theme_light_surfaceTintColor">#305DA8</color>
     <color name="md_theme_dark_primary">#ADC7FF</color>
     <color name="md_theme_dark_onPrimary">#002E68</color>
-    <color name="md_theme_dark_primaryContainer">#0C448E</color>
+
+    <color name="md_theme_dark_primaryContainer">#0B3771</color>
+
     <color name="md_theme_dark_onPrimaryContainer">#D8E2FF</color>
     <color name="md_theme_dark_secondary">#D5CA00</color>
     <color name="md_theme_dark_onSecondary">#353200</color>

@@ -24,7 +24,7 @@ class SettingsActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        binding.appToolbar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this))
+        //binding.appToolbar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this))
 
         window.statusBarColor = resources.getColor(R.color.status_bar_color)
         window.navigationBarColor = SurfaceColors.SURFACE_2.getColor(this)
