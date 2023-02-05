@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -80,7 +81,7 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
         if (mItemList[position].item_image != "") {
             val img = Utils.stringToBitMap(mItemList[position].item_image)
             if (img != null) {
-                holder.itemImage.setImageBitmap(img)
+                Glide.with(mContext).load(img).into(holder.itemImage)
             }
         }
 

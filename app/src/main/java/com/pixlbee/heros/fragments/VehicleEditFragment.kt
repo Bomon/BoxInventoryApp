@@ -280,7 +280,7 @@ class VehicleEditFragment : Fragment() {
         if (mVehicleModel.image == "") {
             Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(vehicleEditImageField)
         } else {
-            vehicleEditImageField.setImageBitmap(Utils.stringToBitMap(mVehicleModel.image))
+            Glide.with(this).load(Utils.stringToBitMap(mVehicleModel.image)).into(vehicleEditImageField)
         }
 
         val thisFragment = this

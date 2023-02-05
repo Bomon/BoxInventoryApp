@@ -4,12 +4,15 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
+import android.widget.ImageView.ScaleType
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -17,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -27,6 +31,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.transition.Hold
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialSharedAxis
@@ -61,12 +66,15 @@ class BoxFragment : Fragment(){
     private lateinit var boxStatusField: ChipGroup
     private lateinit var boxColorField: View
     private lateinit var boxHeaderCard: MaterialCardView
+    private lateinit var boxImageSlider: LinearLayout
 
     private lateinit var boxSummaryImageField: ImageView
     private lateinit var boxSummaryImageFieldOverlay: LinearLayout
     private lateinit var boxLocationImageField: ImageView
 
     private lateinit var animationType: String
+    private var sliderImageViews: ArrayList<ImageView> = ArrayList()
+    private var sliderImages: ArrayList<Bitmap?> = ArrayList()
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -270,21 +278,65 @@ class BoxFragment : Fragment(){
             }
         }
 
+        sliderImageViews.clear()
+        sliderImages.clear()
+
         if (boxImg == "") {
             Glide.with(this).load(R.drawable.placeholder_with_bg_80_elevated).into(boxSummaryImageField)
+            addImageToSlider(BitmapFactory.decodeResource(resources, R.drawable.placeholder_with_bg_80))
         } else {
             boxSummaryImageField.scaleType=ImageView.ScaleType.CENTER_CROP
-            boxSummaryImageField.setImageBitmap(Utils.stringToBitMap(boxImg))
+            Glide.with(this).load(Utils.stringToBitMap(boxImg)).into(boxSummaryImageField)
+            addImageToSlider(Utils.stringToBitMap(boxImg))
         }
 
-        /*if (boxLocationImg == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(boxLocationImageField)
-        } else {
-            boxLocationImageField.scaleType=ImageView.ScaleType.CENTER_CROP
-            boxLocationImageField.setImageBitmap(Utils.stringToBitMap(boxLocationImg))
-        }*/
+        if (boxLocationImg != "") {
+            for (image in boxLocationImg.split(";")){
+                addImageToSlider(Utils.stringToBitMap(image))
+            }
+        }
+
+        for (iv in sliderImageViews) {
+            iv.setOnClickListener {
+
+                StfalconImageViewer.Builder(
+                    context, sliderImages
+                ) { imageView, image -> Glide.with(it.context).load(image).into(imageView) }
+                    .withTransitionFrom(iv)
+                    .withStartPosition(sliderImageViews.indexOf(iv))
+                    .show(true)
+            }
+        }
 
         (activity as AppCompatActivity).supportActionBar?.title = boxId
+    }
+
+
+    fun addImageToSlider(image: Bitmap?){
+        val imageView = ShapeableImageView(context)
+        //imageView.id = i
+
+        val radius = Utils.dpToPx(8, context).toFloat()
+        val shapeAppearanceModel = imageView.shapeAppearanceModel.toBuilder()
+            .setAllCornerSizes(radius)
+            .build()
+        imageView.shapeAppearanceModel = shapeAppearanceModel
+
+        imageView.setPadding(Utils.dpToPx(4, context))
+
+        imageView.scaleType = ScaleType.CENTER_CROP
+
+        val hw = Utils.dpToPx(100, context)
+        val params = LinearLayout.LayoutParams(hw, hw)
+        params.bottomMargin = Utils.dpToPx(5, context)
+
+        imageView.layoutParams = params
+        boxImageSlider.addView(imageView)
+
+        Glide.with(this).load(image).into(imageView)
+
+        sliderImageViews.add(imageView)
+        sliderImages.add(image)
     }
 
 
@@ -305,6 +357,7 @@ class BoxFragment : Fragment(){
         boxColorField = v.findViewById(R.id.box_summary_color)
         boxSummaryImageFieldOverlay = v.findViewById(R.id.box_summary_image_overlay)
         boxHeaderCard = v.findViewById(R.id.headerCard)
+        boxImageSlider = v.findViewById(R.id.imageSlider)
         val boxContainer: View = v.findViewById(R.id.box_fragment_container)
 
         // Transition target element

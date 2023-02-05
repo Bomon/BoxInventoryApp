@@ -199,7 +199,7 @@ class ItemFragment : Fragment() {
             Glide.with(this).load(R.drawable.placeholder_with_bg_80_yellow).into(itemImageField)
         } else {
             itemImageField.scaleType=ImageView.ScaleType.CENTER_CROP
-            itemImageField.setImageBitmap(Utils.stringToBitMap(itemImage))
+            Glide.with(this).load(Utils.stringToBitMap(itemImage)).into(itemImageField)
         }
 
         itemImageField.setOnClickListener {

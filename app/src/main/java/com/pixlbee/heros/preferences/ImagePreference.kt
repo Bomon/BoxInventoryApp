@@ -39,7 +39,7 @@ class ImagePreference : Preference {
                     Glide.with(context).load(R.drawable.placeholder_with_bg_80).into(imageField)
                 } else {
                     imageField.scaleType= ImageView.ScaleType.FIT_CENTER
-                    imageField.setImageBitmap(Utils.stringToBitMap(image))
+                    Glide.with(context).load(Utils.stringToBitMap(image)).into(imageField)
                 }
             }
         }

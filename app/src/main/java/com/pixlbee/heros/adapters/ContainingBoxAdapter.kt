@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -118,7 +119,7 @@ class ContainingBoxAdapter(
             if (model.image != "") {
                 val img = Utils.stringToBitMap(model.image)
                 if (img != null){
-                    boxImage.setImageBitmap(img)
+                    Glide.with(mContext).load(img).into(boxImage)
                 }
             }
 

@@ -24,6 +24,7 @@ import com.pixlbee.heros.models.VehicleModel
 import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.concurrent.ExecutionException
+import kotlin.math.roundToInt
 
 
 class Utils {
@@ -37,6 +38,15 @@ class Utils {
                 e.message
                 null
             }
+        }
+
+
+        fun dpToPx(dp: Int, context: Context?): Int {
+            var density = context?.resources?.displayMetrics?.density
+            if (density == null) {
+                density = 1f
+            }
+            return (dp.toFloat() * density).roundToInt()
         }
 
 

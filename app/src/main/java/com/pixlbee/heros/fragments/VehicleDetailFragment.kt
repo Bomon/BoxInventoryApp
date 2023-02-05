@@ -212,7 +212,7 @@ class VehicleDetailFragment : Fragment() {
             Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(vehicleImageField)
         } else {
             vehicleImageField.scaleType=ImageView.ScaleType.CENTER_CROP
-            vehicleImageField.setImageBitmap(Utils.stringToBitMap(vehicleImage))
+            Glide.with(this).load(Utils.stringToBitMap(vehicleImage)).into(vehicleImageField)
         }
 
         vehicleImageField.setOnClickListener {

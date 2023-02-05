@@ -313,7 +313,7 @@ class ItemEditFragment : Fragment() {
         if (mItemModel.image == "") {
             Glide.with(this).load(R.drawable.placeholder_with_bg_80_yellow).into(itemEditImageField)
         } else {
-            itemEditImageField.setImageBitmap(Utils.stringToBitMap(mItemModel.image))
+            Glide.with(this).load(Utils.stringToBitMap(mItemModel.image)).into(itemEditImageField)
         }
 
         for (chip in mItemModel.tags.split(";")){

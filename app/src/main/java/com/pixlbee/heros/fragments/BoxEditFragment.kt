@@ -564,13 +564,13 @@ class BoxEditFragment : Fragment() {
         if (mBoxModel.image == "") {
             Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(boxEditImageField)
         } else {
-            boxEditImageField.setImageBitmap(Utils.stringToBitMap(mBoxModel.image))
+            Glide.with(this).load(Utils.stringToBitMap(mBoxModel.image)).into(boxEditImageField)
         }
 
         if (mBoxModel.location_image == "") {
             Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(boxEditLocationImageField)
         } else {
-            boxEditLocationImageField.setImageBitmap(Utils.stringToBitMap(mBoxModel.location_image))
+            Glide.with(this).load(Utils.stringToBitMap(mBoxModel.location_image)).into(boxEditLocationImageField)
         }
 
 

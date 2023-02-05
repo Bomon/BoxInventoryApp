@@ -223,20 +223,64 @@
 
                     </com.google.android.material.card.MaterialCardView>
 
-                    <LinearLayout
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/imageCardView"
+                        style="?attr/materialCardViewElevatedStyle"
                         android:layout_width="match_parent"
-                        android:layout_height="16dp"
-                        android:orientation="vertical"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginTop="6dp"
+                        app:cardElevation="5dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-                    </LinearLayout>
+                        app:layout_constraintTop_toBottomOf="@+id/box_summary_image_overlay">
+
+                        <LinearLayout
+                            android:id="@+id/ll4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:padding="16dp"
+                                android:id="@+id/box_summary_images_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/images_label"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textColor="?android:attr/textColorSecondary"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <HorizontalScrollView
+                                android:id="@+id/horizontal_scroll"
+                                android:layout_width="match_parent"
+                                android:paddingBottom="8dp"
+                                android:layout_height="wrap_content" >
+
+                                <LinearLayout
+                                    android:id="@+id/imageSlider"
+                                    android:layout_width="match_parent"
+                                    android:layout_marginHorizontal="8dp"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent">
+                                </LinearLayout>
+
+                            </HorizontalScrollView>
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/materialCardView6"
                         style="?attr/materialCardViewElevatedStyle"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_marginTop="6dp"
                         android:clickable="false"
                         app:cardElevation="10dp"
                         android:fillViewport="true"

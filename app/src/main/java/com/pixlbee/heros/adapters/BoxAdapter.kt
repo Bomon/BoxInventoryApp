@@ -1,7 +1,6 @@
 package com.pixlbee.heros.adapters
 
 import android.content.Context
-import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -99,9 +98,8 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
         holder.boxColor.background.setTint(mBoxList[position].color)
 
         if (mBoxList[position].image != ""){
-            val imageByteArray = Base64.decode(mBoxList[position].image, Base64.DEFAULT)
             Glide.with(mContext)
-                .load(imageByteArray)
+                .load(Utils.stringToBitMap(mBoxList[position].image))
                 .into(holder.boxImg)
         }
 
