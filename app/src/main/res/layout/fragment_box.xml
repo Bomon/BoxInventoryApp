@@ -149,21 +149,26 @@
                             android:id="@+id/box_summary_description"
                             android:layout_width="wrap_content"
                             android:paddingTop="8dp"
+                            android:paddingBottom="16dp"
                             android:layout_height="wrap_content"
                             android:text="@string/content_description_description"
-                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textAppearance="?attr/textAppearanceLabelLarge"
                             android:textColor="?android:attr/textColorSecondary" />
 
                     </LinearLayout>
 
-                    <com.google.android.material.card.MaterialCardView
+                    <LinearLayout
+                        android:layout_height="5dp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:background="?colorSurfaceVariant"  />
+
+                    <LinearLayout
                         android:id="@+id/materialCardView5"
                         style="?attr/materialCardViewElevatedStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="false"
-                        android:layout_margin="10dp"
-                        app:cardElevation="5dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/box_summary_image_overlay">
 
@@ -186,6 +191,7 @@
 
 
                             <RelativeLayout
+                                android:paddingHorizontal="16dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content">
 
@@ -221,19 +227,22 @@
                         </LinearLayout>
 
 
-                    </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
 
 
-                    <com.google.android.material.card.MaterialCardView
+                    <LinearLayout
+                        android:layout_height="5dp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:background="?colorSurfaceVariant" />
+
+                    <LinearLayout
                         android:id="@+id/imageCardView"
                         style="?attr/materialCardViewElevatedStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="false"
-                        android:layout_marginHorizontal="10dp"
-                        android:layout_marginBottom="16dp"
-                        android:layout_marginTop="6dp"
-                        app:cardElevation="5dp"
+                        android:layout_marginBottom="8dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/box_summary_image_overlay">
 
@@ -274,9 +283,15 @@
 
                         </LinearLayout>
 
-                    </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
 
-                    <com.google.android.material.card.MaterialCardView
+                    <LinearLayout
+                        android:layout_height="5dp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:background="?colorSurfaceVariant"  />
+
+                    <LinearLayout
                         android:id="@+id/materialCardView6"
                         style="?attr/materialCardViewElevatedStyle"
                         android:layout_width="match_parent"
@@ -322,7 +337,7 @@
                             </RelativeLayout>
 
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
 
                 </LinearLayout>
 

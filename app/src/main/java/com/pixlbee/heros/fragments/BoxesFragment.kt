@@ -218,6 +218,10 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
         recyclerview.layoutManager = LinearLayoutManager(activity)
         recyclerview.adapter = mAdapter
 
+        // Possible optimizations:
+        //recyclerview.setHasFixedSize(true)
+        //recyclerview.setItemViewCacheSize(100);
+
         // Item decorators for inserting dividers into RecyclerView
         /*val dividerItemDecoration: ItemDecoration = BoxDividerItemDecorator(
             ContextCompat.getDrawable(

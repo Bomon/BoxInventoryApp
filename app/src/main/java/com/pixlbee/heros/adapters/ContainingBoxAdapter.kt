@@ -67,10 +67,12 @@ class ContainingBoxAdapter(
         private var boxInvLabel: TextView = itemView.findViewById(R.id.box_inv_label)
         private var boxInvnums: ChipGroup = itemView.findViewById(R.id.box_inv_invnums)
         private var boxAmount: TextView = itemView.findViewById(R.id.box_inv_amount)
-        private var boxStatus: ChipGroup = itemView.findViewById(R.id.box_inv_status)
+        //private var boxStatus: ChipGroup = itemView.findViewById(R.id.box_inv_status)
         private var boxColor: View = itemView.findViewById(R.id.box_inv_color)
         private var boxContainer: MaterialCardView = itemView.findViewById(R.id.box_inv_card_small)
         private var boxIncompleteIcon: ImageView = itemView.findViewById(R.id.box_inv_incomplete_icon)
+        //private var boxTagContainer: LinearLayout = itemView.findViewById(R.id.box_inv_tag_container)
+        private var boxCompartment: TextView = itemView.findViewById(R.id.box_inv_compartment)
 
         init {
             itemView.setOnClickListener(this)
@@ -123,8 +125,9 @@ class ContainingBoxAdapter(
                 }
             }
 
-            boxStatus.removeAllViews()
+            /*boxStatus.removeAllViews()
             if(model.status != ""){
+                boxTagContainer.visibility = View.VISIBLE
                 for (tag in model.status.split(";")){
                     if (tag != ""){
                         val chip = Chip(mContext)
@@ -134,12 +137,15 @@ class ContainingBoxAdapter(
                         boxStatus.addView(chip)
                     }
                 }
-            }
+            } else {
+                boxTagContainer.visibility = View.GONE
+            }*/
 
             if (boxInvLabel != null && boxInvnums != null) {
                 var countAmount = 0
                 var countAmountTaken = 0
                 val invnums = ArrayList<String>()
+                val compartments = ArrayList<String>()
                 for (ci in model.content){
                     if (ci.id == mItemId){
                         countAmountTaken += ci.amount_taken.toInt()
@@ -147,8 +153,14 @@ class ContainingBoxAdapter(
                         if (ci.invnum != ""){
                             invnums.add(ci.invnum)
                         }
+                        var compartment = ci.compartment
+                        if (listOf("", "null").contains(ci.compartment))
+                            compartment = mContext.resources.getString(R.string.compartment_default_name)
+                        compartments.add(compartment)
                     }
                 }
+
+                boxCompartment.text = compartments.joinToString(", ")
 
                 if (countAmountTaken == 0) {
                     boxAmount.text = countAmount.toString()

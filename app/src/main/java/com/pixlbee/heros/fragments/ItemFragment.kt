@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -46,6 +47,8 @@ class ItemFragment : Fragment() {
     private lateinit var itemTagsField: ChipGroup
     private lateinit var itemImageField: ImageView
     lateinit var itemContainingBoxesEmptyLabel: TextView
+    private lateinit var itemDescriptionDivider: LinearLayout
+    private lateinit var itemTagsDivider: LinearLayout
 
     private lateinit var animationType: String
 
@@ -176,8 +179,10 @@ class ItemFragment : Fragment() {
         val itemImage = mItemModel.image
 
         if (itemDescription == ""){
+            itemDescriptionDivider.visibility = View.GONE
             itemDescriptionField.visibility = View.GONE
         } else {
+            itemDescriptionDivider.visibility = View.VISIBLE
             itemDescriptionField.visibility = View.VISIBLE
         }
 
@@ -186,6 +191,8 @@ class ItemFragment : Fragment() {
 
         itemTagsField.removeAllViews()
         if(itemTags != ""){
+            itemTagsDivider.visibility = View.VISIBLE
+            itemTagsField.visibility = View.VISIBLE
             for (tag in itemTags.split(";")){
                 if (tag != ""){
                     val chip = Chip(context)
@@ -193,6 +200,9 @@ class ItemFragment : Fragment() {
                     itemTagsField.addView(chip)
                 }
             }
+        } else {
+            itemTagsDivider.visibility = View.GONE
+            itemTagsField.visibility = View.GONE
         }
 
         if (itemImage == "") {
@@ -228,6 +238,8 @@ class ItemFragment : Fragment() {
         itemDescriptionField = v.findViewById(R.id.item_summary_description)
         itemImageField = v.findViewById(R.id.item_summary_image)
         itemContainingBoxesEmptyLabel = v.findViewById(R.id.item_summary_content_empty_label)
+        itemTagsDivider = v.findViewById(R.id.item_summary_tags_divider)
+        itemDescriptionDivider = v.findViewById(R.id.item_summary_description_divider)
 
         val itemContainer: ConstraintLayout = v.findViewById(R.id.item_fragment_container)
 

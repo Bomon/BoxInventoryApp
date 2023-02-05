@@ -19,9 +19,6 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
-import com.google.android.material.divider.MaterialDivider
 import com.google.android.material.transition.Hold
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialFadeThrough
@@ -45,13 +42,16 @@ class VehicleDetailFragment : Fragment() {
     var mBoxList: ArrayList<BoxModel> = ArrayList()
 
     private lateinit var vehicleNameField: TextView
-    private lateinit var vehicleCallnameField: ChipGroup
+    private lateinit var vehicleCallnameField: TextView
+    private lateinit var vehicleCallnameContainer: LinearLayout
     private lateinit var vehicleParkingSpotField: TextView
     private lateinit var vehicleDescriptionField: TextView
     private lateinit var vehicleImageField: ImageView
     private lateinit var vehicleContainedBoxesEmptyLabel: TextView
     private lateinit var vehicleParkingSpotContainer: LinearLayout
-    private lateinit var vehicleDescriptionDivider: MaterialDivider
+    private lateinit var vehicleDetailsContainer: LinearLayout
+    private lateinit var vehicleDescriptionDivider: LinearLayout
+    private lateinit var vehicleDetailsDivider: LinearLayout
 
     private lateinit var animationType: String
 
@@ -197,15 +197,20 @@ class VehicleDetailFragment : Fragment() {
             vehicleParkingSpotContainer.visibility = View.VISIBLE
         }
 
-        vehicleCallnameField.removeAllViews()
         if(vehicleCallname != ""){
-            vehicleCallnameField.visibility = View.VISIBLE
-            val chip = Chip(context)
-            chip.text = vehicleCallname
-            chip.isClickable = false
-            vehicleCallnameField.addView(chip)
+            vehicleCallnameContainer.visibility = View.VISIBLE
+            vehicleCallnameField.text = vehicleCallname
         } else {
-            vehicleCallnameField.visibility = View.GONE
+            vehicleCallnameContainer.visibility = View.GONE
+        }
+
+        if (vehicleCallname == "" && vehicleParkingSpot == "") {
+            vehicleDetailsDivider.visibility = View.GONE
+            vehicleDetailsContainer.visibility = View.GONE
+        }
+        else {
+            vehicleDetailsDivider.visibility = View.VISIBLE
+            vehicleDetailsContainer.visibility = View.VISIBLE
         }
 
         if (vehicleImage == "") {
@@ -243,7 +248,10 @@ class VehicleDetailFragment : Fragment() {
         vehicleParkingSpotField = v.findViewById(R.id.vehicle_details_parking_spot)
         vehicleContainedBoxesEmptyLabel = v.findViewById(R.id.vehicle_details_content_empty_label)
         vehicleParkingSpotContainer = v.findViewById(R.id.vehicle_details_parking_spot_container)
-        vehicleDescriptionDivider = v.findViewById(R.id.vehicle_details_divider)
+        vehicleDescriptionDivider = v.findViewById(R.id.vehicle_description_divider)
+        vehicleDetailsContainer = v.findViewById(R.id.vehicle_details_container)
+        vehicleDetailsDivider = v.findViewById(R.id.vehicle_details_divider)
+        vehicleCallnameContainer = v.findViewById(R.id.vehicle_details_callname_container)
 
         val vehicleContainer: ConstraintLayout = v.findViewById(R.id.vehicle_details_fragment_container)
 

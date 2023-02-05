@@ -7,12 +7,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
+    <!-- Media -->
     <ImageView
         android:scaleType="centerCrop"
-        app:srcCompat="@drawable/background_image"
+        android:id="@+id/item_summary_image"
         android:layout_width="match_parent"
-        android:alpha="0.6"
-        android:layout_height="match_parent"/>
+        android:layout_height="250dp"
+        app:srcCompat="@drawable/placeholder_with_bg_80_yellow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/content_description_item_image"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -23,109 +28,129 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="240dp"
             android:orientation="vertical">
 
-            <!-- Media -->
-            <ImageView
-                android:scaleType="centerCrop"
-                android:id="@+id/item_summary_image"
-                android:layout_width="match_parent"
-                android:layout_height="194dp"
-                app:srcCompat="@drawable/placeholder_with_bg_80_yellow"
-                android:contentDescription="@string/content_description_item_image"/>
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/materialCardView3"
+                style="?attr/materialCardViewElevatedStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:clickable="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/box_summary_image_overlay">
 
-                <TextView
-                    android:layout_marginTop="8dp"
-                    android:id="@+id/item_summary_name"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/content_description_title"
-                    android:textAppearance="?attr/textAppearanceTitleLarge"
-                    />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/item_summary_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/content_description_description"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?android:attr/textColorSecondary" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:background="?colorPrimaryContainer"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/item_summary_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/content_description_title"
+                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                            />
+
+                    </LinearLayout>
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/item_summary_tags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
                     app:chipSpacingHorizontal="6dp"
                     app:chipSpacingVertical="-8dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/box_color"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
 
-
-            </LinearLayout>
-
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/divider"
-                app:dividerInsetStart="8dp"
-                app:dividerInsetEnd="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingTop="0dp">
+                <LinearLayout
+                    android:id="@+id/item_summary_tags_divider"
+                    android:layout_height="5dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:background="?colorSurfaceVariant" />
 
                 <TextView
-                    android:id="@+id/item_summary_content_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="@string/containing_box"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textColor="?android:attr/textColorSecondary"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/item_summary_content_empty_label"
-                    android:layout_width="match_parent"
-                    android:visibility="gone"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="@string/containing_box_empty"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?android:attr/textColorSecondary"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <RelativeLayout
+                    android:id="@+id/item_summary_description"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="@string/content_description_description"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?android:attr/textColorSecondary" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/item_summary_containing_boxes"
+
+                <LinearLayout
+                    android:id="@+id/item_summary_description_divider"
+                    android:layout_height="5dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:background="?colorSurfaceVariant" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:fillViewport="true"
+                    android:layout_weight="1.0">
+
+                    <TextView
+                        android:id="@+id/item_summary_content_label"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
                         android:layout_marginBottom="16dp"
-                        android:nestedScrollingEnabled="false" />
+                        android:text="@string/containing_box"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?android:attr/textColorSecondary"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                </RelativeLayout>
+                    <TextView
+                        android:id="@+id/item_summary_content_empty_label"
+                        android:layout_width="match_parent"
+                        android:visibility="gone"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="@string/containing_box_empty"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="?android:attr/textColorSecondary"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-            </LinearLayout>
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/item_summary_containing_boxes"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="16dp"
+                            android:nestedScrollingEnabled="false" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 

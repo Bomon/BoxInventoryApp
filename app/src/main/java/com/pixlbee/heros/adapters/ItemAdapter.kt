@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.imageview.ShapeableImageView
 import com.pixlbee.heros.R
 import com.pixlbee.heros.models.ItemModel
 
@@ -61,6 +62,7 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
         holder.itemTags.removeAllViews()
         if(mItemList[position].tags != ""){
             holder.itemTagsContainer.visibility = View.VISIBLE
+            holder.itemTagsIcon.visibility = View.VISIBLE
             for (tag in mItemList[position].tags.split(";")){
                 if (tag != ""){
                     val chip = Chip(context)
@@ -73,6 +75,7 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
                 }
             }
         } else {
+            holder.itemTagsIcon.visibility = View.GONE
             holder.itemTagsContainer.visibility = View.GONE
         }
 
@@ -95,6 +98,7 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
         val itemTags: ChipGroup = itemView.findViewById(R.id.card_item_tags)
         val itemTagsContainer: LinearLayout = itemView.findViewById(R.id.card_item_tags_container)
         val itemContainer: MaterialCardView = itemView.findViewById(R.id.card_item_small)
+        val itemTagsIcon: ShapeableImageView = itemView.findViewById(R.id.card_item_tags_icon)
 
         init {
             itemView.setOnClickListener(this)
