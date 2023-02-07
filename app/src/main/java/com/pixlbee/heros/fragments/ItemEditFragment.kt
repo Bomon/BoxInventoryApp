@@ -1,8 +1,6 @@
 package com.pixlbee.heros.fragments
 
 import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -28,6 +26,8 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.github.drjacky.imagepicker.ImagePicker
 import com.github.drjacky.imagepicker.constant.ImageProvider
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputLayout
@@ -53,12 +53,17 @@ class ItemEditFragment : Fragment() {
     private lateinit var itemEditTagsField: EditText
     private lateinit var itemEditTagsChips: ChipGroup
     private lateinit var itemEditImageSpinner: ProgressBar
+    private lateinit var itemImageCard: MaterialCardView
+
+    private lateinit var vehicleImgAddBtn: MaterialButton
+    private lateinit var vehicleImgChangeBtn: MaterialButton
+    private lateinit var vehicleImgDeleteBtn: MaterialButton
 
     private var allItemNamesList: ArrayList<String> = ArrayList()
 
     private var isNewItem: Boolean = false
 
-    private lateinit var imageBitmap: Bitmap
+    private var imageBitmapEncoded: String = ""
 
     private lateinit var animationType: String
 
@@ -115,10 +120,7 @@ class ItemEditFragment : Fragment() {
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("name").setValue(itemEditNameField.text.toString().trim())
                             val chipString = Utils.chipListToString(itemEditTagsChips)
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("tags").setValue(chipString)
-                            if (::imageBitmap.isInitialized){
-                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("image").setValue(
-                                    Utils.getEncoded64ImageStringFromBitmap(imageBitmap))
-                            }
+                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("image").setValue(imageBitmapEncoded)
                         }
                     }
                 }
@@ -138,9 +140,7 @@ class ItemEditFragment : Fragment() {
         mItemModel.description = itemEditDescriptionField.text.toString()
         mItemModel.tags = itemEditTagsField.text.toString()
         mItemModel.image = ""
-        if (::imageBitmap.isInitialized){
-            mItemModel.image = Utils.getEncoded64ImageStringFromBitmap(imageBitmap)
-        }
+        mItemModel.image = imageBitmapEncoded
         FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").push().setValue(mItemModel)
         return true
     }
@@ -273,24 +273,6 @@ class ItemEditFragment : Fragment() {
     }
 
 
-    // For image picker
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode === RESULT_OK) {
-            //Image Uri will not be null for RESULT_OK
-            val uri: Uri = data?.data!!
-            imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
-            // Use Uri object instead of File to avoid storage permissions
-            itemEditImageField.setImageURI(uri)
-        } else if (resultCode == ImagePicker.RESULT_ERROR) {
-            Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, resources.getString(R.string.task_cancelled), Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -306,13 +288,24 @@ class ItemEditFragment : Fragment() {
         itemEditImageField = v.findViewById(R.id.item_edit_image)
         itemEditTagsChips = v.findViewById(R.id.item_edit_tags_chips)
         itemEditImageSpinner = v.findViewById(R.id.item_edit_image_spinner)
+        itemImageCard = v.findViewById(R.id.image_card)
+
+        vehicleImgAddBtn = v.findViewById(R.id.btn_add_image)
+        vehicleImgChangeBtn = v.findViewById(R.id.btn_change_image)
+        vehicleImgDeleteBtn = v.findViewById(R.id.btn_remove_image)
 
         itemEditNameField.setText(mItemModel.name)
         itemEditDescriptionField.setText(mItemModel.description)
 
         if (mItemModel.image == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg_80_yellow).into(itemEditImageField)
+            vehicleImgAddBtn.visibility = View.VISIBLE
+            vehicleImgDeleteBtn.visibility = View.GONE
+            vehicleImgChangeBtn.visibility = View.GONE
+            //Glide.with(this).load(R.drawable.placeholder_with_bg_80_yellow).into(itemEditImageField)
         } else {
+            vehicleImgAddBtn.visibility = View.GONE
+            vehicleImgDeleteBtn.visibility = View.VISIBLE
+            vehicleImgChangeBtn.visibility = View.VISIBLE
             Glide.with(this).load(Utils.stringToBitMap(mItemModel.image)).into(itemEditImageField)
         }
 
@@ -359,11 +352,17 @@ class ItemEditFragment : Fragment() {
                 if (resultCode == RESULT_OK) {
                     //Image Uri will not be null for RESULT_OK
                     val uri: Uri = data?.data!!
-                    imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
-                    itemEditImageField.setImageURI(uri)
+                    var imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
+                    imageBitmapEncoded = Utils.getEncoded64ImageStringFromBitmap(imageBitmap)
+
+                    Glide.with(context!!)
+                        .load(imageBitmap)
+                        .into(itemEditImageField)
+
                     itemEditImageSpinner.visibility = View.GONE
-                    //} else if (resultCode == ImagePicker.RESULT_ERROR) {
-                    //Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                    vehicleImgAddBtn.visibility = View.GONE
+                    vehicleImgDeleteBtn.visibility = View.VISIBLE
+                    vehicleImgChangeBtn.visibility = View.VISIBLE
                 } else {
                     itemEditImageSpinner.visibility = View.GONE
                     Toast.makeText(context, resources.getString(R.string.task_cancelled), Toast.LENGTH_SHORT).show()
@@ -371,15 +370,27 @@ class ItemEditFragment : Fragment() {
             }
 
 
-        itemEditImageField.setOnClickListener {
-            ImagePicker.with(activity as AppCompatActivity)
-                .crop()
-                .cropFreeStyle()
-                .provider(ImageProvider.BOTH)
-                .createIntentFromDialog { intent ->
-                    startForImageResult.launch(intent)
-                    itemEditImageSpinner.visibility = View.VISIBLE
-                }
+        val imageClickElements = listOf(itemImageCard, vehicleImgAddBtn, vehicleImgChangeBtn)
+
+        imageClickElements.forEach { elem ->
+            elem.setOnClickListener {
+                ImagePicker.with(activity as AppCompatActivity)
+                    .crop()
+                    .cropFreeStyle()
+                    .provider(ImageProvider.BOTH)
+                    .createIntentFromDialog { intent ->
+                        startForImageResult.launch(intent)
+                        itemEditImageSpinner.visibility = View.VISIBLE
+                    }
+            }
+        }
+
+        vehicleImgDeleteBtn.setOnClickListener {
+            imageBitmapEncoded = ""
+            vehicleImgAddBtn.visibility = View.VISIBLE
+            vehicleImgDeleteBtn.visibility = View.GONE
+            vehicleImgChangeBtn.visibility = View.GONE
+            Glide.with(this).load(R.drawable.ic_outline_add_photo_alternate_24_padding).into(itemEditImageField)
         }
 
         return v

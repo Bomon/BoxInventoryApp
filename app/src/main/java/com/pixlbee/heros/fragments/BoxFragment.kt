@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -406,8 +405,12 @@ class BoxFragment : Fragment(){
 
         //Init Image Fullscreen on click
         boxSummaryImageFieldOverlay.setOnClickListener {
-            val drawables: ArrayList<Drawable> = ArrayList()
-            drawables.add(boxSummaryImageField.drawable)
+            val drawables: ArrayList<Bitmap?> = ArrayList()
+            if (mBoxModel.image == "") {
+                drawables.add(BitmapFactory.decodeResource(resources, R.drawable.placeholder_with_bg_80))
+            } else {
+                drawables.add(Utils.stringToBitMap(mBoxModel.image))
+            }
 
             StfalconImageViewer.Builder(
                 context, drawables

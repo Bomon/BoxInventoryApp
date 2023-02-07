@@ -1,8 +1,9 @@
 package com.pixlbee.heros.fragments
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
@@ -47,6 +48,7 @@ class VehicleDetailFragment : Fragment() {
     private lateinit var vehicleParkingSpotField: TextView
     private lateinit var vehicleDescriptionField: TextView
     private lateinit var vehicleImageField: ImageView
+    private lateinit var vehicleImageOverlayField: LinearLayout
     private lateinit var vehicleContainedBoxesEmptyLabel: TextView
     private lateinit var vehicleParkingSpotContainer: LinearLayout
     private lateinit var vehicleDetailsContainer: LinearLayout
@@ -220,9 +222,14 @@ class VehicleDetailFragment : Fragment() {
             Glide.with(this).load(Utils.stringToBitMap(vehicleImage)).into(vehicleImageField)
         }
 
-        vehicleImageField.setOnClickListener {
-            val drawables: ArrayList<Drawable> = ArrayList()
-            drawables.add(vehicleImageField.drawable)
+        vehicleImageOverlayField.setOnClickListener {
+            val drawables: ArrayList<Bitmap?> = ArrayList()
+
+            if (vehicleImage == "") {
+                drawables.add(BitmapFactory.decodeResource(resources, R.drawable.placeholder_with_bg_80))
+            } else {
+                drawables.add(Utils.stringToBitMap(vehicleImage))
+            }
 
             StfalconImageViewer.Builder(
                 context, drawables
@@ -244,6 +251,7 @@ class VehicleDetailFragment : Fragment() {
         vehicleNameField = v.findViewById(R.id.vehicle_details_name)
         vehicleDescriptionField = v.findViewById(R.id.vehicle_details_description)
         vehicleImageField = v.findViewById(R.id.vehicle_details_image)
+        vehicleImageOverlayField = v.findViewById(R.id.vehicle_details_image_overlay)
         vehicleCallnameField = v.findViewById(R.id.vehicle_details_callname)
         vehicleParkingSpotField = v.findViewById(R.id.vehicle_details_parking_spot)
         vehicleContainedBoxesEmptyLabel = v.findViewById(R.id.vehicle_details_content_empty_label)

@@ -1,8 +1,6 @@
 package com.pixlbee.heros.fragments
 
 import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -26,6 +24,8 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.github.drjacky.imagepicker.ImagePicker
 import com.github.drjacky.imagepicker.constant.ImageProvider
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialFadeThrough
@@ -48,10 +48,15 @@ class VehicleEditFragment : Fragment() {
     private lateinit var vehicleEditParkingSpotField: EditText
     private lateinit var vehicleEditDescriptionField: EditText
     private lateinit var vehicleEditImageSpinner: ProgressBar
+    private lateinit var vehicleImageCard: MaterialCardView
+
+    private lateinit var vehicleImgAddBtn: MaterialButton
+    private lateinit var vehicleImgChangeBtn: MaterialButton
+    private lateinit var vehicleImgDeleteBtn: MaterialButton
 
     private var isNewVehicle: Boolean = false
 
-    private lateinit var imageBitmap: Bitmap
+    private var imageBitmapEncoded: String = ""
 
     private lateinit var animationType: String
 
@@ -86,10 +91,7 @@ class VehicleEditFragment : Fragment() {
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("callname").setValue(vehicleEditCallnameField.text.toString().trim())
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("description").setValue(vehicleEditDescriptionField.text.toString().trim())
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("parking_spot").setValue(vehicleEditParkingSpotField.text.toString().trim())
-                            if (::imageBitmap.isInitialized){
-                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("image").setValue(
-                                    Utils.getEncoded64ImageStringFromBitmap(imageBitmap))
-                            }
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").child(vehicleKey).child("image").setValue(imageBitmapEncoded)
                         }
                     }
                 }
@@ -109,9 +111,7 @@ class VehicleEditFragment : Fragment() {
         mVehicleModel.description = vehicleEditDescriptionField.text.toString()
         mVehicleModel.parking_spot = vehicleEditParkingSpotField.text.toString()
         mVehicleModel.image = ""
-        if (::imageBitmap.isInitialized){
-            mVehicleModel.image = Utils.getEncoded64ImageStringFromBitmap(imageBitmap)
-        }
+        mVehicleModel.image = imageBitmapEncoded
         FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles").push().setValue(mVehicleModel)
         return true
     }
@@ -238,24 +238,6 @@ class VehicleEditFragment : Fragment() {
     }
 
 
-    // For image picker
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode === RESULT_OK) {
-            //Image Uri will not be null for RESULT_OK
-            val uri: Uri = data?.data!!
-            imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
-            // Use Uri object instead of File to avoid storage permissions
-            vehicleEditImageField.setImageURI(uri)
-        } else if (resultCode == ImagePicker.RESULT_ERROR) {
-            Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, resources.getString(R.string.task_cancelled), Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -271,19 +253,29 @@ class VehicleEditFragment : Fragment() {
         vehicleEditNameLabel = v.findViewById(R.id.vehicle_edit_name_label)
         vehicleEditImageField = v.findViewById(R.id.vehicle_edit_image)
         vehicleEditImageSpinner = v.findViewById(R.id.vehicle_edit_image_spinner)
+        vehicleImageCard = v.findViewById(R.id.image_card)
+
+        vehicleImgAddBtn = v.findViewById(R.id.btn_add_image)
+        vehicleImgChangeBtn = v.findViewById(R.id.btn_change_image)
+        vehicleImgDeleteBtn = v.findViewById(R.id.btn_remove_image)
 
         vehicleEditNameField.setText(mVehicleModel.name)
         vehicleEditCallnameField.setText(mVehicleModel.callname)
         vehicleEditParkingSpotField.setText(mVehicleModel.parking_spot)
         vehicleEditDescriptionField.setText(mVehicleModel.description)
 
+
         if (mVehicleModel.image == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(vehicleEditImageField)
+            vehicleImgAddBtn.visibility = View.VISIBLE
+            vehicleImgDeleteBtn.visibility = View.GONE
+            vehicleImgChangeBtn.visibility = View.GONE
+            //Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(vehicleEditImageField)
         } else {
+            vehicleImgAddBtn.visibility = View.GONE
+            vehicleImgDeleteBtn.visibility = View.VISIBLE
+            vehicleImgChangeBtn.visibility = View.VISIBLE
             Glide.with(this).load(Utils.stringToBitMap(mVehicleModel.image)).into(vehicleEditImageField)
         }
-
-        val thisFragment = this
 
         val startForImageResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -293,9 +285,18 @@ class VehicleEditFragment : Fragment() {
                 if (resultCode == RESULT_OK) {
                     //Image Uri will not be null for RESULT_OK
                     val uri: Uri = data?.data!!
-                    imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
-                    vehicleEditImageField.setImageURI(uri)
+                    var imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
+                    imageBitmapEncoded = Utils.getEncoded64ImageStringFromBitmap(imageBitmap)
+
+                    Glide.with(context!!)
+                        .load(imageBitmap)
+                        .into(vehicleEditImageField)
+
+                    //vehicleEditImageField.setImageURI(uri)
                     vehicleEditImageSpinner.visibility = View.GONE
+                    vehicleImgAddBtn.visibility = View.GONE
+                    vehicleImgDeleteBtn.visibility = View.VISIBLE
+                    vehicleImgChangeBtn.visibility = View.VISIBLE
                     //} else if (resultCode == ImagePicker.RESULT_ERROR) {
                     //Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
                 } else {
@@ -305,16 +306,30 @@ class VehicleEditFragment : Fragment() {
             }
 
 
-        vehicleEditImageField.setOnClickListener {
-            ImagePicker.with(activity as AppCompatActivity)
-                .crop()
-                .cropFreeStyle()
-                .provider(ImageProvider.BOTH)
-                .createIntentFromDialog { intent ->
-                    startForImageResult.launch(intent)
-                    vehicleEditImageSpinner.visibility = View.VISIBLE
-                }
+        val imageClickElements = listOf(vehicleImageCard, vehicleImgAddBtn, vehicleImgChangeBtn)
+
+        imageClickElements.forEach { elem ->
+            elem.setOnClickListener {
+                ImagePicker.with(activity as AppCompatActivity)
+                    .crop()
+                    .cropFreeStyle()
+                    .provider(ImageProvider.BOTH)
+                    .createIntentFromDialog { intent ->
+                        startForImageResult.launch(intent)
+                        vehicleEditImageSpinner.visibility = View.VISIBLE
+                    }
+            }
         }
+
+        vehicleImgDeleteBtn.setOnClickListener {
+            imageBitmapEncoded = ""
+            vehicleImgAddBtn.visibility = View.VISIBLE
+            vehicleImgDeleteBtn.visibility = View.GONE
+            vehicleImgChangeBtn.visibility = View.GONE
+            Glide.with(this).load(R.drawable.ic_outline_add_photo_alternate_24_padding).into(vehicleEditImageField)
+        }
+
+
 
         return v
     }

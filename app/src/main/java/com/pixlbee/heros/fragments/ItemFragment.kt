@@ -1,8 +1,9 @@
 package com.pixlbee.heros.fragments
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
@@ -46,6 +47,7 @@ class ItemFragment : Fragment() {
     private lateinit var itemDescriptionField: TextView
     private lateinit var itemTagsField: ChipGroup
     private lateinit var itemImageField: ImageView
+    private lateinit var itemImageOverlayField: LinearLayout
     lateinit var itemContainingBoxesEmptyLabel: TextView
     private lateinit var itemDescriptionDivider: LinearLayout
     private lateinit var itemTagsDivider: LinearLayout
@@ -212,9 +214,14 @@ class ItemFragment : Fragment() {
             Glide.with(this).load(Utils.stringToBitMap(itemImage)).into(itemImageField)
         }
 
-        itemImageField.setOnClickListener {
-            val drawables: ArrayList<Drawable> = ArrayList()
-            drawables.add(itemImageField.drawable)
+        itemImageOverlayField.setOnClickListener {
+            val drawables: ArrayList<Bitmap?> = ArrayList()
+
+            if (itemImage == "") {
+                drawables.add(BitmapFactory.decodeResource(resources, R.drawable.placeholder_with_bg_80_yellow))
+            } else {
+                drawables.add(Utils.stringToBitMap(itemImage))
+            }
 
             StfalconImageViewer.Builder(
                 context, drawables
@@ -237,6 +244,7 @@ class ItemFragment : Fragment() {
         itemTagsField = v.findViewById(R.id.item_summary_tags)
         itemDescriptionField = v.findViewById(R.id.item_summary_description)
         itemImageField = v.findViewById(R.id.item_summary_image)
+        itemImageOverlayField = v.findViewById(R.id.item_summary_image_overlay)
         itemContainingBoxesEmptyLabel = v.findViewById(R.id.item_summary_content_empty_label)
         itemTagsDivider = v.findViewById(R.id.item_summary_tags_divider)
         itemDescriptionDivider = v.findViewById(R.id.item_summary_description_divider)

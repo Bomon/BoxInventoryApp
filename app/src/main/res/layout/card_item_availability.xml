@@ -49,6 +49,17 @@
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize25Percent"
             app:srcCompat="@drawable/ic_baseline_add_24" />
 
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/card_item_tags_icon"
+            android:layout_width="32dp"
+            android:layout_height="20dp"
+            android:alpha="0.5"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="@+id/card_item_img"
+            app:layout_constraintStart_toStartOf="@+id/card_item_img"
+            app:layout_constraintTop_toBottomOf="@+id/card_item_name"
+            app:srcCompat="@drawable/ic_twotone_label_24" />
+
         <LinearLayout
             android:id="@+id/card_item_tags_container"
             android:layout_width="0dp"

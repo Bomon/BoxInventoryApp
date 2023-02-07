@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.imageview.ShapeableImageView
 import com.pixlbee.heros.R
 import com.pixlbee.heros.models.ItemAvailabilityModel
 
@@ -60,6 +61,7 @@ class ItemAvailabilityAdapter : RecyclerView.Adapter<ItemAvailabilityAdapter.Ite
         holder.itemTags.removeAllViews()
         if(mItemList[position].item.tags != ""){
             holder.itemTags.visibility = View.VISIBLE
+            holder.itemTagIcon.visibility = View.VISIBLE
             for (tag in mItemList[position].item.tags.split(";")){
                 if (tag != ""){
                     val chip = Chip(context)
@@ -72,6 +74,7 @@ class ItemAvailabilityAdapter : RecyclerView.Adapter<ItemAvailabilityAdapter.Ite
                 }
             }
         } else {
+            holder.itemTagIcon.visibility = View.GONE
             holder.itemTags.visibility = View.GONE
         }
 
@@ -117,6 +120,7 @@ class ItemAvailabilityAdapter : RecyclerView.Adapter<ItemAvailabilityAdapter.Ite
         val itemTagsContainer: LinearLayout = itemView.findViewById(R.id.card_item_tags_container)
         val itemContainer: MaterialCardView = itemView.findViewById(R.id.card_item_small)
         val itemAvailabilityTable: TableLayout = itemView.findViewById(R.id.item_availability_table)
+        val itemTagIcon: ShapeableImageView = itemView.findViewById(R.id.card_item_tags_icon)
 
         init {
             itemView.setOnClickListener(this)

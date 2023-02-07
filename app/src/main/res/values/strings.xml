@@ -234,4 +234,11 @@
     <string name="item_availability_table_taken">Entnommen</string>
     <string name="compartment_default_name">Standard</string>
     <string name="images_label">Bilder</string>
+    <string name="image_title">Titelbild</string>
+    <string name="image_subtitle">Fahrzeug Foto</string>
+    <string name="title_image_label">Titelbild</string>
+    <string name="btn_add_image">Bild hinzufügen</string>
+    <string name="btn_change_image">Ändern</string>
+    <string name="btn_remove_image">Entfernen</string>
+    <string name="tool_image_label">Detail Bild</string>
 </resources>

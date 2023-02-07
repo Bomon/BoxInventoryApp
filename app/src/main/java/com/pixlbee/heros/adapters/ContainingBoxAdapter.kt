@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -64,7 +65,7 @@ class ContainingBoxAdapter(
         private var boxName: TextView = itemView.findViewById(R.id.box_inv_name)
         private var boxVehicle: TextView = itemView.findViewById(R.id.box_inv_vehicle)
         private var boxImage: ImageView = itemView.findViewById(R.id.box_inv_img)
-        private var boxInvLabel: TextView = itemView.findViewById(R.id.box_inv_label)
+        private var boxInvContainer: LinearLayout = itemView.findViewById(R.id.box_inv_container)
         private var boxInvnums: ChipGroup = itemView.findViewById(R.id.box_inv_invnums)
         private var boxAmount: TextView = itemView.findViewById(R.id.box_inv_amount)
         //private var boxStatus: ChipGroup = itemView.findViewById(R.id.box_inv_status)
@@ -141,50 +142,48 @@ class ContainingBoxAdapter(
                 boxTagContainer.visibility = View.GONE
             }*/
 
-            if (boxInvLabel != null && boxInvnums != null) {
-                var countAmount = 0
-                var countAmountTaken = 0
-                val invnums = ArrayList<String>()
-                val compartments = ArrayList<String>()
-                for (ci in model.content){
-                    if (ci.id == mItemId){
-                        countAmountTaken += ci.amount_taken.toInt()
-                        countAmount += ci.amount.toInt()
-                        if (ci.invnum != ""){
-                            invnums.add(ci.invnum)
-                        }
-                        var compartment = ci.compartment
-                        if (listOf("", "null").contains(ci.compartment))
-                            compartment = mContext.resources.getString(R.string.compartment_default_name)
-                        compartments.add(compartment)
+            var countAmount = 0
+            var countAmountTaken = 0
+            val invnums = ArrayList<String>()
+            val compartments = ArrayList<String>()
+            for (ci in model.content){
+                if (ci.id == mItemId){
+                    countAmountTaken += ci.amount_taken.toInt()
+                    countAmount += ci.amount.toInt()
+                    if (ci.invnum != ""){
+                        invnums.add(ci.invnum)
+                    }
+                    var compartment = ci.compartment
+                    if (listOf("", "null").contains(ci.compartment))
+                        compartment = mContext.resources.getString(R.string.compartment_default_name)
+                    compartments.add(compartment)
+                }
+            }
+
+            boxCompartment.text = compartments.distinct().joinToString(", ")
+
+            if (countAmountTaken == 0) {
+                boxAmount.text = countAmount.toString()
+            } else {
+                boxAmount.text = (countAmount - countAmountTaken).toString() + " / $countAmount"
+            }
+
+            if (invnums.size > 0){
+                boxInvContainer.visibility = View.VISIBLE
+                boxInvnums.visibility = View.VISIBLE
+                boxInvnums.removeAllViews()
+                for (invnum in invnums){
+                    if (invnum != ""){
+                        val chip = Chip(mContext)
+                        chip.setTextAppearance(android.R.style.TextAppearance_Material_Small)
+                        chip.isClickable = false
+                        chip.text = invnum
+                        boxInvnums.addView(chip)
                     }
                 }
-
-                boxCompartment.text = compartments.joinToString(", ")
-
-                if (countAmountTaken == 0) {
-                    boxAmount.text = countAmount.toString()
-                } else {
-                    boxAmount.text = (countAmount - countAmountTaken).toString() + " / $countAmount"
-                }
-
-                if (invnums.size > 0){
-                    boxInvLabel.visibility = View.VISIBLE
-                    boxInvnums.visibility = View.VISIBLE
-                    boxInvnums.removeAllViews()
-                    for (invnum in invnums){
-                        if (invnum != ""){
-                            val chip = Chip(mContext)
-                            chip.setTextAppearance(android.R.style.TextAppearance_Material_Small)
-                            chip.isClickable = false
-                            chip.text = invnum
-                            boxInvnums.addView(chip)
-                        }
-                    }
-                } else {
-                    boxInvLabel.visibility = View.GONE
-                    boxInvnums.visibility = View.GONE
-                }
+            } else {
+                boxInvContainer.visibility = View.GONE
+                boxInvnums.visibility = View.GONE
             }
             boxContainer.transitionName = model.id
 

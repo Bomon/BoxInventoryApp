@@ -27,8 +27,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="240dp"
             android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/vehicle_details_image_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:orientation="vertical"/>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/materialCardView3"
@@ -49,7 +54,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="16dp"
-                        android:background="?colorPrimaryContainer"
+                        android:background="?colorSurfaceVariant"
                         android:orientation="vertical">
 
                         <TextView
@@ -57,7 +62,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/content_description_title"
-                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                            android:textStyle="bold"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
                             />
 
                     </LinearLayout>
