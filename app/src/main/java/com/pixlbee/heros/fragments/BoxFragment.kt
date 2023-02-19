@@ -66,6 +66,7 @@ class BoxFragment : Fragment(){
     private lateinit var boxColorField: View
     private lateinit var boxHeaderCard: MaterialCardView
     private lateinit var boxImageSlider: LinearLayout
+    private lateinit var boxImagesContainer: LinearLayout
 
     private lateinit var boxSummaryImageField: ImageView
     private lateinit var boxSummaryImageFieldOverlay: LinearLayout
@@ -277,64 +278,73 @@ class BoxFragment : Fragment(){
             }
         }
 
+        boxImageSlider.removeAllViews()
         sliderImageViews.clear()
         sliderImages.clear()
 
+        var sliderImageOffset = 0
+
         if (boxImg == "") {
             Glide.with(this).load(R.drawable.placeholder_with_bg_80_elevated).into(boxSummaryImageField)
-            addImageToSlider(BitmapFactory.decodeResource(resources, R.drawable.placeholder_with_bg_80))
+            //addImageToSlider(BitmapFactory.decodeResource(resources, R.drawable.placeholder_with_bg_80))
         } else {
             boxSummaryImageField.scaleType=ImageView.ScaleType.CENTER_CROP
             Glide.with(this).load(Utils.stringToBitMap(boxImg)).into(boxSummaryImageField)
-            addImageToSlider(Utils.stringToBitMap(boxImg))
+            addImageToSlider(Utils.stringToBitMap(boxImg), false)
+            sliderImageOffset = 1
         }
 
         if (boxLocationImg != "") {
             for (image in boxLocationImg.split(";")){
-                addImageToSlider(Utils.stringToBitMap(image))
+                addImageToSlider(Utils.stringToBitMap(image), true)
             }
+        } else {
+            boxImagesContainer.visibility = View.GONE
         }
 
         for (iv in sliderImageViews) {
             iv.setOnClickListener {
-
                 StfalconImageViewer.Builder(
                     context, sliderImages
                 ) { imageView, image -> Glide.with(it.context).load(image).into(imageView) }
                     .withTransitionFrom(iv)
-                    .withStartPosition(sliderImageViews.indexOf(iv))
+                    .withStartPosition(sliderImageViews.indexOf(iv) + sliderImageOffset)
                     .show(true)
             }
         }
 
         (activity as AppCompatActivity).supportActionBar?.title = boxId
+        // Alternative: context?.resources?.getString(R.id.container)
     }
 
 
-    fun addImageToSlider(image: Bitmap?){
-        val imageView = ShapeableImageView(context)
-        //imageView.id = i
+    private fun addImageToSlider(image: Bitmap?, displayInPreview: Boolean){
+        if (displayInPreview) {
+            val imageView = ShapeableImageView(context)
+            //imageView.id = i
 
-        val radius = Utils.dpToPx(8, context).toFloat()
-        val shapeAppearanceModel = imageView.shapeAppearanceModel.toBuilder()
-            .setAllCornerSizes(radius)
-            .build()
-        imageView.shapeAppearanceModel = shapeAppearanceModel
+            val radius = Utils.dpToPx(8, context).toFloat()
+            val shapeAppearanceModel = imageView.shapeAppearanceModel.toBuilder()
+                .setAllCornerSizes(radius)
+                .build()
+            imageView.shapeAppearanceModel = shapeAppearanceModel
 
-        imageView.setPadding(Utils.dpToPx(4, context))
+            imageView.setPadding(Utils.dpToPx(4, context))
 
-        imageView.scaleType = ScaleType.CENTER_CROP
+            imageView.scaleType = ScaleType.CENTER_CROP
 
-        val hw = Utils.dpToPx(100, context)
-        val params = LinearLayout.LayoutParams(hw, hw)
-        params.bottomMargin = Utils.dpToPx(5, context)
+            val hw = Utils.dpToPx(100, context)
+            val params = LinearLayout.LayoutParams(hw, hw)
+            params.bottomMargin = Utils.dpToPx(5, context)
 
-        imageView.layoutParams = params
-        boxImageSlider.addView(imageView)
+            imageView.layoutParams = params
+            boxImageSlider.addView(imageView)
 
-        Glide.with(this).load(image).into(imageView)
+            Glide.with(this).load(image).into(imageView)
 
-        sliderImageViews.add(imageView)
+            sliderImageViews.add(imageView)
+        }
+
         sliderImages.add(image)
     }
 
@@ -357,6 +367,7 @@ class BoxFragment : Fragment(){
         boxSummaryImageFieldOverlay = v.findViewById(R.id.box_summary_image_overlay)
         boxHeaderCard = v.findViewById(R.id.headerCard)
         boxImageSlider = v.findViewById(R.id.imageSlider)
+        boxImagesContainer = v.findViewById(R.id.imagesContainer)
         val boxContainer: View = v.findViewById(R.id.box_fragment_container)
 
         // Transition target element

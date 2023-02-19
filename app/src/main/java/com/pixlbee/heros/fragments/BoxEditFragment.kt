@@ -8,7 +8,6 @@ import android.os.StrictMode
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.activity.addCallback
@@ -23,6 +22,8 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -41,6 +42,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
 import com.pixlbee.heros.adapters.BoxCompartmentEditAdapter
+import com.pixlbee.heros.adapters.ImageGridAdapter
 import com.pixlbee.heros.adapters.VehicleAdapter
 import com.pixlbee.heros.models.*
 import com.pixlbee.heros.utility.Utils
@@ -55,15 +57,13 @@ class BoxEditFragment : Fragment() {
     private lateinit var mVehicle: VehicleModel
 
     private lateinit var boxEditImageField: ImageView
-    private lateinit var boxEditLocationImageField: ImageView
+    //private lateinit var boxEditLocationImageField: ImageView
     private lateinit var boxEditVehicleField: ImageView
     private lateinit var boxEditLocationDetailsFieldContainer: TextInputLayout
     private lateinit var boxEditNameField: TextInputEditText
     private lateinit var boxEditNameFieldContainer: TextInputLayout
     private lateinit var boxEditIdField: TextInputEditText
     private lateinit var boxEditIdFieldContainer: TextInputLayout
-    private lateinit var boxEditTypeField: TextInputEditText
-    private lateinit var boxEditTypeFieldContainer: TextInputLayout
     private lateinit var boxEditDescriptionField: TextInputEditText
     private lateinit var boxEditLocationDetailsField: TextInputEditText
     private lateinit var boxEditStatusChips: ChipGroup
@@ -73,7 +73,16 @@ class BoxEditFragment : Fragment() {
     private lateinit var boxEditColorBtn: MaterialButton
     private lateinit var boxEditColorPreview: View
     private lateinit var boxEditImageSpinner: ProgressBar
-    private lateinit var boxEditLocationImageSpinner: ProgressBar
+    //private lateinit var boxEditLocationImageSpinner: ProgressBar
+
+    private lateinit var boxImgAddBtn: MaterialButton
+    private lateinit var boxImgChangeBtn: MaterialButton
+    private lateinit var boxImgDeleteBtn: MaterialButton
+
+    private lateinit var boxVehicleAddBtn: MaterialButton
+    private lateinit var boxVehicleChangeBtn: MaterialButton
+    private lateinit var boxVehicleDeleteBtn: MaterialButton
+
     private var boxEditColor: Int = -1
 
     private var qrList: ArrayList<String> = ArrayList()
@@ -86,15 +95,21 @@ class BoxEditFragment : Fragment() {
     private var isNewBox: Boolean = false
     private lateinit var mBoxCompartmentEditAdapter: BoxCompartmentEditAdapter
     private lateinit var mVehicleAdapter: VehicleAdapter
+    private lateinit var mimageGridAdapter: ImageGridAdapter
 
     private lateinit var navController: NavController
 
     private lateinit var imageBitmap: Bitmap
+    private var imageBitmapEncoded: String = ""
     private lateinit var locationImageBitmap: Bitmap
 
     private lateinit var animationType: String
 
     private lateinit var rvCompartments: RecyclerView
+    private lateinit var rvImageGrid: RecyclerView
+
+
+    private var gridImages = ArrayList<ImageGridElementModel>()
 
 
     private fun checkFields(): Boolean {
@@ -156,7 +171,6 @@ class BoxEditFragment : Fragment() {
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("id").setValue(boxEditIdField.text.toString().trim())
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("name").setValue(boxEditNameField.text.toString().trim())
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("description").setValue(boxEditDescriptionField.text.toString().trim())
-                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("type").setValue(boxEditTypeField.text.toString().trim())
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("qrcode").setValue(boxEditQrcodeField.text.toString().trim())
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("in_vehicle").setValue(mVehicle.id)
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("location_details").setValue(boxEditLocationDetailsField.text.toString().trim())
@@ -167,18 +181,15 @@ class BoxEditFragment : Fragment() {
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("status").setValue(chipString)
 
                             // Update main image
-                            if (::imageBitmap.isInitialized){
-                                val updatedImage = Utils.getEncoded64ImageStringFromBitmap(imageBitmap)
-                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("image").setValue(
-                                    updatedImage)
-                            }
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("image").setValue(imageBitmapEncoded)
 
                             // Update Location image
-                            if (::locationImageBitmap.isInitialized){
-                                val updatedLocationImage = Utils.getEncoded64ImageStringFromBitmap(locationImageBitmap)
-                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("location_image").setValue(
-                                    updatedLocationImage)
-                            }
+                            val additionalImages = mimageGridAdapter.getImages().filter { im ->
+                                im.grid_element_type == GridElementType.IMAGE && im.image != ""
+                            }.map { im ->
+                                    im.image
+                            }.joinToString(";")
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("location_image").setValue(additionalImages)
 
                             // Update compartment items
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("content").removeValue()
@@ -196,7 +207,6 @@ class BoxEditFragment : Fragment() {
 
                             // Insert items that were moved out of the box
                             for (movedItem in movedItemTracker) {
-                                Log.e("Error", "Moving item " + movedItem.item.item_name + " to " + movedItem.target_box_id)
                                 var newItem = movedItem.item
                                 var newContentItem = ContentItem(newItem.numeric_id, "", newItem.item_amount, newItem.item_amount_taken, newItem.item_id, newItem.item_invnum, newItem.item_color, movedItem.target_compartment)
                                 FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(movedItem.target_box_key).child("content").push().setValue(newContentItem)
@@ -225,15 +235,11 @@ class BoxEditFragment : Fragment() {
         mBoxModel.id = boxEditIdField.text.toString()
         mBoxModel.name = boxEditNameField.text.toString()
         mBoxModel.qrcode = boxEditQrcodeField.text.toString()
-        mBoxModel.type = boxEditTypeField.text.toString()
         mBoxModel.in_vehicle = mVehicle.id
         mBoxModel.description = boxEditDescriptionField.text.toString()
         mBoxModel.color = boxEditColor
         mBoxModel.status = Utils.chipListToString(boxEditStatusChips)
-        mBoxModel.image = ""
-        if (::imageBitmap.isInitialized){
-            mBoxModel.image = Utils.getEncoded64ImageStringFromBitmap(imageBitmap)
-        }
+        mBoxModel.image = imageBitmapEncoded
         if (::locationImageBitmap.isInitialized){
             mBoxModel.location_image = Utils.getEncoded64ImageStringFromBitmap(locationImageBitmap)
         }
@@ -409,6 +415,14 @@ class BoxEditFragment : Fragment() {
         val builder = StrictMode.VmPolicy.Builder()
         StrictMode.setVmPolicy(builder.build())
         builder.detectFileUriExposure()
+
+        // prepare image grid
+        gridImages.clear()
+        mBoxModel.location_image.split(";").forEach { image ->
+            if (image != ""){
+                gridImages.add(ImageGridElementModel(image, GridElementType.IMAGE))
+            }
+        }
     }
 
 
@@ -443,6 +457,10 @@ class BoxEditFragment : Fragment() {
             viewLifecycleOwner) { result ->
             mVehicle = result
             mVehicleAdapter.setFilter(listOf(mVehicle))
+
+            boxVehicleAddBtn.visibility = View.GONE
+            boxVehicleDeleteBtn.visibility = View.VISIBLE
+            boxVehicleChangeBtn.visibility = View.VISIBLE
         }
     }
 
@@ -471,14 +489,13 @@ class BoxEditFragment : Fragment() {
         boxEditNameField = v.findViewById(R.id.box_edit_name)
         boxEditIdField = v.findViewById(R.id.box_edit_id)
         boxEditLocationDetailsField = v.findViewById(R.id.box_edit_location_details)
-        boxEditTypeField = v.findViewById(R.id.box_edit_type)
         boxEditQrcodeField = v.findViewById(R.id.box_edit_qrcode)
         boxEditDescriptionField = v.findViewById(R.id.box_edit_description)
         boxEditColorBtn = v.findViewById(R.id.box_edit_color_btn)
         boxEditColorPreview = v.findViewById(R.id.box_edit_color_preview)
         val boxEditAddButton: Button = v.findViewById(R.id.box_edit_add_button)
         boxEditImageField = v.findViewById(R.id.box_edit_image)
-        boxEditLocationImageField = v.findViewById(R.id.box_edit_location_image)
+        //boxEditLocationImageField = v.findViewById(R.id.box_edit_location_image)
         boxEditStatusChips = v.findViewById(R.id.box_edit_status_chips)
         boxEditStatusInput = v.findViewById(R.id.box_edit_status_input)
         boxEditVehicleField = v.findViewById(R.id.box_edit_vehicle_overlay)
@@ -487,10 +504,17 @@ class BoxEditFragment : Fragment() {
         boxEditNameFieldContainer = v.findViewById(R.id.box_edit_name_container)
         boxEditQrcodeFieldContainer = v.findViewById(R.id.box_edit_qrcode_container)
         boxEditLocationDetailsFieldContainer = v.findViewById(R.id.box_edit_location_details_container)
-        boxEditTypeFieldContainer = v.findViewById(R.id.box_edit_type_container)
+
+        boxImgAddBtn = v.findViewById(R.id.btn_add_image)
+        boxImgChangeBtn = v.findViewById(R.id.btn_change_image)
+        boxImgDeleteBtn = v.findViewById(R.id.btn_remove_image)
+
+        boxVehicleAddBtn = v.findViewById(R.id.btn_add_vehicle)
+        boxVehicleChangeBtn = v.findViewById(R.id.btn_change_vehicle)
+        boxVehicleDeleteBtn = v.findViewById(R.id.btn_remove_vehicle)
 
         boxEditImageSpinner = v.findViewById(R.id.bod_edit_image_spinner)
-        boxEditLocationImageSpinner = v.findViewById(R.id.bod_edit_location_image_spinner)
+        //boxEditLocationImageSpinner = v.findViewById(R.id.bod_edit_location_image_spinner)
 
         val confirmationChars = listOf(";", "\n")
         boxEditStatusInput.addTextChangedListener(object : TextWatcher {
@@ -549,7 +573,6 @@ class BoxEditFragment : Fragment() {
         boxEditNameField.setText(mBoxModel.name)
         boxEditIdField.setText(mBoxModel.id)
         boxEditLocationDetailsField.setText(if (mBoxModel.location_details == "null") "" else mBoxModel.location_details)
-        boxEditTypeField.setText(if (mBoxModel.type == "null") "" else mBoxModel.type)
         boxEditQrcodeField.setText(mBoxModel.qrcode)
         boxEditDescriptionField.setText(mBoxModel.description)
         boxEditColorPreview.background.setTint(mBoxModel.color)
@@ -562,16 +585,21 @@ class BoxEditFragment : Fragment() {
         }
 
         if (mBoxModel.image == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(boxEditImageField)
+            boxImgAddBtn.visibility = View.VISIBLE
+            boxImgDeleteBtn.visibility = View.GONE
+            boxImgChangeBtn.visibility = View.GONE
         } else {
+            boxImgAddBtn.visibility = View.GONE
+            boxImgDeleteBtn.visibility = View.VISIBLE
+            boxImgChangeBtn.visibility = View.VISIBLE
             Glide.with(this).load(Utils.stringToBitMap(mBoxModel.image)).into(boxEditImageField)
         }
 
-        if (mBoxModel.location_image == "") {
+        /*if (mBoxModel.location_image == "") {
             Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(boxEditLocationImageField)
         } else {
             Glide.with(this).load(Utils.stringToBitMap(mBoxModel.location_image)).into(boxEditLocationImageField)
-        }
+        }*/
 
 
         val startForMainImageResult =
@@ -580,31 +608,41 @@ class BoxEditFragment : Fragment() {
                 val data = result.data
 
                 if (resultCode == AppCompatActivity.RESULT_OK) {
-                    //Image Uri will not be null for RESULT_OK
                     val uri: Uri = data?.data!!
                     imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
-                    boxEditImageField.setImageURI(uri)
+                    imageBitmapEncoded = Utils.getEncoded64ImageStringFromBitmap(imageBitmap)
+
+                    Glide.with(context!!)
+                        .load(imageBitmap)
+                        .into(boxEditImageField)
+
                     boxEditImageSpinner.visibility = View.GONE
-                //} else if (resultCode == ImagePicker.RESULT_ERROR) {
-                    //Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                    boxImgAddBtn.visibility = View.GONE
+                    boxImgDeleteBtn.visibility = View.VISIBLE
+                    boxImgChangeBtn.visibility = View.VISIBLE
                 } else {
                     boxEditImageSpinner.visibility = View.GONE
                     Toast.makeText(context, resources.getString(R.string.task_cancelled), Toast.LENGTH_SHORT).show()
                 }
             }
 
-        boxEditImageField.setOnClickListener {
-            ImagePicker.with(activity as AppCompatActivity)
-                .crop()
-                .cropFreeStyle()
-                .provider(ImageProvider.BOTH)
-                .createIntentFromDialog  { intent ->
-                    boxEditImageSpinner.visibility = View.VISIBLE
-                    startForMainImageResult.launch(intent)
-                }
+        val imageClickElements = listOf(boxEditImageField, boxImgAddBtn, boxImgChangeBtn)
+
+        imageClickElements.forEach { elem ->
+            elem.setOnClickListener {
+                ImagePicker.with(activity as AppCompatActivity)
+                    .crop()
+                    .cropFreeStyle()
+                    .provider(ImageProvider.BOTH)
+                    .createIntentFromDialog { intent ->
+                        startForMainImageResult.launch(intent)
+                        boxEditImageSpinner.visibility = View.VISIBLE
+                    }
+            }
         }
 
-        val startForLocationImageResult =
+        // action for on additional iamge select
+        val startForGridImageResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
                 val resultCode = result.resultCode
                 val data = result.data
@@ -613,41 +651,62 @@ class BoxEditFragment : Fragment() {
                     //Image Uri will not be null for RESULT_OK
                     val uri: Uri = data?.data!!
                     locationImageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
-                    boxEditLocationImageField.setImageURI(uri)
-                    boxEditLocationImageSpinner.visibility = View.GONE
-                //} else if (resultCode == ImagePicker.RESULT_ERROR) {
-                    //Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                    var imageString = Utils.getEncoded64ImageStringFromBitmap(locationImageBitmap)
+
+                    mimageGridAdapter.addImage(ImageGridElementModel(imageString, GridElementType.IMAGE))
                 } else {
-                    boxEditLocationImageSpinner.visibility = View.GONE
                     Toast.makeText(context, resources.getString(R.string.task_cancelled), Toast.LENGTH_SHORT).show()
                 }
             }
 
+        // Init image grid
+        mimageGridAdapter = ImageGridAdapter(gridImages)
+        rvImageGrid = v.findViewById(R.id.box_edit_additional_images)
+        rvImageGrid.layoutManager = GridLayoutManager(activity, 3)
+        rvImageGrid.adapter = mimageGridAdapter
 
-        boxEditLocationImageField.setOnClickListener {
-            ImagePicker.with(activity as AppCompatActivity)
-                .crop()
-                .cropFreeStyle()
-                .provider(ImageProvider.BOTH)
-                .createIntentFromDialog { intent ->
-                    boxEditLocationImageSpinner.visibility = View.VISIBLE
-                    startForLocationImageResult.launch(intent)
-                }
-        }
+        mimageGridAdapter.setOnImageGridClickListener(object: ImageGridAdapter.OnImageGridClickListener {
+
+            override fun onImageAdd(view: View) {
+
+                ImagePicker.with(activity as AppCompatActivity)
+                    .crop()
+                    .cropFreeStyle()
+                    .provider(ImageProvider.BOTH)
+                    .createIntentFromDialog { intent ->
+                        startForGridImageResult.launch(intent)
+                    }
+            }
+        })
 
 
         //Init vehicle view
-        mVehicleAdapter = VehicleAdapter(ArrayList<VehicleModel>())
+        mVehicleAdapter = VehicleAdapter(ArrayList<VehicleModel>(), true)
         val recyclerviewVehicle = v.findViewById<View>(R.id.box_edit_vehicle_rv) as RecyclerView
         recyclerviewVehicle.layoutManager = LinearLayoutManager(activity)
         recyclerviewVehicle.adapter = mVehicleAdapter
         mVehicleAdapter.setFilter(listOf(mVehicle))
+
+        if (mVehicle.id == "-1") {
+            boxVehicleAddBtn.visibility = View.VISIBLE
+            boxVehicleDeleteBtn.visibility = View.GONE
+            boxVehicleChangeBtn.visibility = View.GONE
+        } else {
+            boxVehicleAddBtn.visibility = View.GONE
+            boxVehicleDeleteBtn.visibility = View.VISIBLE
+            boxVehicleChangeBtn.visibility = View.VISIBLE
+        }
 
         //Init Compartment View
         rvCompartments = v.findViewById<View>(R.id.box_edit_compartments) as RecyclerView
         mBoxCompartmentEditAdapter = BoxCompartmentEditAdapter(mBoxModel.id, this)
         rvCompartments.layoutManager = LinearLayoutManager(activity)
         rvCompartments.adapter = mBoxCompartmentEditAdapter
+
+        // if there is only one compartment, expand it by default
+        if (mCompartmentList.size == 1) {
+            mCompartmentList[0].is_expanded = true
+        }
         mBoxCompartmentEditAdapter.setFilter(mCompartmentList)
         mBoxCompartmentEditAdapter.setOnCompartmentItemAddListener(object: BoxCompartmentEditAdapter.OnCompartmentItemAddListener{
             override fun onCompartmentItemAdd(targetCompartmentName: String, view: View) {
@@ -686,7 +745,7 @@ class BoxEditFragment : Fragment() {
                     b.setOnClickListener {
                         val inputText = input.text.toString()
                         if (inputText != "" && !inputText.contains(";") && inputText !in mCompartmentList.map { t -> t.name } && inputText !in newTempCompartments) {
-                            mCompartmentList.add(CompartmentModel(inputText, ArrayList<BoxItemModel>(), false))
+                            mCompartmentList.add(CompartmentModel(inputText, ArrayList<BoxItemModel>(), true))
                             newTempCompartments.add(inputText)
                             mBoxCompartmentEditAdapter.setFilter(mCompartmentList)
                             mAlertDialog.dismiss()
@@ -712,55 +771,69 @@ class BoxEditFragment : Fragment() {
             }
         }
 
-        //Init Vehicle View
-        boxEditVehicleField.setOnClickListener { view ->
-            if (view != null) {
-                if (animationType == "elegant") {
-                    exitTransition = Hold()
-                }
-                // Temp store elements for when item was added
-                mBoxModel.status = Utils.chipListToString(boxEditStatusChips)
-                mBoxModel.color = boxEditColor
-                mCompartmentList = mBoxCompartmentEditAdapter.getCurrentStatus()
 
-                val extras = FragmentNavigatorExtras(view to "transition_to_vehicles")
-                findNavController().navigate(
-                    BoxEditFragmentDirections.actionBoxEditFragmentToNavigationVehicles(
-                        returnVehicleInsteadOfShowDetails = true
-                    ), extras
-                )
+        //Init Vehicle View
+        val vehicleClickElements = listOf(boxEditVehicleField, boxVehicleAddBtn, boxVehicleChangeBtn)
+        vehicleClickElements.forEach { elem ->
+            elem.setOnClickListener { view ->
+                if (boxEditVehicleField != null) {
+                    if (animationType == "elegant") {
+                        exitTransition = Hold()
+                    }
+                    // Temp store elements for when item was added
+                    mBoxModel.status = Utils.chipListToString(boxEditStatusChips)
+                    mBoxModel.color = boxEditColor
+                    mCompartmentList = mBoxCompartmentEditAdapter.getCurrentStatus()
+
+                    val extras = FragmentNavigatorExtras(boxEditVehicleField to "transition_to_vehicles")
+                    findNavController().navigate(
+                        BoxEditFragmentDirections.actionBoxEditFragmentToNavigationVehicles(
+                            returnVehicleInsteadOfShowDetails = true
+                        ), extras
+                    )
+                }
             }
         }
 
-        /*// init move
+        boxImgDeleteBtn.setOnClickListener {
+            imageBitmapEncoded = ""
+            boxImgAddBtn.visibility = View.VISIBLE
+            boxImgDeleteBtn.visibility = View.GONE
+            boxImgChangeBtn.visibility = View.GONE
+            Glide.with(this).load(R.drawable.ic_outline_add_photo_alternate_24_padding).into(boxEditImageField)
+        }
+
+        boxVehicleDeleteBtn.setOnClickListener {
+            mVehicle = VehicleModel(
+                    "-1",
+                    resources.getString(R.string.error_no_vehicle_assigned),
+                    "",
+                    "",
+                    "",
+                    ""
+                )
+            mVehicleAdapter.setFilter(listOf(mVehicle))
+            boxVehicleAddBtn.visibility = View.VISIBLE
+            boxVehicleDeleteBtn.visibility = View.GONE
+            boxVehicleChangeBtn.visibility = View.GONE
+        }
+
+
+        // init move of images
         val itemTouchHelper by lazy {
-            val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END, 0) {
+            val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT, 0) {
 
                 override fun onMove(recyclerView: RecyclerView,
                                     viewHolder: RecyclerView.ViewHolder,
                                     target: RecyclerView.ViewHolder): Boolean {
-                    if ((target as BoxCompartmentEditAdapter.BoxItemViewHolder).isExpanded) return false
-                    val adapter = recyclerView.adapter as BoxItemEditAdapter
-                    val from = viewHolder.adapterPosition
-                    val to = target.adapterPosition
+                    val from = viewHolder.absoluteAdapterPosition
+                    val to = target.absoluteAdapterPosition
+                    val adapter = recyclerView.adapter as ImageGridAdapter
 
-                    adapter.notifyItemMoved(from, to)
+                    adapter.onRowMoved(from, to)
 
                     return true
-                }
-
-                override fun onMoved(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    fromPos: Int,
-                    target: RecyclerView.ViewHolder,
-                    toPos: Int,
-                    x: Int,
-                    y: Int
-                ) {
-                    super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
-                    val adapter = recyclerView.adapter as BoxItemEditAdapter
-                    adapter.moveItem(fromPos, toPos)
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -783,7 +856,7 @@ class BoxEditFragment : Fragment() {
 
             ItemTouchHelper(simpleItemTouchCallback)
         }
-        itemTouchHelper.attachToRecyclerView(rvCompartments) */
+        itemTouchHelper.attachToRecyclerView(rvImageGrid)
 
 
         return v
@@ -830,8 +903,13 @@ class BoxEditFragment : Fragment() {
         //addItem(item_id.toString())
     }
 
-    fun getNewCompartments(): ArrayList<String> {
+    fun getTempCompartments(): ArrayList<String> {
         return newTempCompartments
+    }
+
+    fun removeTempCompartment(name: String){
+        newTempCompartments.remove(name)
+        mCompartmentList.removeIf { it -> it.name == name }
     }
 
 }

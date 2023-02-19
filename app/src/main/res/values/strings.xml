@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Heros Gitterbox</string>
-    <string name="title_nav_boxes">Boxen</string>
+    <string name="title_nav_boxes">Container</string>
     <string name="title_nav_qrscanner">QR</string>
     <string name="title_nav_items">Ausrüstung</string>
 
     <string name="location">Standort</string>
     <string name="content">Inhalt</string>
+    <string name="container">Container</string>
     <string name="edit_box_markings">Markierungen</string>
     <string name="edit_box_id">ID / Nummer *</string>
     <string name="edit_box_name">Name *</string>
@@ -33,14 +34,14 @@
     <string name="password_hint">Passwort</string>
     <string name="user_hint">Benutzername</string>
     <string name="containing_box">Enthalten in:</string>
-    <string name="containing_box_empty">In keiner Box enthalten</string>
+    <string name="containing_box_empty">In keinem Container enthalten</string>
     <string name="invnums_label">Inventarnummern / Details:</string>
 
 
     <string name="item_edit_tags_title">Tags</string>
     <string name="item_edit_description">Beschreibung / Notizen</string>
     <string name="item_edit_name">Bezeichnung *</string>
-    <string name="item_edit_title">Allgemeine Daten</string>
+    <string name="item_edit_title">Allgemeine Daten (Pflichtfelder)</string>
     <string name="item_edit_image">Foto</string>
     <string name="press_back_again_to_exit">Zum Verlassen nochmal ZURÜCK klicken</string>
 
@@ -52,19 +53,19 @@
     <string name="dialog_save_title">Änderungen Speichern?</string>
     <string name="dialog_save_text">Alte Daten werden überschrieben.</string>
     <string name="error_field_empty">Feld darf nicht leer sein</string>
-    <string name="error_box_already_exists_id">Es existiert bereits eine Box mit dieser ID</string>
-    <string name="error_box_already_exists_qrcode">Es existiert bereits eine Box mit diesem QR-Code</string>
-    <string name="fragment_box_edit_title">Box bearbeiten</string>
-    <string name="fragment_box_edit_title_new">Box erstellen</string>
-    <string name="dialog_delete_box_title">Box Löschen?</string>
-    <string name="dialog_delete_box_text">Soll die Box wirklich gelöscht werden?</string>
+    <string name="error_box_already_exists_id">Es existiert bereits ein Container mit dieser ID</string>
+    <string name="error_box_already_exists_qrcode">Es existiert bereits ein Container mit diesem QR-Code</string>
+    <string name="fragment_box_edit_title">Container bearbeiten</string>
+    <string name="fragment_box_edit_title_new">Container erstellen</string>
+    <string name="dialog_delete_box_title">Container Löschen?</string>
+    <string name="dialog_delete_box_text">Container wirklich löschen?</string>
     <string name="dialog_add_invnr_title">Inventarnummer / Detail Hinzufügen</string>
     <string name="error_dialog_invnr_empty">Feld nicht leer sein</string>
     <string name="error_dialog_invnr_invalid">Feld darf kein ; enthalten</string>
     <string name="fragment_item_edit_title">Gegenstand erstellen</string>
     <string name="fragment_item_edit_title_new">Gegenstand bearbeiten</string>
     <string name="dialog_delete_item_title">Gegenstand Löschen?</string>
-    <string name="dialog_delete_item_text">Achtung: Beim Löschen wird der Geegenstand automatisch aus allen Boxen entfernt</string>
+    <string name="dialog_delete_item_text">Achtung: Beim Löschen wird der Geegenstand automatisch aus allen Containern entfernt</string>
     <string name="permission_camera_request">Kamera Zugriff wird benötigt, um den QR- Scanner zu nutzen</string>
     <string name="error_qrcode_invalid">QR-Code ungültig</string>
     <string name="error_start_camera">Kamera konnte nicht gestartet werden</string>
@@ -72,7 +73,7 @@
     <string name="error_check_username">Benutzernamen überprüfen</string>
     <string name="error_check_password">Passwort überprüfen</string>
     <string name="error_login_failed">Login Fehlgeschlagen</string>
-    <string name="item_details_title">Objekt Details</string>
+    <string name="item_details_title">Ausrüstung</string>
     <string name="error_no_write_permission">Keine Berechtigung für diese Aktion</string>
 
     <string name="pdf_share_label">PDF Label teilen</string>
@@ -91,7 +92,7 @@
     <string name="btn_delete">Löschen</string>
     <string name="btn_save">Speichern</string>
     <string name="btn_cancel">Abbrechen</string>
-    <string name="content_description_box_image">Box Foto</string>
+    <string name="content_description_box_image">Container Foto</string>
     <string name="content_description_title">Titel</string>
     <string name="content_description_description">Beschreibung</string>
     <string name="content_description_item_image">Ausrüstung Foto</string>
@@ -123,8 +124,8 @@
     <string name="qrcode_change_org_btn">Wechseln</string>
     <string name="title_nav_vehicles">Fahrzeuge</string>
     <string name="content_description_vehicle_image">Fahrzeug Foto</string>
-    <string name="vehicle_containing_boxes">Geladene Boxen</string>
-    <string name="vehicle_empty">Keine Boxen auf Fahrzeug</string>
+    <string name="vehicle_containing_boxes">Geladene Container</string>
+    <string name="vehicle_empty">Keine Container auf Fahrzeug</string>
     <string name="vehicle_edit_title">Fahrzeugdaten</string>
     <string name="vehicle_edit_name">Name *</string>
     <string name="vehicle_edit_callname">Funkrufname</string>
@@ -217,7 +218,7 @@
     <string name="error_dialog_field_empty">Feld darf nicht leer sein</string>
     <string name="error_dialog_compartment_already_exists">Es gibt bereits ein Fach mit dieser Bezeichnung</string>
     <string name="dialog_move_item_title">Verschieben</string>
-    <string name="dialog_box">Box</string>
+    <string name="dialog_box">Container</string>
     <string name="dialog_compartment">Fach</string>
     <string name="dialog_move">Verschieben</string>
     <string name="dialog_close">Schließen</string>
@@ -230,7 +231,7 @@
     <string name="dialog_ok">Ausführen</string>
     <string name="items_tab_all">Alle</string>
     <string name="items_tab_taken">Entnommen</string>
-    <string name="item_availability_table_box">Box</string>
+    <string name="item_availability_table_box">Container</string>
     <string name="item_availability_table_taken">Entnommen</string>
     <string name="compartment_default_name">Standard</string>
     <string name="images_label">Bilder</string>
@@ -241,4 +242,11 @@
     <string name="btn_change_image">Ändern</string>
     <string name="btn_remove_image">Entfernen</string>
     <string name="tool_image_label">Detail Bild</string>
+    <string name="box_edit_markings">Markierungen</string>
+    <string name="box_edit_additional_details">Weitere Details</string>
+    <string name="box_edit_location">Standort</string>
+    <string name="btn_add_vehicle">Standort Wählen</string>
+    <string name="box_edit_additional_images">Zusätzliche Bilder</string>
+    <string name="error_too_many_images">Mehr als 10 Bilder können nicht hinzugefügt werden</string>
+    <string name="edit_box_add_compartment">Fach Hinzufügen</string>
 </resources>

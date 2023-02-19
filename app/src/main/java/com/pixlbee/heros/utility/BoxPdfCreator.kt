@@ -338,8 +338,8 @@ class BoxPdfCreator {
                 val titleContainer = Paragraph()
 
                 val title = Paragraph()
-                title.add(Phrase("Box ",
-                    FontFactory.getFont(FontFactory.HELVETICA, 36f)))
+                //title.add(Phrase("Box ",
+                //    FontFactory.getFont(FontFactory.HELVETICA, 36f)))
                 title.add(Phrase(box_model.id,
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 36f)))
                 title.add(Phrase(" - ",

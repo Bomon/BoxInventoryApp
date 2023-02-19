@@ -123,7 +123,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="40dp"
+                    android:paddingTop="44dp"
                     android:orientation="vertical">
 
                     <LinearLayout
@@ -176,18 +176,33 @@
                             android:id="@+id/ll2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:paddingBottom="8dp"
                             android:orientation="vertical">
 
-                            <TextView
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:padding="16dp"
-                                android:id="@+id/box_summary_vehicle_label"
-                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/vehicle_location_label"
-                                android:textAppearance="?attr/textAppearanceTitleMedium"
-                                android:textColor="?android:attr/textColorSecondary"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginRight="8dp"
+                                    android:scaleType="fitCenter"
+                                    app:srcCompat="@drawable/ic_baseline_fire_truck_24" />
+
+                                <TextView
+                                    android:id="@+id/box_summary_vehicle_label"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/vehicle_location_label"
+                                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                                    android:textColor="?android:attr/textColorSecondary"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                            </LinearLayout>
 
 
                             <RelativeLayout
@@ -237,12 +252,11 @@
                         android:background="?colorSurfaceVariant" />
 
                     <LinearLayout
-                        android:id="@+id/imageCardView"
+                        android:id="@+id/imagesContainer"
                         style="?attr/materialCardViewElevatedStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="false"
-                        android:layout_marginBottom="8dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/box_summary_image_overlay">
 
@@ -252,21 +266,36 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
-                            <TextView
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:padding="16dp"
-                                android:id="@+id/box_summary_images_label"
-                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/images_label"
-                                android:textAppearance="?attr/textAppearanceTitleMedium"
-                                android:textColor="?android:attr/textColorSecondary"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginRight="8dp"
+                                    android:scaleType="fitCenter"
+                                    app:srcCompat="@drawable/ic_photo_camera_black_48dp" />
+
+                                <TextView
+                                    android:id="@+id/box_summary_images_label"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/images_label"
+                                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                                    android:textColor="?android:attr/textColorSecondary"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                            </LinearLayout>
 
                             <HorizontalScrollView
                                 android:id="@+id/horizontal_scroll"
                                 android:layout_width="match_parent"
-                                android:paddingBottom="8dp"
+                                android:paddingBottom="16dp"
                                 android:layout_height="wrap_content" >
 
                                 <LinearLayout
@@ -281,15 +310,15 @@
 
                             </HorizontalScrollView>
 
+                            <LinearLayout
+                                android:layout_height="5dp"
+                                android:orientation="horizontal"
+                                android:layout_width="match_parent"
+                                android:background="?colorSurfaceVariant"  />
+
                         </LinearLayout>
 
                     </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_height="5dp"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:background="?colorSurfaceVariant"  />
 
                     <LinearLayout
                         android:id="@+id/materialCardView6"
@@ -310,18 +339,34 @@
                             android:orientation="vertical"
                             android:paddingTop="0dp">
 
-                            <TextView
-                                android:id="@+id/box_summary_content_label"
+
+                            <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="16dp"
                                 android:layout_marginBottom="16dp"
-                                android:text="@string/content"
-                                android:textAppearance="?attr/textAppearanceTitleMedium"
-                                android:textColor="?android:attr/textColorSecondary"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:layout_width="25dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginRight="8dp"
+                                    android:scaleType="fitCenter"
+                                    app:srcCompat="@drawable/ic_baseline_format_list_bulleted_24" />
+
+
+                                <TextView
+                                    android:id="@+id/box_summary_content_label"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/content"
+                                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                                    android:textColor="?android:attr/textColorSecondary"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                            </LinearLayout>
 
                             <RelativeLayout
                                 android:layout_width="wrap_content"

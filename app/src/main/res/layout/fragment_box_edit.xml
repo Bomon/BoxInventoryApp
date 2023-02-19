@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/box_edit_card"
+    android:id="@+id/item_edit_card"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
+    android:transitionName="transition_add_item"
     tools:context=".fragments.ItemsAllFragment">
 
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
         android:id="@+id/box_edit_card_scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,419 +21,574 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:context=".ProfileSettingFragment" >
+                android:layout_margin="16dp"
+                android:text="@string/title_image_label"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="?colorSecondary" />
 
-            <!-- Media -->
-                <ImageView
-                    android:id="@+id/box_edit_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="194dp"
-                    android:contentDescription="@string/content_description_box_image"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/placeholder_with_bg_80_yellow"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/bod_edit_image_overlay"
-                    android:layout_width="match_parent"
-                    android:layout_height="194dp"
-                    android:background="#90000000"
-                    android:padding="50dp"
-                    app:srcCompat="@drawable/ic_baseline_edit_24"
-                    app:layout_constraintTop_toTopOf="@+id/box_edit_image"
-                    app:layout_constraintEnd_toEndOf="@+id/box_edit_image"
-                    app:tint="#90FFFFFF" />
-
-                <ProgressBar
-                    android:visibility="gone"
-                    android:id="@+id/bod_edit_image_spinner"
-                    style="?android:attr/progressBarStyleLarge"
-                    android:layout_width="match_parent"
-                    android:layout_height="194dp"
-                    android:background="#CC000000"
-                    android:padding="60dp"
-                    app:layout_constraintTop_toTopOf="@+id/box_edit_image"
-                    app:layout_constraintBottom_toBottomOf="@+id/box_edit_image"
-                    app:layout_constraintEnd_toEndOf="@+id/box_edit_image" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/image_card"
+                app:strokeWidth="0dp"
+                android:layout_width="wrap_content"
+                app:cardCornerRadius="10dp"
+                android:layout_gravity="center_horizontal"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <!-- Title, secondary and supporting text -->
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:layout_weight="1"
-                    android:text="@string/edit_box_title"
-                    android:textStyle="bold"
-                    android:textAppearance="?attr/textAppearanceTitleLarge"
-                    android:textColor="?android:attr/textColorSecondary" />
-
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/box_edit_id_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/edit_box_id">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/box_edit_id"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/box_edit_name_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:hint="@string/edit_box_name">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/box_edit_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:hint="@string/edit_box_description">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/box_edit_description"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="150dp"
-                        android:gravity="top"
-                        android:inputType="textMultiLine"
-                        android:isScrollContainer="false"
-                        android:overScrollMode="always"
-                        android:scrollbarStyle="insideInset"
-                        android:scrollbars="vertical" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/box_edit_type_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:hint="@string/edit_box_type">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/box_edit_type"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/box_edit_qrcode_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:hint="@string/edit_box_qrcode"
-                    app:helperText="@string/edit_box_qrcode_helper">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/box_edit_qrcode"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-            </LinearLayout>
-
-
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/divider3"
-                app:dividerInsetStart="8dp"
-                app:dividerInsetEnd="8dp"
-                android:layout_marginTop="32dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:id="@+id/box_edit_vehicle_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/vehicle_location_label"
-                    android:textStyle="bold"
-                    android:textAppearance="?attr/textAppearanceTitleLarge"
-                    android:textColor="?android:attr/textColorSecondary"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-                <RelativeLayout
-                    android:layout_marginTop="16dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/box_edit_vehicle_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/box_edit_vehicle_rv"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="1.0"
-                            app:layout_constraintTop_toTopOf="parent"
-                            android:nestedScrollingEnabled="false" />
-
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:id="@+id/box_edit_vehicle_overlay"
-                            android:transitionName="transition_to_vehicles"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_marginStart="6dp"
-                            android:layout_marginTop="3dp"
-                            android:layout_marginEnd="6dp"
-                            android:layout_marginBottom="3dp"
-                            android:background="#90000000"
-                            app:layout_constraintBottom_toBottomOf="@+id/box_edit_vehicle_rv"
-                            app:layout_constraintEnd_toEndOf="@+id/box_edit_vehicle_rv"
-                            app:layout_constraintStart_toStartOf="@+id/box_edit_vehicle_rv"
-                            app:layout_constraintTop_toTopOf="@+id/box_edit_vehicle_rv"
-                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                            app:tint="#90FFFFFF" />
-
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:id="@+id/box_edit_vehicle_overlay_icon"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:padding="25dp"
-                            android:src="@drawable/ic_baseline_edit_24"
-                            app:layout_constraintStart_toStartOf="@+id/box_edit_vehicle_rv"
-                            app:layout_constraintEnd_toEndOf="@+id/box_edit_vehicle_rv"
-                            app:layout_constraintTop_toTopOf="@+id/box_edit_vehicle_rv"
-                            app:layout_constraintBottom_toBottomOf="@+id/box_edit_vehicle_rv"
-                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                            app:tint="#90FFFFFF" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </RelativeLayout>
-
-            </LinearLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingTop="0dp">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/box_edit_location_details_container"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:hint="@string/edit_box_location_details"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/box_edit_location_image_container"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/box_edit_location_details"
-                        android:minLines="2"
-                        android:gravity="left|top"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
+                android:clickable="true">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/box_edit_location_image_container"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    xmlns:tools="http://schemas.android.com/tools"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
+                    android:background="?colorSurfaceVariant"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0"
-                    tools:context=".ProfileSettingFragment">
+                    tools:context=".ProfileSettingFragment" >
 
-                    <!-- Media -->
                     <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/box_edit_location_image"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:id="@+id/box_edit_image"
+                        android:layout_width="200dp"
+                        android:layout_height="120dp"
                         android:contentDescription="@string/content_description_location_image"
                         android:scaleType="centerCrop"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize25Percent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="1.0"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                        app:srcCompat="@drawable/placeholder_with_bg_80" />
-
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/box_edit_location_image_overlay"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:background="#90000000"
-                        app:layout_constraintEnd_toEndOf="@+id/box_edit_location_image"
-                        app:layout_constraintTop_toTopOf="@+id/box_edit_location_image"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                        app:tint="#90FFFFFF" />
-
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/box_edit_location_image_overlay_icon"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:padding="15dp"
-                        android:src="@drawable/ic_baseline_edit_24"
-                        app:layout_constraintEnd_toEndOf="@+id/box_edit_location_image"
-                        app:layout_constraintTop_toTopOf="@+id/box_edit_location_image"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                        app:tint="#90FFFFFF" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:srcCompat="@drawable/ic_outline_add_photo_alternate_24_padding"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <ProgressBar
-                        android:id="@+id/bod_edit_location_image_spinner"
+                        android:id="@+id/bod_edit_image_spinner"
                         style="?android:attr/progressBarStyleLarge"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="200dp"
+                        android:layout_height="120dp"
                         android:background="#CC000000"
                         android:padding="18dp"
                         android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="@+id/box_edit_location_image"
-                        app:layout_constraintEnd_toEndOf="@+id/box_edit_location_image"
-                        app:layout_constraintTop_toTopOf="@+id/box_edit_location_image" />
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize25Percent"
+                        app:layout_constraintStart_toStartOf="@+id/box_edit_image"
+                        app:layout_constraintBottom_toBottomOf="@+id/box_edit_image"
+                        app:layout_constraintEnd_toEndOf="@+id/box_edit_image"
+                        app:layout_constraintTop_toTopOf="@+id/box_edit_image" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/divider0"
-                app:dividerInsetStart="8dp"
-                app:dividerInsetEnd="8dp"
-                android:layout_marginTop="32dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
             <LinearLayout
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:orientation="vertical">
+                android:layout_width="match_parent"
+                android:paddingBottom ="16dp"
+                android:paddingTop ="4dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
 
-                <TextView
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_add_image"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:layout_weight="1"
-                    android:text="@string/edit_box_markings"
-                    android:textStyle="bold"
-                    android:textAppearance="?attr/textAppearanceTitleLarge"
-                    android:textColor="?android:attr/textColorSecondary" />
+                    android:text="@string/btn_add_image" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:paddingBottom="8dp"
-                    android:layout_height="wrap_content">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/box_edit_color_btn"
-                        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|end"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="@string/edit_box_color"
-                        app:icon="@drawable/ic_baseline_palette_24"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/box_edit_color_preview"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <View
-                        android:id="@+id/box_edit_color_preview"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:background="@drawable/round_bg"
-                        android:backgroundTint="@color/default_box_color"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_change_image"
+                    style="@style/Widget.Material3.Button.TextButton.Icon"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:helperTextEnabled="true"
-                    app:helperText="@string/edit_box_status_helper"
-                    android:hint="@string/edit_box_status">
+                    android:text="@string/btn_change_image"
+                    app:icon="@drawable/ic_outline_edit_24" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/box_edit_status_input"
-                        android:maxLines="1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/box_edit_status_chips"
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="8dp"
-                    app:chipSpacingHorizontal="6dp"
-                    app:chipSpacingVertical="-8dp"
-                    android:layout_height="wrap_content" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_remove_image"
+                    style="@style/Widget.Material3.Button.TextButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_remove_image"
+                    app:icon="@drawable/ic_baseline_delete_outline_24" />
 
             </LinearLayout>
 
 
             <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/divider2"
-                app:dividerInsetStart="8dp"
-                app:dividerInsetEnd="8dp"
-                android:layout_marginTop="32dp"
+                android:alpha="0.2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/item_edit_title"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="?colorSecondary" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="25dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="16dp"
+                        android:scaleType="fitStart"
+                        app:srcCompat="@drawable/ic_baseline_numbers_24" />
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/box_edit_id_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/edit_box_id">
+
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/box_edit_id"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="25dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="16dp"
+                        android:scaleType="fitStart"
+                        app:srcCompat="@drawable/ic_outline_widgets_24" />
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/box_edit_name_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/edit_box_name">
+
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/box_edit_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="25dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="16dp"
+                        android:scaleType="fitStart"
+                        app:srcCompat="@drawable/ic_baseline_qr_code_scanner_24" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/box_edit_qrcode_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/edit_box_qrcode"
+                        app:helperText="@string/edit_box_qrcode_helper">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/box_edit_qrcode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <com.google.android.material.divider.MaterialDivider
+                android:alpha="0.2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/box_edit_location"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="?colorSecondary" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="25dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="8dp"
+                        android:scaleType="fitStart"
+                        app:srcCompat="@drawable/ic_outline_location_on_24" />
+
+                    <LinearLayout
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/box_edit_vehicle_container"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/box_edit_vehicle_rv"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintHorizontal_bias="1.0"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    android:nestedScrollingEnabled="false" />
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:id="@+id/box_edit_vehicle_overlay"
+                                    android:transitionName="transition_to_vehicles"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:background="#90000000"
+                                    android:alpha="0"
+                                    app:layout_constraintBottom_toBottomOf="@+id/box_edit_vehicle_rv"
+                                    app:layout_constraintEnd_toEndOf="@+id/box_edit_vehicle_rv"
+                                    app:layout_constraintStart_toStartOf="@+id/box_edit_vehicle_rv"
+                                    app:layout_constraintTop_toTopOf="@+id/box_edit_vehicle_rv"
+                                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                                    app:tint="#90FFFFFF" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </RelativeLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/vehicle_details_parking_spot_container"
+                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:paddingTop ="4dp"
+                            android:gravity="left"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_add_vehicle"
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/btn_add_vehicle" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_change_vehicle"
+                                style="@style/Widget.Material3.Button.TextButton.Icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/btn_change_image"
+                                app:icon="@drawable/ic_outline_edit_24" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_remove_vehicle"
+                                style="@style/Widget.Material3.Button.TextButton.Icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/btn_remove_image"
+                                app:icon="@drawable/ic_baseline_delete_outline_24" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="25dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="16dp"
+                        android:scaleType="fitStart"
+                        app:srcCompat="@drawable/ic_outline_add_location_alt_24" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/box_edit_location_details_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/edit_box_location_details">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/box_edit_location_details"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="100dp"
+                            android:gravity="top"
+                            android:inputType="textMultiLine"
+                            android:isScrollContainer="false"
+                            android:overScrollMode="always"
+                            android:scrollbarStyle="insideInset"
+                            android:scrollbars="vertical" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:alpha="0.2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/box_edit_additional_details"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="?colorSecondary" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="25dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="16dp"
+                        android:scaleType="fitStart"
+                        app:srcCompat="@drawable/ic_baseline_notes_24" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/box_edit_description_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/item_edit_description">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/box_edit_description"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="150dp"
+                            android:gravity="top"
+                            android:inputType="textMultiLine"
+                            android:isScrollContainer="false"
+                            android:overScrollMode="always"
+                            android:scrollbarStyle="insideInset"
+                            android:scrollbars="vertical" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="25dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="16dp"
+                        android:scaleType="fitStart"
+                        app:srcCompat="@drawable/ic_twotone_label_24" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/item_summary_name_label"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/item_edit_tags_title"
+                            app:helperText="@string/edit_box_status_helper"
+                            android:hint="@string/edit_item_status">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/box_edit_status_input"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/box_edit_status_chips"
+                            android:layout_width="match_parent"
+                            android:layout_marginTop="8dp"
+                            app:chipSpacingHorizontal="6dp"
+                            app:chipSpacingVertical="-8dp"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="25dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="12dp"
+                        android:scaleType="fitStart"
+                        app:srcCompat="@drawable/ic_outline_palette_24" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/box_edit_color_btn"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="8dp"
+                            android:text="@string/edit_box_color"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/box_edit_color_preview"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <View
+                            android:id="@+id/box_edit_color_preview"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="8dp"
+                            android:background="@drawable/round_bg"
+                            android:backgroundTint="@color/default_box_color"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:alpha="0.2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/box_edit_additional_images"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="?colorSecondary" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="8dp"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="16dp"
+                android:paddingTop="8dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/box_edit_additional_images"
+                    android:layout_width="match_parent"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_height="wrap_content" />
+
+
+            </LinearLayout>
+
+
+            <com.google.android.material.divider.MaterialDivider
+                android:alpha="0.2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/content"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="?colorSecondary" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -447,29 +603,16 @@
                     android:paddingTop="0dp"
                     android:paddingBottom="16dp">
 
-                    <TextView
-                        android:id="@+id/box_summary_content_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_weight="1"
-                        android:text="@string/content"
-                        android:textStyle="bold"
-                        android:textAppearance="?attr/textAppearanceTitleLarge"
-                        android:textColor="?android:attr/textColorSecondary" />
-
 
                     <Button
                         android:id="@+id/box_edit_add_button"
-                        style="@style/Widget.Material3.Button.Icon"
+                        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:layout_marginTop="16dp"
                         android:layout_marginEnd="16dp"
                         android:layout_weight="0"
-                        android:text="@string/edit_box_add"
+                        android:text="@string/edit_box_add_compartment"
                         android:transitionName="transition_to_items"
                         app:icon="@drawable/ic_baseline_add_24" />
 
@@ -483,7 +626,6 @@
                         android:id="@+id/box_edit_compartments"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="16dp"
                         android:nestedScrollingEnabled="false" />
 
                 </RelativeLayout>
@@ -492,6 +634,6 @@
 
         </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

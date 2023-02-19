@@ -1,10 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_boxes"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.MainActivity">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:background="?colorPrimaryContainer"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="?colorPrimaryContainer"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/item_summary_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/content_description_title"
+        android:textStyle="bold"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        />
+
+</LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        style="?attr/materialCardViewElevatedStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/box_summary_image_overlay">
+
 <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/item_fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="?attr/colorSurface">
+
 
 
     <!-- Media -->
@@ -50,42 +90,56 @@
                     android:background="?colorSurface"
                     android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:background="?colorPrimaryContainer"
-                        android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/item_summary_name"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/item_summary_tags_container"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:background="?colorSurfaceVariant"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/item_summary_tags_label"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="16dp"
+                        android:scaleType="fitStart"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_twotone_label_24" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/item_summary_tags"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        app:chipSpacingHorizontal="6dp"
+                        app:chipSpacingVertical="-8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/item_summary_tags_label"
+                        app:layout_constraintTop_toTopOf="parent">
+
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/box_vehicle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/content_description_title"
-                            android:textStyle="bold"
-                            android:textAppearance="?attr/textAppearanceBodyLarge"
-                            />
+                            android:text="@string/location"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toEndOf="@+id/box_vehicle_icon"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-                    </LinearLayout>
+                    </com.google.android.material.chip.ChipGroup>
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/item_summary_tags"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:chipSpacingHorizontal="6dp"
-                    app:chipSpacingVertical="-8dp"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/box_color"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
-
-                <LinearLayout
-                    android:id="@+id/item_summary_tags_divider"
-                    android:layout_height="5dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:background="?colorSurfaceVariant" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
                     android:id="@+id/item_summary_description"
@@ -162,3 +216,8 @@
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>
+</RelativeLayout>

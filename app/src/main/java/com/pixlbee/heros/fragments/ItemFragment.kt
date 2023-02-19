@@ -50,7 +50,7 @@ class ItemFragment : Fragment() {
     private lateinit var itemImageOverlayField: LinearLayout
     lateinit var itemContainingBoxesEmptyLabel: TextView
     private lateinit var itemDescriptionDivider: LinearLayout
-    private lateinit var itemTagsDivider: LinearLayout
+    private lateinit var itemTagsContainer: ConstraintLayout
 
     private lateinit var animationType: String
 
@@ -193,8 +193,7 @@ class ItemFragment : Fragment() {
 
         itemTagsField.removeAllViews()
         if(itemTags != ""){
-            itemTagsDivider.visibility = View.VISIBLE
-            itemTagsField.visibility = View.VISIBLE
+            itemTagsContainer.visibility = View.VISIBLE
             for (tag in itemTags.split(";")){
                 if (tag != ""){
                     val chip = Chip(context)
@@ -203,8 +202,7 @@ class ItemFragment : Fragment() {
                 }
             }
         } else {
-            itemTagsDivider.visibility = View.GONE
-            itemTagsField.visibility = View.GONE
+            itemTagsContainer.visibility = View.GONE
         }
 
         if (itemImage == "") {
@@ -246,7 +244,7 @@ class ItemFragment : Fragment() {
         itemImageField = v.findViewById(R.id.item_summary_image)
         itemImageOverlayField = v.findViewById(R.id.item_summary_image_overlay)
         itemContainingBoxesEmptyLabel = v.findViewById(R.id.item_summary_content_empty_label)
-        itemTagsDivider = v.findViewById(R.id.item_summary_tags_divider)
+        itemTagsContainer = v.findViewById(R.id.item_summary_tags_container)
         itemDescriptionDivider = v.findViewById(R.id.item_summary_description_divider)
 
         val itemContainer: ConstraintLayout = v.findViewById(R.id.item_fragment_container)

@@ -12,6 +12,7 @@ import androidx.core.view.children
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -27,6 +28,7 @@ import dev.sasikanth.colorsheet.ColorSheet
 import it.sephiroth.android.library.numberpicker.NumberPicker
 import it.sephiroth.android.library.numberpicker.NumberPicker.OnNumberPickerChangeListener
 import java.lang.Integer.min
+import kotlin.math.max
 
 class BoxItemEditAdapter(
     mDataList: ArrayList<BoxItemModel>,
@@ -102,6 +104,7 @@ class BoxItemEditAdapter(
         //private var itemEditAmountTaken: NumberPicker
         //private var itemEditInvnum: ChipGroup
         //var item_edit_status: EditText
+        private var itemContainer: MaterialCardView
         private var itemName: TextView
         private var itemAmount: TextView
         private var itemColorDisplay: View
@@ -111,14 +114,16 @@ class BoxItemEditAdapter(
         private var itemDeleteButton: MaterialButton
         private var itemEditButton: MaterialButton
         private var itemMoveButton: MaterialButton
+        private var itemPlusButton: MaterialButton
+        private var itemMinusButton: MaterialButton
         //private var itemInvnumButton: MaterialButton
-
 
         init {
             //itemEditAmount = itemView.findViewById(R.id.box_item_edit_amount)
             //itemEditAmountTaken = itemView.findViewById(R.id.box_item_edit_amount_taken)
             //itemEditInvnum = itemView.findViewById(R.id.box_item_invnums)
             //item_edit_status = itemView.findViewById<EditText>(R.id.box_item_edit_status)
+            itemContainer = itemView.findViewById<MaterialCardView>(R.id.card_box)
             itemName = itemView.findViewById<TextView>(R.id.box_item_name)
             itemAmount = itemView.findViewById<TextView>(R.id.box_item_amount)
             itemColorDisplay = itemView.findViewById<View>(R.id.box_item_color)
@@ -127,6 +132,8 @@ class BoxItemEditAdapter(
             itemDeleteButton = itemView.findViewById(R.id.box_item_delete_btn)
             itemEditButton = itemView.findViewById(R.id.box_item_edit_btn)
             itemMoveButton = itemView.findViewById(R.id.box_item_move_btn)
+            itemPlusButton = itemView.findViewById(R.id.box_item_edit_plus)
+            itemMinusButton = itemView.findViewById(R.id.box_item_edit_minus)
             //itemColorButton = itemView.findViewById(R.id.box_item_color_btn)
             //itemInvnumButton = itemView.findViewById(R.id.box_item_invnum_btn)
             itemDeleteButton.setOnClickListener {
@@ -134,6 +141,28 @@ class BoxItemEditAdapter(
                 notifyItemRemoved(absoluteAdapterPosition)
                 notifyItemRangeChanged(absoluteAdapterPosition, mItemModel.size)
                 mListenerRemove.onItemRemove(removedItem.item_compartment, removedItem.numeric_id, it)
+            }
+
+            fun fixAmountTextfield(){
+                var taken = mItemModel[absoluteAdapterPosition].item_amount_taken.toInt()
+                var amount = mItemModel[absoluteAdapterPosition].item_amount.toInt()
+                if (taken == 0) {
+                    itemAmount.text = amount.toString()
+                } else {
+                    itemAmount.text = (amount - taken).toString() + " / " + amount
+                }
+            }
+
+            itemPlusButton.setOnClickListener {
+                var newAmount = mItemModel[absoluteAdapterPosition].item_amount.toInt() + 1
+                mItemModel[absoluteAdapterPosition].item_amount = newAmount.toString()
+                fixAmountTextfield()
+            }
+
+            itemMinusButton.setOnClickListener {
+                var newAmount = max(0, mItemModel[absoluteAdapterPosition].item_amount.toInt() - 1)
+                mItemModel[absoluteAdapterPosition].item_amount = newAmount.toString()
+                fixAmountTextfield()
             }
 
             /*// For loops are needed for automatically closing number keyboard on enter press
@@ -174,6 +203,11 @@ class BoxItemEditAdapter(
                 var defaultBox: String = ""
                 var defaultCompartment: String = mCompartmentName
 
+                val defaultCompartmentStrings = setOf("", "null")
+                if (defaultCompartment in defaultCompartmentStrings)
+                    defaultCompartment = mContext.resources.getString(R.string.compartment_default_name)
+
+
                 var movedItem: ItemMoveModel = ItemMoveModel(
                     mItemModel[absoluteAdapterPosition],
                     mBoxId,
@@ -196,7 +230,8 @@ class BoxItemEditAdapter(
                                 if (boxId == mBoxId) {
                                     defaultBox = "$boxId - $boxName"
                                     for (item: DataSnapshot in box.child("content").children){
-                                        val compartment = item.child("compartment").value.toString()
+                                        var compartment = item.child("compartment").value.toString()
+                                        compartment = if (compartment in defaultCompartmentStrings) mContext.resources.getString(R.string.compartment_default_name) else compartment
                                         if (compartment !in allBoxCompartments) {
                                             allBoxCompartments.add(compartment)
                                         }
@@ -205,7 +240,7 @@ class BoxItemEditAdapter(
                             }
                         }
 
-                        for (newCompartment in mParentFragment.getNewCompartments()){
+                        for (newCompartment in mParentFragment.getTempCompartments()){
                             allBoxCompartments.add(newCompartment)
                         }
 
@@ -236,18 +271,19 @@ class BoxItemEditAdapter(
                                                     allBoxCompartments.clear()
                                                     for (item: DataSnapshot in box.child("content").children){
                                                         var compartment = item.child("compartment").value.toString()
-                                                        compartment = if (compartment.toString() == "null") "" else compartment
+                                                        compartment = if (compartment in defaultCompartmentStrings) mContext.resources.getString(R.string.compartment_default_name) else compartment
                                                         if (compartment !in allBoxCompartments) {
                                                             allBoxCompartments.add(compartment)
                                                         }
                                                     }
                                                     // If we are in our box, add new temp compartments
                                                     if (boxId == mBoxId) {
-                                                        for (newCompartment in mParentFragment.getNewCompartments()){
+                                                        for (newCompartment in mParentFragment.getTempCompartments()){
                                                             allBoxCompartments.add(newCompartment)
                                                         }
                                                     }
-                                                    targetCompartmentSelect.setText(allBoxCompartments[0], false)
+                                                    if (allBoxCompartments.size != 0)
+                                                        targetCompartmentSelect.setText(allBoxCompartments[0], false)
                                                     arrayAdapterCompartment.notifyDataSetChanged()
                                                     break
                                                 }
@@ -260,6 +296,8 @@ class BoxItemEditAdapter(
                         targetCompartmentSelect.onItemClickListener =
                             AdapterView.OnItemClickListener { parent, view, position, id ->
                                 var clickedCompartment = parent.adapter.getItem(position)
+                                if (clickedCompartment == mContext.resources.getString(R.string.compartment_default_name))
+                                    clickedCompartment = ""
                                 movedItem.target_compartment = clickedCompartment.toString()
                             }
                     }
@@ -286,7 +324,7 @@ class BoxItemEditAdapter(
 
             }
 
-
+            // edit button
             itemEditButton.setOnClickListener {
                 val builder = MaterialAlertDialogBuilder(mContext)
                 builder.setTitle(mContext.resources.getString(R.string.dialog_edit_item_title))
@@ -463,6 +501,8 @@ class BoxItemEditAdapter(
             }
             itemColorDisplay.background.setTint(model.item_color)
 
+            //itemContainer.strokeColor = model.item_color
+
             itemInvnums.removeAllViews()
             for (invnum in model.item_invnum.split(";")){
                 if (invnum != ""){
@@ -483,7 +523,7 @@ class BoxItemEditAdapter(
         val fromLocation = mItemModel[from]
         mItemModel.removeAt(from)
         if (to < from) {
-            mItemModel.add(to , fromLocation)
+            mItemModel.add(to, fromLocation)
         } else {
             mItemModel.add(to, fromLocation)
         }

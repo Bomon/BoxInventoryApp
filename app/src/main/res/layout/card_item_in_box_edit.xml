@@ -4,175 +4,216 @@
     android:id="@+id/card_box"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
-    android:layout_marginBottom="4dp"
+    android:layout_marginLeft="4dp"
+    android:layout_marginRight="4dp"
     android:clickable="true"
-    style="?attr/materialCardViewElevatedStyle"
+    app:cardCornerRadius="0dp"
+    style="?attr/materialCardViewOutlinedStyle"
+    android:background="?colorSurfaceVariant"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?colorSurface"
+        android:orientation="horizontal">
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/box_item_delete_btn"
+                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:padding="0dp"
+                app:icon="@drawable/ic_baseline_delete_24"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/box_item_move_btn"
+                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:padding="0dp"
+                app:icon="@drawable/ic_baseline_move_up_24"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/box_item_delete_btn"
+                app:layout_constraintVertical_bias="1.0" />
 
 
             <View
                 android:id="@+id/box_item_color"
                 android:layout_width="3dp"
                 android:layout_height="0dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginStart="8dp"
                 android:background="@color/default_item_color"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/box_item_delete_btn"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/box_item_amount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:text="@string/content_amount_label"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/box_item_color"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/box_item_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:text="@string/content_description_title"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/box_item_amount"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:id="@+id/box_item_invnums_container"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/box_item_amount"
-                app:layout_constraintTop_toBottomOf="@+id/box_item_name">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/box_item_invnums"
+                <TextView
+                    android:id="@+id/box_item_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:chipSpacingHorizontal="6dp"
-                    app:chipSpacingVertical="-8dp">
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/content_amount_label"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
-                </com.google.android.material.chip.ChipGroup>
+                <TextView
+                    android:id="@+id/box_item_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/content_description_title"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/box_item_amount"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
-            </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/box_item_invnums_container"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/box_item_amount"
+                    app:layout_constraintTop_toBottomOf="@+id/box_item_name">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/box_item_invnums"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:chipSpacingHorizontal="6dp"
+                        app:chipSpacingVertical="-8dp">
 
-        <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/divider2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+                    </com.google.android.material.chip.ChipGroup>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+                </LinearLayout>
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/box_item_delete_btn"
-                style="@style/Widget.Material3.Button.OutlinedButton.Icon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="bottom|end"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:padding="0dp"
-                app:icon="@drawable/ic_baseline_delete_24"
-                app:iconGravity="textStart"
-                app:iconPadding="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/box_item_edit_btn"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="bottom|end"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:padding="0dp"
-                app:iconPadding="0dp"
-                app:iconGravity="textStart"
-                app:icon="@drawable/ic_baseline_edit_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/box_item_delete_btn"
-                app:layout_constraintTop_toTopOf="parent" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/box_item_move_btn"
-                style="@style/Widget.Material3.Button.OutlinedButton.Icon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="bottom|end"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:padding="0dp"
-                app:iconPadding="0dp"
-                app:iconGravity="textStart"
-                app:icon="@drawable/ic_baseline_move_up_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/box_item_edit_btn"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/box_item_edit_btn"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="0dp"
+                    app:iconPadding="0dp"
+                    app:iconGravity="textStart"
+                    app:icon="@drawable/ic_baseline_edit_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgDragHandler"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:src="@drawable/ic_draggable"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/box_item_edit_btn"
-                app:layout_constraintStart_toEndOf="@+id/box_item_move_btn"
-                app:layout_constraintTop_toTopOf="parent" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgDragHandler"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:src="@drawable/ic_draggable"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/box_item_edit_btn"
+                    app:layout_constraintStart_toEndOf="@+id/box_item_edit_plus"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/box_item_edit_plus"
+                    style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="0dp"
+                    app:icon="@drawable/ic_baseline_exposure_plus_1_24"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/box_item_edit_minus"
+                    app:layout_constraintTop_toTopOf="parent" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/box_item_edit_minus"
+                    style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="0dp"
+                    app:icon="@drawable/ic_baseline_exposure_neg_1_24"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

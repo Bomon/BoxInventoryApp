@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/box_edit_card"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    tools:context=".fragments.ItemsAllFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/box_edit_card_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:context=".ProfileSettingFragment" >
+
+            <!-- Media -->
+                <ImageView
+                    android:id="@+id/box_edit_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="194dp"
+                    android:contentDescription="@string/content_description_box_image"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/placeholder_with_bg_80_yellow"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/bod_edit_image_overlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="194dp"
+                    android:background="#90000000"
+                    android:padding="50dp"
+                    app:srcCompat="@drawable/ic_baseline_edit_24"
+                    app:layout_constraintTop_toTopOf="@+id/box_edit_image"
+                    app:layout_constraintEnd_toEndOf="@+id/box_edit_image"
+                    app:tint="#90FFFFFF" />
+
+                <ProgressBar
+                    android:visibility="gone"
+                    android:id="@+id/bod_edit_image_spinner"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="match_parent"
+                    android:layout_height="194dp"
+                    android:background="#CC000000"
+                    android:padding="60dp"
+                    app:layout_constraintTop_toTopOf="@+id/box_edit_image"
+                    app:layout_constraintBottom_toBottomOf="@+id/box_edit_image"
+                    app:layout_constraintEnd_toEndOf="@+id/box_edit_image" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Title, secondary and supporting text -->
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_weight="1"
+                    android:text="@string/edit_box_title"
+                    android:textStyle="bold"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/box_edit_id_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/edit_box_id">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/box_edit_id"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/box_edit_name_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/edit_box_name">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/box_edit_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/edit_box_description">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/box_edit_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="150dp"
+                        android:gravity="top"
+                        android:inputType="textMultiLine"
+                        android:isScrollContainer="false"
+                        android:overScrollMode="always"
+                        android:scrollbarStyle="insideInset"
+                        android:scrollbars="vertical" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/box_edit_type_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/edit_box_type">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/box_edit_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/box_edit_qrcode_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/edit_box_qrcode"
+                    app:helperText="@string/edit_box_qrcode_helper">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/box_edit_qrcode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider3"
+                app:dividerInsetStart="8dp"
+                app:dividerInsetEnd="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/box_edit_vehicle_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vehicle_location_label"
+                    android:textStyle="bold"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:textColor="?android:attr/textColorSecondary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <RelativeLayout
+                    android:layout_marginTop="16dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/box_edit_vehicle_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/box_edit_vehicle_rv"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="1.0"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:nestedScrollingEnabled="false" />
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/box_edit_vehicle_overlay"
+                            android:transitionName="transition_to_vehicles"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="6dp"
+                            android:layout_marginTop="3dp"
+                            android:layout_marginEnd="6dp"
+                            android:layout_marginBottom="3dp"
+                            android:background="#90000000"
+                            app:layout_constraintBottom_toBottomOf="@+id/box_edit_vehicle_rv"
+                            app:layout_constraintEnd_toEndOf="@+id/box_edit_vehicle_rv"
+                            app:layout_constraintStart_toStartOf="@+id/box_edit_vehicle_rv"
+                            app:layout_constraintTop_toTopOf="@+id/box_edit_vehicle_rv"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                            app:tint="#90FFFFFF" />
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/box_edit_vehicle_overlay_icon"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:padding="25dp"
+                            android:src="@drawable/ic_baseline_edit_24"
+                            app:layout_constraintStart_toStartOf="@+id/box_edit_vehicle_rv"
+                            app:layout_constraintEnd_toEndOf="@+id/box_edit_vehicle_rv"
+                            app:layout_constraintTop_toTopOf="@+id/box_edit_vehicle_rv"
+                            app:layout_constraintBottom_toBottomOf="@+id/box_edit_vehicle_rv"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                            app:tint="#90FFFFFF" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="0dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/box_edit_location_details_container"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:hint="@string/edit_box_location_details"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/box_edit_location_image_container"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/box_edit_location_details"
+                        android:minLines="2"
+                        android:gravity="left|top"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/box_edit_location_image_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0"
+                    tools:context=".ProfileSettingFragment">
+
+                    <!-- Media -->
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/box_edit_location_image"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:contentDescription="@string/content_description_location_image"
+                        android:scaleType="centerCrop"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                        app:srcCompat="@drawable/placeholder_with_bg_80" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/box_edit_location_image_overlay"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:background="#90000000"
+                        app:layout_constraintEnd_toEndOf="@+id/box_edit_location_image"
+                        app:layout_constraintTop_toTopOf="@+id/box_edit_location_image"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                        app:tint="#90FFFFFF" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/box_edit_location_image_overlay_icon"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:padding="15dp"
+                        android:src="@drawable/ic_baseline_edit_24"
+                        app:layout_constraintEnd_toEndOf="@+id/box_edit_location_image"
+                        app:layout_constraintTop_toTopOf="@+id/box_edit_location_image"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                        app:tint="#90FFFFFF" />
+
+                    <ProgressBar
+                        android:id="@+id/bod_edit_location_image_spinner"
+                        style="?android:attr/progressBarStyleLarge"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:background="#CC000000"
+                        android:padding="18dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@+id/box_edit_location_image"
+                        app:layout_constraintEnd_toEndOf="@+id/box_edit_location_image"
+                        app:layout_constraintTop_toTopOf="@+id/box_edit_location_image" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider0"
+                app:dividerInsetStart="8dp"
+                app:dividerInsetEnd="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_weight="1"
+                    android:text="@string/edit_box_markings"
+                    android:textStyle="bold"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:paddingBottom="8dp"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/box_edit_color_btn"
+                        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/edit_box_color"
+                        app:icon="@drawable/ic_baseline_palette_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/box_edit_color_preview"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/box_edit_color_preview"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/round_bg"
+                        android:backgroundTint="@color/default_box_color"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:helperTextEnabled="true"
+                    app:helperText="@string/edit_box_status_helper"
+                    android:hint="@string/edit_box_status">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/box_edit_status_input"
+                        android:maxLines="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/box_edit_status_chips"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="8dp"
+                    app:chipSpacingHorizontal="6dp"
+                    app:chipSpacingVertical="-8dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider2"
+                app:dividerInsetStart="8dp"
+                app:dividerInsetEnd="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="16dp">
+
+                    <TextView
+                        android:id="@+id/box_summary_content_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_weight="1"
+                        android:text="@string/content"
+                        android:textStyle="bold"
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
+                        android:textColor="?android:attr/textColorSecondary" />
+
+
+                    <Button
+                        android:id="@+id/box_edit_add_button"
+                        style="@style/Widget.Material3.Button.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_weight="0"
+                        android:text="@string/edit_box_add"
+                        android:transitionName="transition_to_items"
+                        app:icon="@drawable/ic_baseline_add_24" />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/box_edit_compartments"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="16dp"
+                        android:nestedScrollingEnabled="false" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

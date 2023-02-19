@@ -15,6 +15,7 @@
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider"
+            android:alpha="0.5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
@@ -54,6 +55,7 @@
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider1"
+            android:alpha="0.5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
@@ -92,28 +94,32 @@
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider2"
+            android:alpha="0.5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/box_item_color_btn"
+            style="@style/Widget.Material3.Button.Icon"
+            app:icon="@drawable/ic_baseline_palette_24"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:text="@string/edit_box_color" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider3"
+            android:alpha="0.5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/box_item_color_btn"
-                android:layout_width="50dp"
-                android:layout_height="40dp"
-                android:layout_gravity="bottom|end"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:padding="0dp"
-                app:iconPadding="0dp"
-                app:iconGravity="textStart"
-                app:icon="@drawable/ic_baseline_palette_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/box_item_invnum_btn"
@@ -128,7 +134,7 @@
                 android:text="@string/edit_item_invnum"
                 app:icon="@drawable/ic_baseline_add_24"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/box_item_color_btn"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -144,10 +150,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -158,6 +160,9 @@
                     android:id="@+id/box_item_invnums"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
                     app:chipSpacingHorizontal="6dp"
                     app:chipSpacingVertical="-8dp">
 
@@ -166,6 +171,12 @@
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider4"
+            android:alpha="0.5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 </FrameLayout>

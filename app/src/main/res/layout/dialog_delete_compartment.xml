@@ -19,7 +19,7 @@
             android:text="@string/dialog_delete_compartment_descr" />
 
         <RadioGroup
-            android:paddingTop="16dp"
+            android:paddingTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
@@ -40,6 +40,7 @@
             android:id="@+id/dialog_del_move_menu"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingTop="8dp"
             android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputLayout

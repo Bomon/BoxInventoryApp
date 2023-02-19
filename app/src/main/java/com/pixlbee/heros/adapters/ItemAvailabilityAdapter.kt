@@ -15,6 +15,7 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.imageview.ShapeableImageView
 import com.pixlbee.heros.R
 import com.pixlbee.heros.models.ItemAvailabilityModel
+import com.pixlbee.heros.utility.Utils
 
 
 class ItemAvailabilityAdapter : RecyclerView.Adapter<ItemAvailabilityAdapter.ItemViewHolder>() {
@@ -100,11 +101,14 @@ class ItemAvailabilityAdapter : RecyclerView.Adapter<ItemAvailabilityAdapter.Ite
 
             val textViewBox = TextView(context)
             textViewBox.text = key
+            textViewBox.isSingleLine = false
             row.addView(textViewBox)
 
 
             val textViewAmount = TextView(context)
             textViewAmount.text = value.toString()
+            textViewAmount.isSingleLine = false
+            textViewAmount.setPadding(Utils.dpToPx(8, context), 0, 0, 0)
             row.addView(textViewAmount)
 
             holder.itemAvailabilityTable.addView(row)

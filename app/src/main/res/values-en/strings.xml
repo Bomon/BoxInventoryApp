@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Heros Gitterbox</string>
-    <string name="title_nav_boxes">Boxes</string>
+    <string name="title_nav_boxes">Containers</string>
     <string name="title_nav_qrscanner">QR</string>
     <string name="title_nav_items">Equipment</string>
     <string name="location">Location</string>
     <string name="content">Content</string>
+    <string name="container">Container</string>
     <string name="edit_box_markings">Markers</string>
     <string name="edit_box_id">ID / Number *</string>
     <string name="edit_box_name">Name *</string>
@@ -17,7 +18,7 @@
     <string name="edit_box_status_helper">Press Enter or click ; to add tag</string>
     <string name="edit_box_qrcode">QR-Code *</string>
     <string name="content_description_location">"Warning: "</string>
-    <string name="edit_box_qrcode_helper">Warning: Any change will invalidate all printed QR-Codes of  this box</string>
+    <string name="edit_box_qrcode_helper">Warning: Any change will invalidate all printed QR-Codes of this container</string>
     <string name="dialog_add">Add</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_invnum">Inventory number</string>
@@ -31,12 +32,12 @@
     <string name="password_hint">Password</string>
     <string name="user_hint">Username</string>
     <string name="containing_box">Contained in:</string>
-    <string name="containing_box_empty">No box contains this item</string>
+    <string name="containing_box_empty">Not included in any container</string>
     <string name="invnums_label">Inventory numbers:</string>
     <string name="item_edit_tags_title">Tags</string>
     <string name="item_edit_description">Description / Notes</string>
     <string name="item_edit_name">Name *</string>
-    <string name="item_edit_title">General Properties</string>
+    <string name="item_edit_title">General Properties (Mandatory)</string>
     <string name="item_edit_image">Image</string>
     <string name="press_back_again_to_exit">Press BACK again to exit</string>
     <string name="edit_box_color">Change color</string>
@@ -47,19 +48,19 @@
     <string name="dialog_save_title">Save changes?</string>
     <string name="dialog_save_text">Old data will be overwritten</string>
     <string name="error_field_empty">Filed must not be blank</string>
-    <string name="error_box_already_exists_id">There is already a box with this ID</string>
-    <string name="error_box_already_exists_qrcode">There is already a box with this QR-Code</string>
+    <string name="error_box_already_exists_id">There is already a container with this ID</string>
+    <string name="error_box_already_exists_qrcode">There is already a container with this QR-Code</string>
     <string name="fragment_box_edit_title">Edit box</string>
     <string name="fragment_box_edit_title_new">Create box</string>
     <string name="dialog_delete_box_title">Delete box?</string>
-    <string name="dialog_delete_box_text">Do you really want to delete this box?</string>
+    <string name="dialog_delete_box_text">Do you really want to delete this container?</string>
     <string name="dialog_add_invnr_title">Add inventory number / Detail</string>
     <string name="error_dialog_invnr_empty">Field must not be blank</string>
     <string name="error_dialog_invnr_invalid">Field must not contain ;</string>
     <string name="fragment_item_edit_title">Create item</string>
     <string name="fragment_item_edit_title_new">Edit item</string>
     <string name="dialog_delete_item_title">Delete item?</string>
-    <string name="dialog_delete_item_text">Warning: On deletion, this item will be automatically removed from all boxes</string>
+    <string name="dialog_delete_item_text">Warning: On deletion, this item will be automatically removed from all containers</string>
     <string name="permission_camera_request">Camera access is required for the QR-Scanner</string>
     <string name="error_qrcode_invalid">QR-Code invalid</string>
     <string name="error_start_camera">Could not start camera</string>
@@ -83,7 +84,7 @@
     <string name="btn_delete">Delete</string>
     <string name="btn_save">Save</string>
     <string name="btn_cancel">Cancel</string>
-    <string name="content_description_box_image">Box image</string>
+    <string name="content_description_box_image">Container image</string>
     <string name="content_description_title">Title</string>
     <string name="content_description_description">Description</string>
     <string name="content_description_item_image">Item image</string>
@@ -114,8 +115,8 @@
     <string name="qrcode_change_org_btn">Switch</string>
     <string name="title_nav_vehicles">Vehicles</string>
     <string name="content_description_vehicle_image">Vehicle Image</string>
-    <string name="vehicle_containing_boxes">Loaded Boxes</string>
-    <string name="vehicle_empty">No boxes on vehicle</string>
+    <string name="vehicle_containing_boxes">Included Containers</string>
+    <string name="vehicle_empty">No containers on vehicle</string>
     <string name="vehicle_edit_title">Vehicle Properties</string>
     <string name="vehicle_edit_name">Name *</string>
     <string name="vehicle_edit_callname">Callname</string>

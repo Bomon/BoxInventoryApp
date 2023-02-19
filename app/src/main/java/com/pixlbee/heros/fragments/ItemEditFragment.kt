@@ -120,7 +120,7 @@ class ItemEditFragment : Fragment() {
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("name").setValue(itemEditNameField.text.toString().trim())
                             val chipString = Utils.chipListToString(itemEditTagsChips)
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("tags").setValue(chipString)
-                                FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("image").setValue(imageBitmapEncoded)
+                            FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(context!!)).child("items").child(itemKey).child("image").setValue(imageBitmapEncoded)
                         }
                     }
                 }
