@@ -43,13 +43,8 @@ class BoxItemEditAdapter(
     lateinit var mCompartmentName: String
     lateinit var mParentFragment: BoxEditFragment
 
-    private lateinit var mListenerRemove: BoxItemEditAdapter.OnItemRemoveListener
-    private lateinit var mListenerMove: BoxItemEditAdapter.OnItemMoveListener
-
-
-    fun getCurrentStatus(): ArrayList<BoxItemModel>{
-        return mItemModel
-    }
+    private lateinit var mListenerRemove: OnItemRemoveListener
+    private lateinit var mListenerMove: OnItemMoveListener
 
 
     init {
@@ -100,52 +95,40 @@ class BoxItemEditAdapter(
 
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
-        //private var itemEditAmount: NumberPicker
-        //private var itemEditAmountTaken: NumberPicker
-        //private var itemEditInvnum: ChipGroup
-        //var item_edit_status: EditText
         private var itemContainer: MaterialCardView
         private var itemName: TextView
         private var itemAmount: TextView
         private var itemColorDisplay: View
         private var itemInvnums: ChipGroup
 
-        //private var itemColorButton: MaterialButton
         private var itemDeleteButton: MaterialButton
         private var itemEditButton: MaterialButton
         private var itemMoveButton: MaterialButton
         private var itemPlusButton: MaterialButton
         private var itemMinusButton: MaterialButton
-        //private var itemInvnumButton: MaterialButton
 
         init {
-            //itemEditAmount = itemView.findViewById(R.id.box_item_edit_amount)
-            //itemEditAmountTaken = itemView.findViewById(R.id.box_item_edit_amount_taken)
-            //itemEditInvnum = itemView.findViewById(R.id.box_item_invnums)
-            //item_edit_status = itemView.findViewById<EditText>(R.id.box_item_edit_status)
-            itemContainer = itemView.findViewById<MaterialCardView>(R.id.card_box)
-            itemName = itemView.findViewById<TextView>(R.id.box_item_name)
-            itemAmount = itemView.findViewById<TextView>(R.id.box_item_amount)
-            itemColorDisplay = itemView.findViewById<View>(R.id.box_item_color)
-            itemInvnums = itemView.findViewById<ChipGroup>(R.id.box_item_invnums)
-
+            itemContainer = itemView.findViewById(R.id.card_box)
+            itemName = itemView.findViewById(R.id.box_item_name)
+            itemAmount = itemView.findViewById(R.id.box_item_amount)
+            itemColorDisplay = itemView.findViewById(R.id.box_item_color)
+            itemInvnums = itemView.findViewById(R.id.box_item_invnums)
             itemDeleteButton = itemView.findViewById(R.id.box_item_delete_btn)
             itemEditButton = itemView.findViewById(R.id.box_item_edit_btn)
             itemMoveButton = itemView.findViewById(R.id.box_item_move_btn)
             itemPlusButton = itemView.findViewById(R.id.box_item_edit_plus)
             itemMinusButton = itemView.findViewById(R.id.box_item_edit_minus)
-            //itemColorButton = itemView.findViewById(R.id.box_item_color_btn)
-            //itemInvnumButton = itemView.findViewById(R.id.box_item_invnum_btn)
+
             itemDeleteButton.setOnClickListener {
-                var removedItem = mItemModel.removeAt(absoluteAdapterPosition)
+                val removedItem = mItemModel.removeAt(absoluteAdapterPosition)
                 notifyItemRemoved(absoluteAdapterPosition)
                 notifyItemRangeChanged(absoluteAdapterPosition, mItemModel.size)
                 mListenerRemove.onItemRemove(removedItem.item_compartment, removedItem.numeric_id, it)
             }
 
             fun fixAmountTextfield(){
-                var taken = mItemModel[absoluteAdapterPosition].item_amount_taken.toInt()
-                var amount = mItemModel[absoluteAdapterPosition].item_amount.toInt()
+                val taken = mItemModel[absoluteAdapterPosition].item_amount_taken.toInt()
+                val amount = mItemModel[absoluteAdapterPosition].item_amount.toInt()
                 if (taken == 0) {
                     itemAmount.text = amount.toString()
                 } else {
@@ -154,39 +137,16 @@ class BoxItemEditAdapter(
             }
 
             itemPlusButton.setOnClickListener {
-                var newAmount = mItemModel[absoluteAdapterPosition].item_amount.toInt() + 1
+                val newAmount = mItemModel[absoluteAdapterPosition].item_amount.toInt() + 1
                 mItemModel[absoluteAdapterPosition].item_amount = newAmount.toString()
                 fixAmountTextfield()
             }
 
             itemMinusButton.setOnClickListener {
-                var newAmount = max(0, mItemModel[absoluteAdapterPosition].item_amount.toInt() - 1)
+                val newAmount = max(0, mItemModel[absoluteAdapterPosition].item_amount.toInt() - 1)
                 mItemModel[absoluteAdapterPosition].item_amount = newAmount.toString()
                 fixAmountTextfield()
             }
-
-            /*// For loops are needed for automatically closing number keyboard on enter press
-            for( v in itemEditAmount.children) {
-                if(v is EditText) {
-                    v.setOnEditorActionListener { _, _, _ ->
-                        v.clearFocus()
-                        val imm = v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.hideSoftInputFromWindow(v.windowToken, 0)
-                        true
-                    }
-                }
-            }
-            for( v in itemEditAmountTaken.children) {
-                if(v is EditText) {
-                    v.setOnEditorActionListener { _, _, _ ->
-                        v.clearFocus()
-                        val imm = v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.hideSoftInputFromWindow(v.windowToken, 0)
-                        true
-                    }
-                }
-            }*/
-
 
             itemMoveButton.setOnClickListener {
                 val builder = MaterialAlertDialogBuilder(mContext)
@@ -199,7 +159,7 @@ class BoxItemEditAdapter(
                 val targetCompartmentSelect = viewInflated.findViewById<View>(R.id.dialog_move_item_dropdown_compartment) as AutoCompleteTextView
 
                 val allBoxes: HashMap<String, String> = HashMap()
-                var allBoxCompartments: ArrayList<String> = ArrayList()
+                val allBoxCompartments: ArrayList<String> = ArrayList()
                 var defaultBox: String = ""
                 var defaultCompartment: String = mCompartmentName
 
@@ -208,7 +168,7 @@ class BoxItemEditAdapter(
                     defaultCompartment = mContext.resources.getString(R.string.compartment_default_name)
 
 
-                var movedItem: ItemMoveModel = ItemMoveModel(
+                val movedItem: ItemMoveModel = ItemMoveModel(
                     mItemModel[absoluteAdapterPosition],
                     mBoxId,
                     mCompartmentName,
@@ -254,7 +214,7 @@ class BoxItemEditAdapter(
 
                         targetBoxSelect.onItemClickListener =
                             AdapterView.OnItemClickListener { parent, view, position, id ->
-                                var clickedBox = parent.adapter.getItem(position)
+                                val clickedBox = parent.adapter.getItem(position)
                                 val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(mContext)).child("boxes")
                                 boxesRef.get().addOnCompleteListener { task ->
                                     if (task.isSuccessful) {
@@ -332,17 +292,11 @@ class BoxItemEditAdapter(
                 val viewInflated: View = LayoutInflater.from(mContext)
                     .inflate(R.layout.dialog_edit_item, itemView as ViewGroup?, false)
 
-                var itemEditAmount: NumberPicker
-                var itemEditAmountTaken: NumberPicker
-                var itemEditInvnum: ChipGroup
-                var itemColorButton: MaterialButton
-                var itemInvnumButton: MaterialButton
-
-                itemEditAmount = viewInflated.findViewById(R.id.box_item_edit_amount)
-                itemEditAmountTaken = viewInflated.findViewById(R.id.box_item_edit_amount_taken)
-                itemEditInvnum = viewInflated.findViewById(R.id.box_item_invnums)
-                itemColorButton = viewInflated.findViewById(R.id.box_item_color_btn)
-                itemInvnumButton = viewInflated.findViewById(R.id.box_item_invnum_btn)
+                val itemEditAmount: NumberPicker = viewInflated.findViewById(R.id.box_item_edit_amount)
+                val itemEditAmountTaken: NumberPicker = viewInflated.findViewById(R.id.box_item_edit_amount_taken)
+                val itemEditInvnum: ChipGroup = viewInflated.findViewById(R.id.box_item_invnums)
+                val itemColorButton: MaterialButton = viewInflated.findViewById(R.id.box_item_color_btn)
+                val itemInvnumButton: MaterialButton = viewInflated.findViewById(R.id.box_item_invnum_btn)
 
 
                 itemEditAmount.progress = mItemModel[absoluteAdapterPosition].item_amount.toInt()
@@ -484,12 +438,7 @@ class BoxItemEditAdapter(
                     }
                 }
                 mAlertDialog.show()
-
             }
-
-
-
-
         }
 
         fun bind(model: BoxItemModel) {
@@ -501,8 +450,6 @@ class BoxItemEditAdapter(
             }
             itemColorDisplay.background.setTint(model.item_color)
 
-            //itemContainer.strokeColor = model.item_color
-
             itemInvnums.removeAllViews()
             for (invnum in model.item_invnum.split(";")){
                 if (invnum != ""){
@@ -512,9 +459,6 @@ class BoxItemEditAdapter(
                     itemInvnums.addView(chip)
                 }
             }
-
-            //item_edit_amount.setText(model.item_amount)
-            //setColorButtonColor(model.item_color, itemEditButton)
         }
     }
 
@@ -545,14 +489,6 @@ class BoxItemEditAdapter(
 
     fun setOnItemMoveListener(mListener: OnItemMoveListener) {
         this.mListenerMove = mListener
-    }
-
-
-
-    fun addToItemList(newList: ArrayList<BoxItemModel>) {
-        this.mItemModel = newList
-        notifyItemInserted(mItemModel.size-1)
-        notifyItemRangeChanged(0, mItemModel.size)
     }
 
 

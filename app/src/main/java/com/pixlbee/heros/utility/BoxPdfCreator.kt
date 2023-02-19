@@ -1,3 +1,5 @@
+@file:Suppress("ReplaceWithEnumMap")
+
 package com.pixlbee.heros.utility
 
 import android.animation.LayoutTransition

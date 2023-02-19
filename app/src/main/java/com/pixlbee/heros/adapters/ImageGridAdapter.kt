@@ -106,26 +106,6 @@ class ImageGridAdapter(gridImages: ArrayList<ImageGridElementModel>) : RecyclerV
     }
 
 
-    fun moveImage(fromPosition: Int, toPosition: Int): ArrayList<ImageGridElementModel> {
-        val item = mImageList.removeAt(fromPosition)
-        mImageList.add(if (toPosition > fromPosition) toPosition - 1 else toPosition, item)
-        return mImageList
-
-        if (toPosition != mImageList.size - 1 && fromPosition != mImageList.size - 1) {
-            if (fromPosition < toPosition) {
-                for (i in fromPosition until toPosition) {
-                    Collections.swap(mImageList, i, i + 1)
-                }
-            } else {
-                for (i in fromPosition downTo toPosition + 1) {
-                    Collections.swap(mImageList, i, i - 1)
-                }
-            }
-        }
-        return mImageList
-    }
-
-
     fun setFilter(imageList: List<ImageGridElementModel>) {
         mImageList.clear()
         mImageList.addAll(imageList)
@@ -145,25 +125,10 @@ class ImageGridAdapter(gridImages: ArrayList<ImageGridElementModel>) : RecyclerV
     }
 
     fun onRowMoved(fromPosition: Int, toPosition: Int) {
-        /*if (fromPosition < toPosition) {
-            for (i in fromPosition until toPosition) {
-                Collections.swap(mImageList, i, i + 1)
-            }
-        } else {
-            for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(mImageList, i, i - 1)
-            }
-        }*/
-
-        //val fromLocation = mImageList[fromPosition]
-        //mImageList.removeAt(fromPosition)
-        //mImageList.add(toPosition, fromLocation)
-
-        Collections.swap(mImageList!!, fromPosition, toPosition)
-        notifyItemMoved(fromPosition, toPosition)
+        Collections.swap(mImageList, fromPosition, toPosition)
         notifyItemChanged(fromPosition)
-
-        //return mImageList
+        notifyItemMoved(fromPosition, toPosition)
+        notifyItemRangeChanged(fromPosition,toPosition)
     }
 
     fun addImage(newImage: ImageGridElementModel) {
@@ -171,8 +136,8 @@ class ImageGridAdapter(gridImages: ArrayList<ImageGridElementModel>) : RecyclerV
         this.notifyItemInserted(mImageList.size - 2)
     }
 
-    fun deleteImage(position: Int) {
-        Log.e("error","Delete position: " + position)
+    private fun deleteImage(position: Int) {
+        Log.e("error", "Delete position: $position")
         mImageList.removeAt(position)
         this.notifyItemRemoved(position)
     }

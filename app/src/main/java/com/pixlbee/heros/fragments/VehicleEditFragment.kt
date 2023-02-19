@@ -285,20 +285,17 @@ class VehicleEditFragment : Fragment() {
                 if (resultCode == RESULT_OK) {
                     //Image Uri will not be null for RESULT_OK
                     val uri: Uri = data?.data!!
-                    var imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
+                    val imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
                     imageBitmapEncoded = Utils.getEncoded64ImageStringFromBitmap(imageBitmap)
 
                     Glide.with(context!!)
                         .load(imageBitmap)
                         .into(vehicleEditImageField)
 
-                    //vehicleEditImageField.setImageURI(uri)
                     vehicleEditImageSpinner.visibility = View.GONE
                     vehicleImgAddBtn.visibility = View.GONE
                     vehicleImgDeleteBtn.visibility = View.VISIBLE
                     vehicleImgChangeBtn.visibility = View.VISIBLE
-                    //} else if (resultCode == ImagePicker.RESULT_ERROR) {
-                    //Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
                 } else {
                     vehicleEditImageSpinner.visibility = View.GONE
                     Toast.makeText(context, resources.getString(R.string.task_cancelled), Toast.LENGTH_SHORT).show()

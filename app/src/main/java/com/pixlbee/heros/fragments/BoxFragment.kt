@@ -1,3 +1,5 @@
+@file:Suppress("LocalVariableName")
+
 package com.pixlbee.heros.fragments
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
@@ -70,7 +72,6 @@ class BoxFragment : Fragment(){
 
     private lateinit var boxSummaryImageField: ImageView
     private lateinit var boxSummaryImageFieldOverlay: LinearLayout
-    private lateinit var boxLocationImageField: ImageView
 
     private lateinit var animationType: String
     private var sliderImageViews: ArrayList<ImageView> = ArrayList()
@@ -288,7 +289,7 @@ class BoxFragment : Fragment(){
             Glide.with(this).load(R.drawable.placeholder_with_bg_80_elevated).into(boxSummaryImageField)
             //addImageToSlider(BitmapFactory.decodeResource(resources, R.drawable.placeholder_with_bg_80))
         } else {
-            boxSummaryImageField.scaleType=ImageView.ScaleType.CENTER_CROP
+            boxSummaryImageField.scaleType= ScaleType.CENTER_CROP
             Glide.with(this).load(Utils.stringToBitMap(boxImg)).into(boxSummaryImageField)
             addImageToSlider(Utils.stringToBitMap(boxImg), false)
             sliderImageOffset = 1
@@ -430,17 +431,6 @@ class BoxFragment : Fragment(){
                 .show(true)
         }
 
-        /*.setOnClickListener {
-            val drawables: ArrayList<Drawable> = ArrayList()
-            drawables.add(boxLocationImageField.drawable)
-
-            StfalconImageViewer.Builder(
-                context, drawables
-            ) { imageView, image -> Glide.with(it.context).load(image).into(imageView) }
-                .withTransitionFrom(boxLocationImageField)
-                .show(true)
-        }*/
-
         (activity as AppCompatActivity).supportActionBar?.title = mBoxModel.id
 
         initFirebase()
@@ -454,7 +444,7 @@ class BoxFragment : Fragment(){
             override fun onDataChange(dataSnapshot: DataSnapshot){
 
                 // store which compartments were expanded (e.g. needed if go back from selection)
-                var expandedCompartments: ArrayList<String> = ArrayList<String>()
+                val expandedCompartments: ArrayList<String> = ArrayList<String>()
                 for (c in mCompartmentList) {
                     if (c.is_expanded) {
                         expandedCompartments.add(c.name)
@@ -496,9 +486,9 @@ class BoxFragment : Fragment(){
                             numericId = (UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE).toString()
                         }
                         if (itemId == contentItem.id) {
-                            var compartmentName = if (contentItem.compartment.toString() == "null") "" else contentItem.compartment
+                            val compartmentName = if (contentItem.compartment == "null") "" else contentItem.compartment
 
-                            var newItem = BoxItemModel(
+                            val newItem = BoxItemModel(
                                 numericId,
                                 contentItem.id,
                                 contentItem.amount,

@@ -31,10 +31,9 @@ class BoxCompartmentAdapter(boxId: String) : RecyclerView.Adapter<BoxCompartment
     private lateinit var mContext: Context
     private var mCompartmentList: ArrayList<CompartmentModel> = ArrayList()
     private lateinit var mBoxId: String
-    private lateinit var animationType: String
     private var skipUpdate = false
 
-    private lateinit var mListener: BoxCompartmentAdapter.OnCompartmentItemClickListener
+    private lateinit var mListener: OnCompartmentItemClickListener
 
 
     init {
@@ -134,7 +133,7 @@ class BoxCompartmentAdapter(boxId: String) : RecyclerView.Adapter<BoxCompartment
                         val backgroundLeft = GradientDrawable()
                         //val backgroundLeftColor = ResourcesCompat.getColor(resources, R.color.thw_blue, context?.theme)
 
-                        val backgroundLeftColor = mContext!!.obtainStyledAttributes(
+                        val backgroundLeftColor = mContext.obtainStyledAttributes(
                             TypedValue().data,
                             intArrayOf(com.google.android.material.R.attr.colorPrimaryContainer)
                         ).getColor(0, 0)
@@ -144,11 +143,11 @@ class BoxCompartmentAdapter(boxId: String) : RecyclerView.Adapter<BoxCompartment
                         backgroundLeft.setBounds(itemView.left + 27, itemView.top + 10, itemView.left + (itemView.right-itemView.left)/2, itemView.bottom - 10)
                         backgroundLeft.draw(c)
 
-                        val iconColor = mContext!!.obtainStyledAttributes(
+                        val iconColor = mContext.obtainStyledAttributes(
                             TypedValue().data,
                             intArrayOf(com.google.android.material.R.attr.colorOnPrimaryContainer)
                         ).getColor(0, 0)
-                        val editIcon = ContextCompat.getDrawable(mContext!!, R.drawable.ic_baseline_exposure_plus_1_24)
+                        val editIcon = ContextCompat.getDrawable(mContext, R.drawable.ic_baseline_exposure_plus_1_24)
                         editIcon!!.setTint(iconColor)
                         val intrinsicWidth = editIcon.intrinsicWidth
                         val intrinsicHeight = editIcon.intrinsicHeight
@@ -166,7 +165,7 @@ class BoxCompartmentAdapter(boxId: String) : RecyclerView.Adapter<BoxCompartment
                         val backgroundRight = GradientDrawable()
                         //val backgroundRightColor = ResourcesCompat.getColor(resources, R.color.thw_blue, context?.theme)
 
-                        val backgroundRightColor = mContext!!.obtainStyledAttributes(
+                        val backgroundRightColor = mContext.obtainStyledAttributes(
                             TypedValue().data,
                             intArrayOf(com.google.android.material.R.attr.colorPrimaryContainer)
                         ).getColor(0, 0)
@@ -176,11 +175,11 @@ class BoxCompartmentAdapter(boxId: String) : RecyclerView.Adapter<BoxCompartment
                         backgroundRight.setBounds(itemView.left + (itemView.right-itemView.left)/2, itemView.top + 10, itemView.right-27, itemView.bottom - 10)
                         backgroundRight.draw(c)
 
-                        val iconColor = mContext!!.obtainStyledAttributes(
+                        val iconColor = mContext.obtainStyledAttributes(
                             TypedValue().data,
                             intArrayOf(com.google.android.material.R.attr.colorOnPrimaryContainer)
                         ).getColor(0, 0)
-                        val editIcon = ContextCompat.getDrawable(mContext!!, R.drawable.ic_baseline_exposure_neg_1_24)
+                        val editIcon = ContextCompat.getDrawable(mContext, R.drawable.ic_baseline_exposure_neg_1_24)
                         editIcon!!.setTint(iconColor)
                         val intrinsicWidth = editIcon.intrinsicWidth
                         val intrinsicHeight = editIcon.intrinsicHeight
@@ -216,7 +215,7 @@ class BoxCompartmentAdapter(boxId: String) : RecyclerView.Adapter<BoxCompartment
                     }
                     mItemList[position].item_amount_taken = newTakenAmount
 
-                    skipUpdate = true;
+                    skipUpdate = true
                     holder.mBoxItemAdapter.updateAmountTaken(position, newTakenAmount, mContext)
                 }
             }
@@ -237,8 +236,8 @@ class BoxCompartmentAdapter(boxId: String) : RecyclerView.Adapter<BoxCompartment
         var compartmentName: TextView = itemView.findViewById(R.id.compartment_name)
         var compartmentContainer: MaterialCardView = itemView.findViewById(R.id.box_compartment_card_small)
         val recyclerview = itemView.findViewById<View>(R.id.compartment_content) as RecyclerView
-        val compartmentArrow: ImageView = itemView.findViewById<ImageView>(R.id.compartment_arrow)
-        val rvContainer: RelativeLayout = itemView.findViewById<RelativeLayout>(R.id.compartment_content_container)
+        private val compartmentArrow: ImageView = itemView.findViewById(R.id.compartment_arrow)
+        val rvContainer: RelativeLayout = itemView.findViewById(R.id.compartment_content_container)
         lateinit var mBoxItemAdapter: BoxItemAdapter
 
         fun expandContent(p0: View?) {

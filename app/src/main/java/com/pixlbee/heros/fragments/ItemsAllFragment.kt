@@ -31,7 +31,7 @@ import com.pixlbee.heros.utility.Utils
 import java.util.*
 
 
-open class ItemsAllFragment() : Fragment(), SearchView.OnQueryTextListener {
+open class ItemsAllFragment : Fragment(), SearchView.OnQueryTextListener {
 
     var mItemList: ArrayList<ItemModel> = ArrayList<ItemModel>()
     lateinit var mAdapter: ItemAdapter
@@ -191,9 +191,6 @@ open class ItemsAllFragment() : Fragment(), SearchView.OnQueryTextListener {
     override fun onQueryTextChange(newText: String): Boolean {
         searchQueryText = newText
         setFilterAndSort(mItemList)
-        //activity?.runOnUiThread {
-        //    adapter.notifyDataSetChanged()
-        //}
 
         return true
     }
@@ -247,7 +244,7 @@ open class ItemsAllFragment() : Fragment(), SearchView.OnQueryTextListener {
                 val boxes: DataSnapshot? = task.result
                 if (boxes != null) {
                     var resultsUpdated = false
-                    var foundItemIds = ArrayList<String>()
+                    val foundItemIds = ArrayList<String>()
                     // search all boxes for queried invnum
                     for (box: DataSnapshot in boxes.children) {
                         for (item: DataSnapshot in box.child("content").children) {

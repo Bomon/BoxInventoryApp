@@ -16,7 +16,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
 import com.pixlbee.heros.fragments.BoxEditFragment
-import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.CompartmentModel
 import com.pixlbee.heros.models.ItemMoveModel
 import com.pixlbee.heros.utility.Animations
@@ -27,11 +26,10 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
 
     private lateinit var mContext: Context
     private var mCompartmentList: ArrayList<CompartmentModel> = ArrayList()
-    private lateinit var mBoxId: String
-    private lateinit var animationType: String
+    private var mBoxId: String
 
-    private lateinit var mListener: BoxCompartmentEditAdapter.OnCompartmentItemAddListener
-    private lateinit var mParentFragment: BoxEditFragment
+    private lateinit var mListener: OnCompartmentItemAddListener
+    private var mParentFragment: BoxEditFragment
 
 
     init {
@@ -77,7 +75,7 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
 
         holder.compartmentContainer.transitionName = compartment.name
 
-        var adapter = BoxItemEditAdapter(ArrayList(), mBoxId, compartment.name, mParentFragment)
+        val adapter = BoxItemEditAdapter(ArrayList(), mBoxId, compartment.name, mParentFragment)
 
         adapter.setOnItemRemoveListener(object: BoxItemEditAdapter.OnItemRemoveListener {
             override fun onItemRemove(compartmentName: String, numericItemId: String, view: View) {
@@ -90,7 +88,7 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
         })
 
         fun moveItem(movedItem: ItemMoveModel) {
-            var newItem = movedItem.item
+            val newItem = movedItem.item
             newItem.item_compartment = movedItem.target_compartment
             // move inside box
             if (movedItem.target_box_id == movedItem.src_box_id) {
@@ -187,9 +185,9 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                 }
 
                 val allBoxes: HashMap<String, String> = HashMap()
-                var allBoxCompartments: ArrayList<String> = ArrayList()
+                val allBoxCompartments: ArrayList<String> = ArrayList()
                 var defaultBox: String = ""
-                var defaultCompartment: String = holder.compartmentName.text.toString()
+                val defaultCompartment: String = holder.compartmentName.text.toString()
 
                 var targetBoxId = mBoxId
                 var targetBoxKey = ""
@@ -242,7 +240,7 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                         // Find compartments if other box is clicked
                         targetBoxSelect.onItemClickListener =
                             AdapterView.OnItemClickListener { parent, view, position, id ->
-                                var clickedBox = parent.adapter.getItem(position)
+                                val clickedBox = parent.adapter.getItem(position)
                                 val boxesRef = FirebaseDatabase.getInstance().reference.child(
                                     Utils.getCurrentlySelectedOrg(mContext)
                                 ).child("boxes")
@@ -290,7 +288,7 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
 
                         targetCompartmentSelect.onItemClickListener =
                             AdapterView.OnItemClickListener { parent, view, position, id ->
-                                var clickedCompartment = parent.adapter.getItem(position)
+                                val clickedCompartment = parent.adapter.getItem(position)
                                 targetCompartment = clickedCompartment.toString()
                             }
                     }
@@ -309,13 +307,13 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                     b.setOnClickListener {
                         // On Move
                         if (radioBtnMove.isChecked) {
-                            var itemsToMove = ArrayList<ItemMoveModel>()
+                            val itemsToMove = ArrayList<ItemMoveModel>()
                             if (targetCompartment == mContext.resources.getString(R.string.compartment_default_name)) {
                                 targetCompartment = ""
                             }
                             if (mBoxId != targetBoxId || compartment.name != targetCompartment) {
                                 for (item in compartment.content) {
-                                    var movedItem: ItemMoveModel = ItemMoveModel(
+                                    val movedItem: ItemMoveModel = ItemMoveModel(
                                         item,
                                         mBoxId,
                                         compartment.name,
@@ -406,10 +404,10 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
         var compartmentName: TextView = itemView.findViewById(R.id.compartment_name)
         var compartmentContainer: MaterialCardView = itemView.findViewById(R.id.box_compartment_card_small)
         val recyclerview = itemView.findViewById<View>(R.id.compartment_content) as RecyclerView
-        val compartmentArrow: ImageView = itemView.findViewById<ImageView>(R.id.compartment_arrow)
-        val compartmentAddItemButton: MaterialButton = itemView.findViewById<MaterialButton>(R.id.compartment_add_item_button)
-        val compartmentDeleteButton: MaterialButton = itemView.findViewById<MaterialButton>(R.id.compartment_delete_button)
-        val rvContainer: RelativeLayout = itemView.findViewById<RelativeLayout>(R.id.compartment_content_container)
+        private val compartmentArrow: ImageView = itemView.findViewById(R.id.compartment_arrow)
+        val compartmentAddItemButton: MaterialButton = itemView.findViewById(R.id.compartment_add_item_button)
+        val compartmentDeleteButton: MaterialButton = itemView.findViewById(R.id.compartment_delete_button)
+        val rvContainer: RelativeLayout = itemView.findViewById(R.id.compartment_content_container)
         var isExpanded: Boolean = false
 
         lateinit var mBoxItemEditAdapter: BoxItemEditAdapter
@@ -443,16 +441,6 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
 
     fun setOnCompartmentItemAddListener(mListener: OnCompartmentItemAddListener) {
         this.mListener = mListener
-    }
-
-
-    fun addItem(newItem: BoxItemModel) {
-        for (c in mCompartmentList) {
-            if (c.name == newItem.item_compartment) {
-                c.content.add(newItem)
-            }
-        }
-        this.notifyDataSetChanged()
     }
 
 

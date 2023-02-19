@@ -76,6 +76,10 @@ class VehicleAdapter(var content: ArrayList<VehicleModel>, private var compactVi
             Glide.with(mContext)
                 .load(imageByteArray)
                 .into(holder.vehicleImg)
+        } else {
+            Glide.with(mContext)
+                .load(R.drawable.placeholder_with_bg_80)
+                .into(holder.vehicleImg)
         }
 
         holder.vehicleContainer.transitionName = mVehicleList[position].id

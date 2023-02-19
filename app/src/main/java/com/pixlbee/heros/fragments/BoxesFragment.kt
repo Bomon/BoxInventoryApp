@@ -1,6 +1,5 @@
 package com.pixlbee.heros.fragments
 
-import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import android.view.*
@@ -38,7 +37,7 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private var viewGroup: ViewGroup? = null
     var mBoxList: ArrayList<BoxModel> = ArrayList<BoxModel>()
-    lateinit var mAdapter: BoxAdapter
+    private lateinit var mAdapter: BoxAdapter
     private lateinit var mFirebaseListener: ValueEventListener
 
     private lateinit var exitToast: Toast
@@ -166,7 +165,7 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
 
-        val sharedPreferences = context!!.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        val sharedPreferences = context!!.getSharedPreferences("AppPreferences", MODE_PRIVATE)
         animationType = sharedPreferences.getString("animation_type", "simple").toString()
         if (animationType == "elegant") {
             enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
@@ -219,8 +218,8 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
         recyclerview.adapter = mAdapter
 
         // Possible optimizations:
-        //recyclerview.setHasFixedSize(true)
-        //recyclerview.setItemViewCacheSize(100);
+        recyclerview.setHasFixedSize(true)
+        recyclerview.setItemViewCacheSize(100)
 
         // Item decorators for inserting dividers into RecyclerView
         /*val dividerItemDecoration: ItemDecoration = BoxDividerItemDecorator(
@@ -230,65 +229,6 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
         )
         recyclerview.addItemDecoration(dividerItemDecoration)*/
 
-        // Swipe functionality
-        /*ItemTouchHelper(object :
-            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT + ItemTouchHelper.LEFT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                if (Utils.checkHasWritePermission(context, false)) {
-                    super.onChildDraw(
-                        c,
-                        recyclerView,
-                        viewHolder,
-                        dX / 5,
-                        dY,
-                        actionState,
-                        isCurrentlyActive
-                    )
-                } else {
-                    super.onChildDraw(
-                        c,
-                        recyclerView,
-                        viewHolder,
-                        0f,
-                        dY,
-                        actionState,
-                        isCurrentlyActive
-                    )
-                }
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                if (Utils.checkHasWritePermission(context, false)) {
-                    val oldBoxModel: BoxModel = mBoxList[viewHolder.adapterPosition]
-                    val position = viewHolder.adapterPosition
-                    //boxList.removeAt(viewHolder.adapterPosition)
-
-                    var color: Int = Utils.getNextColor(context!!, oldBoxModel.color)
-                    if (direction == ItemTouchHelper.RIGHT) {
-                        color = Utils.getPreviousColor(context!!, oldBoxModel.color)
-                    }
-                    oldBoxModel.color = color
-
-                    mAdapter.updateColorInFirebase(position)
-                }
-            }
-        }).attachToRecyclerView(recyclerview)*/
 
         initFirebase()
 
@@ -313,8 +253,8 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
                 vehicleIdNameLookup.clear()
                 val vehicles = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("vehicles")
                 for (vehicle: DataSnapshot in vehicles.children) {
-                    var vehicleId = vehicle.child("id").value.toString()
-                    var vehicleName = vehicle.child("name").value.toString()
+                    val vehicleId = vehicle.child("id").value.toString()
+                    val vehicleName = vehicle.child("name").value.toString()
                     vehicleIdNameLookup[vehicleId] = vehicleName
                 }
 
@@ -437,7 +377,7 @@ class BoxesFragment : Fragment(), SearchView.OnQueryTextListener {
                 val vehicles: DataSnapshot? = task.result
                 if (vehicles != null) {
                     var resultsUpdated = false
-                    var foundVehicleIds = ArrayList<String>()
+                    val foundVehicleIds = ArrayList<String>()
                     // search all vehicles for queried name or callname
                     for (vehicle: DataSnapshot in vehicles.children) {
                         val name = vehicle.child("name").value.toString()

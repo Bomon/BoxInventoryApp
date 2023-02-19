@@ -23,7 +23,7 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
 
     private lateinit var mContext: Context
     private var mItemList: ArrayList<BoxItemModel> = ArrayList()
-    private lateinit var mBoxId: String
+    private var mBoxId: String
 
     private lateinit var mListener: OnBoxItemClickListener
 
@@ -90,7 +90,6 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
 
 
     inner class BoxItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
-        //var itemColor: View = itemView.findViewById(R.id.item_color)
         var itemAmount: TextView = itemView.findViewById(R.id.item_amount)
         var itemName: TextView = itemView.findViewById(R.id.item_name)
         var itemInvnums: ChipGroup = itemView.findViewById(R.id.item_invnums)

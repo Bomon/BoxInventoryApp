@@ -6,7 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageView
+import android.widget.TableLayout
+import android.widget.TableRow
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
@@ -79,11 +82,14 @@ class ItemAvailabilityAdapter : RecyclerView.Adapter<ItemAvailabilityAdapter.Ite
             holder.itemTags.visibility = View.GONE
         }
 
-        //holder.item_description.text = mItemList[position].description
         if (mItemList[position].item.image != ""){
             val imageByteArray = Base64.decode(mItemList[position].item.image, Base64.DEFAULT)
             Glide.with(context)
                 .load(imageByteArray)
+                .into(holder.itemImage)
+        } else {
+            Glide.with(context)
+                .load(R.drawable.placeholder_with_bg_80_yellow)
                 .into(holder.itemImage)
         }
 
@@ -96,7 +102,7 @@ class ItemAvailabilityAdapter : RecyclerView.Adapter<ItemAvailabilityAdapter.Ite
 
         // Add rows
         mItemList[position].taken.forEach { (key, value) ->
-            Log.e("Error", "Add row " + key.toString() + " with value " + value);
+            Log.e("Error", "Add row $key with value $value")
             val row = TableRow(context)
 
             val textViewBox = TextView(context)
@@ -121,7 +127,6 @@ class ItemAvailabilityAdapter : RecyclerView.Adapter<ItemAvailabilityAdapter.Ite
         var itemName: TextView = itemView.findViewById(R.id.card_item_name)
         var itemImage: ImageView = itemView.findViewById(R.id.card_item_img)
         val itemTags: ChipGroup = itemView.findViewById(R.id.card_item_tags)
-        val itemTagsContainer: LinearLayout = itemView.findViewById(R.id.card_item_tags_container)
         val itemContainer: MaterialCardView = itemView.findViewById(R.id.card_item_small)
         val itemAvailabilityTable: TableLayout = itemView.findViewById(R.id.item_availability_table)
         val itemTagIcon: ShapeableImageView = itemView.findViewById(R.id.card_item_tags_icon)

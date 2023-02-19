@@ -72,7 +72,7 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
 
         confirmBtn.setOnMenuItemClickListener {
             val navController: NavController = findNavController()
-            var itemIds = mAdapter.getSelectedItems()
+            val itemIds = mAdapter.getSelectedItems()
             navController.previousBackStackEntry?.savedStateHandle?.set("itemIdList", itemIds)
             navController.previousBackStackEntry?.savedStateHandle?.set("targetCompartmentName", targetCompartmentName)
             navController.popBackStack()
@@ -136,7 +136,6 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
                 if (isMultiSelectMode) {
                     mAdapter.toggleSelection(position)
                 } else {
-                    //adapter.setFilter(itemList)
                     val navController: NavController = Navigation.findNavController(view)
                     // push the selected item back to BoxEditFragment
                     navController.previousBackStackEntry?.savedStateHandle?.set("itemIdList", listOf(itemId))
@@ -225,9 +224,6 @@ open class ItemsSelectionFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onQueryTextChange(newText: String): Boolean {
         searchQueryText = newText
         mAdapter.setFilter(filterAndSort(mItemList))
-        //activity?.runOnUiThread {
-        //    adapter.notifyDataSetChanged()
-        //}
 
         return true
     }

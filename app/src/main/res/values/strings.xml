@@ -166,6 +166,7 @@
     <string name="dialog_order_by_completeness">Vollständigkeit</string>
     <string name="snackbar_update_ready">Update ist bereit</string>
     <string name="snackbar_btn_install">Installieren</string>
+
     <string name="changelog_1_2_slide1_text">Update 1.2 ist da und bringt neben neuen Funktionen auch viele kleine Verbesserungen.</string>
     <string name="changelog_1_2_slide2_title">Fahrzeuge</string>
     <string name="changelog_1_2_slide2_text">Es gibt eine neue Hauptansicht, in der Fahrzeuge angelegt und verwaltet werden können. Jede Box kann nun einem bestimmten Fahrzeug zugewiesen werden.</string>
@@ -174,6 +175,7 @@
     <string name="changelog_1_2_slide4_title">Verfügbarkeit von Ausrüstung</string>
     <string name="changelog_1_2_slide4_text">Es wird nun angezeigt, wie viele Gegenstände in einer Box verfügbar sind.\nDurch ein kurzes Wischen (oder im Box-Editor) können Gegenstände als \'entnommen\' markiert werden.\n\nUnvollständige Boxen, werden zudem in der Übersicht mit einem kleinen \'!\' Symbol markiert.</string>
     <string name="changelog_1_2_slide1_title">Neuigkeiten\n- Version 1.2 -</string>
+
     <string name="error_login_timeout">Verbindung konnte nicht hergestellt werden.</string>
     <string name="settings_animation_elegant">Elegant</string>
     <string name="settings_animation_simple">Einfach</string>

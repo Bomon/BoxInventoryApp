@@ -30,7 +30,7 @@ import com.pixlbee.heros.utility.Utils
 import java.util.*
 
 
-open class ItemsAvailabilityFragment() : Fragment(), SearchView.OnQueryTextListener {
+open class ItemsAvailabilityFragment : Fragment(), SearchView.OnQueryTextListener {
 
     var mItemList: ArrayList<ItemAvailabilityModel> = ArrayList<ItemAvailabilityModel>()
     lateinit var mAdapter: ItemAvailabilityAdapter
@@ -148,7 +148,7 @@ open class ItemsAvailabilityFragment() : Fragment(), SearchView.OnQueryTextListe
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 mItemList.clear()
 
-                var itemMap = ArrayMap<String, ItemAvailabilityModel>()
+                val itemMap = ArrayMap<String, ItemAvailabilityModel>()
                 val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                 for (box: DataSnapshot in boxes.children){
                     val boxId = box.child("id").value.toString()
@@ -161,8 +161,8 @@ open class ItemsAvailabilityFragment() : Fragment(), SearchView.OnQueryTextListe
                         if (itemAmountTaken != "0"){
                             // Create entry if not exist
                             if (!itemMap.containsKey(contentItemId)) {
-                                var initialItemModel = ItemModel(contentItemId, "", "", "", "")
-                                var initialTakenMap = ArrayMap<String, Int>()
+                                val initialItemModel = ItemModel(contentItemId, "", "", "", "")
+                                val initialTakenMap = ArrayMap<String, Int>()
                                 initialTakenMap[boxId] = itemAmountTaken.toInt()
                                 itemMap[contentItemId] = ItemAvailabilityModel(initialItemModel, initialTakenMap)
                             // Add to entry
@@ -197,9 +197,6 @@ open class ItemsAvailabilityFragment() : Fragment(), SearchView.OnQueryTextListe
     override fun onQueryTextChange(newText: String): Boolean {
         searchQueryText = newText
         setFilterAndSort(mItemList)
-        //activity?.runOnUiThread {
-        //    adapter.notifyDataSetChanged()
-        //}
 
         return true
     }
@@ -253,7 +250,7 @@ open class ItemsAvailabilityFragment() : Fragment(), SearchView.OnQueryTextListe
                 val boxes: DataSnapshot? = task.result
                 if (boxes != null) {
                     var resultsUpdated = false
-                    var foundItemIds = ArrayList<String>()
+                    val foundItemIds = ArrayList<String>()
                     // search all boxes for queried invnum
                     for (box: DataSnapshot in boxes.children) {
                         for (item: DataSnapshot in box.child("content").children) {

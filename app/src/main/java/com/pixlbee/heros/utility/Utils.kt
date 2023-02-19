@@ -112,7 +112,7 @@ class Utils {
             }
 
             val compartments = box.child("compartmentList").value.toString()
-            var compartmentList = ArrayList<String>()
+            val compartmentList = ArrayList<String>()
             if (compartments != "null") {
                 val compartmentList = ArrayList(compartments.split(";"))
             }

@@ -1,3 +1,5 @@
+@file:Suppress("PrivatePropertyName")
+
 package com.pixlbee.heros.activities
 
 import android.content.Context

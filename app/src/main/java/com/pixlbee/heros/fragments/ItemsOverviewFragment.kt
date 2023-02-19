@@ -20,8 +20,6 @@ import com.pixlbee.heros.adapters.ItemsViewPagerAdapter
 
 class ItemsOverviewFragment: Fragment(), SearchView.OnQueryTextListener {
 
-    private lateinit var searchView: SearchView
-    private lateinit var searchBtn: MenuItem
     private lateinit var animationType: String
 
 

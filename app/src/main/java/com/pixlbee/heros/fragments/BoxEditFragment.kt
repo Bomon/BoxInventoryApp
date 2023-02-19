@@ -57,7 +57,6 @@ class BoxEditFragment : Fragment() {
     private lateinit var mVehicle: VehicleModel
 
     private lateinit var boxEditImageField: ImageView
-    //private lateinit var boxEditLocationImageField: ImageView
     private lateinit var boxEditVehicleField: ImageView
     private lateinit var boxEditLocationDetailsFieldContainer: TextInputLayout
     private lateinit var boxEditNameField: TextInputEditText
@@ -73,7 +72,6 @@ class BoxEditFragment : Fragment() {
     private lateinit var boxEditColorBtn: MaterialButton
     private lateinit var boxEditColorPreview: View
     private lateinit var boxEditImageSpinner: ProgressBar
-    //private lateinit var boxEditLocationImageSpinner: ProgressBar
 
     private lateinit var boxImgAddBtn: MaterialButton
     private lateinit var boxImgChangeBtn: MaterialButton
@@ -147,7 +145,7 @@ class BoxEditFragment : Fragment() {
     }
 
 
-    public fun moveItem(movedItem: ItemMoveModel) {
+    fun moveItem(movedItem: ItemMoveModel) {
         if (!movedItemTracker.map { model -> model.item.numeric_id }.contains(movedItem.item.numeric_id)) {
             movedItemTracker.add(movedItem)
         }
@@ -186,9 +184,9 @@ class BoxEditFragment : Fragment() {
                             // Update Location image
                             val additionalImages = mimageGridAdapter.getImages().filter { im ->
                                 im.grid_element_type == GridElementType.IMAGE && im.image != ""
-                            }.map { im ->
-                                    im.image
-                            }.joinToString(";")
+                            }.joinToString(";") { im ->
+                                im.image
+                            }
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("location_image").setValue(additionalImages)
 
                             // Update compartment items
@@ -202,13 +200,13 @@ class BoxEditFragment : Fragment() {
                                     FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("content").push().setValue(newItem)
                                 }
                             }
-                            var allCompartmentList = (compartmentList.map { c -> c.name }).filter { c -> c != "" }.joinToString(";")
+                            val allCompartmentList = (compartmentList.map { c -> c.name }).filter { c -> c != "" }.joinToString(";")
                             FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(boxKey).child("compartmentList").setValue(allCompartmentList)
 
                             // Insert items that were moved out of the box
                             for (movedItem in movedItemTracker) {
-                                var newItem = movedItem.item
-                                var newContentItem = ContentItem(newItem.numeric_id, "", newItem.item_amount, newItem.item_amount_taken, newItem.item_id, newItem.item_invnum, newItem.item_color, movedItem.target_compartment)
+                                val newItem = movedItem.item
+                                val newContentItem = ContentItem(newItem.numeric_id, "", newItem.item_amount, newItem.item_amount_taken, newItem.item_id, newItem.item_invnum, newItem.item_color, movedItem.target_compartment)
                                 FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(tempContext)).child("boxes").child(movedItem.target_box_key).child("content").push().setValue(newContentItem)
                             }
 
@@ -595,13 +593,6 @@ class BoxEditFragment : Fragment() {
             Glide.with(this).load(Utils.stringToBitMap(mBoxModel.image)).into(boxEditImageField)
         }
 
-        /*if (mBoxModel.location_image == "") {
-            Glide.with(this).load(R.drawable.placeholder_with_bg_80).into(boxEditLocationImageField)
-        } else {
-            Glide.with(this).load(Utils.stringToBitMap(mBoxModel.location_image)).into(boxEditLocationImageField)
-        }*/
-
-
         val startForMainImageResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
                 val resultCode = result.resultCode
@@ -651,7 +642,7 @@ class BoxEditFragment : Fragment() {
                     //Image Uri will not be null for RESULT_OK
                     val uri: Uri = data?.data!!
                     locationImageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
-                    var imageString = Utils.getEncoded64ImageStringFromBitmap(locationImageBitmap)
+                    val imageString = Utils.getEncoded64ImageStringFromBitmap(locationImageBitmap)
 
                     mimageGridAdapter.addImage(ImageGridElementModel(imageString, GridElementType.IMAGE))
                 } else {
@@ -909,7 +900,7 @@ class BoxEditFragment : Fragment() {
 
     fun removeTempCompartment(name: String){
         newTempCompartments.remove(name)
-        mCompartmentList.removeIf { it -> it.name == name }
+        mCompartmentList.removeIf { it.name == name }
     }
 
 }

@@ -11,7 +11,7 @@ class ItemsViewPagerAdapter(
     fragmentActivity: FragmentActivity
 ) : FragmentStateAdapter(fragmentActivity) {
 
-    val mFragmentNames = listOf<String>(
+    val mFragmentNames = listOf(
         fragmentActivity.resources.getString(R.string.items_tab_all),
         fragmentActivity.resources.getString(R.string.items_tab_taken)
     )

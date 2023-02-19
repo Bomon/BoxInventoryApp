@@ -352,7 +352,7 @@ class ItemEditFragment : Fragment() {
                 if (resultCode == RESULT_OK) {
                     //Image Uri will not be null for RESULT_OK
                     val uri: Uri = data?.data!!
-                    var imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
+                    val imageBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(uri.toString()))
                     imageBitmapEncoded = Utils.getEncoded64ImageStringFromBitmap(imageBitmap)
 
                     Glide.with(context!!)

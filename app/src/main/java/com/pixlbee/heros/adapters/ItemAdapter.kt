@@ -79,11 +79,14 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
             holder.itemTagsContainer.visibility = View.GONE
         }
 
-        //holder.item_description.text = mItemList[position].description
         if (mItemList[position].image != ""){
             val imageByteArray = Base64.decode(mItemList[position].image, Base64.DEFAULT)
             Glide.with(context)
                 .load(imageByteArray)
+                .into(holder.itemImage)
+        } else {
+            Glide.with(context)
+                .load(R.drawable.placeholder_with_bg_80_yellow)
                 .into(holder.itemImage)
         }
 

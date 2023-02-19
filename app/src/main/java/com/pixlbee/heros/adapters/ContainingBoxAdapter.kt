@@ -126,22 +126,6 @@ class ContainingBoxAdapter(
                 }
             }
 
-            /*boxStatus.removeAllViews()
-            if(model.status != ""){
-                boxTagContainer.visibility = View.VISIBLE
-                for (tag in model.status.split(";")){
-                    if (tag != ""){
-                        val chip = Chip(mContext)
-                        chip.text = tag
-                        chip.minHeight = 1
-                        chip.setTextAppearance(R.style.SmallTextChip)
-                        boxStatus.addView(chip)
-                    }
-                }
-            } else {
-                boxTagContainer.visibility = View.GONE
-            }*/
-
             var countAmount = 0
             var countAmountTaken = 0
             val invnums = ArrayList<String>()

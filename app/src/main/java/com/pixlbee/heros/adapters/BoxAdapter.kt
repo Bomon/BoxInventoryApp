@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -100,6 +101,13 @@ class BoxAdapter(var content: ArrayList<BoxModel>, private var compactView: Bool
         if (mBoxList[position].image != ""){
             Glide.with(mContext)
                 .load(Utils.stringToBitMap(mBoxList[position].image))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.placeholder_with_bg_80)
+                .into(holder.boxImg)
+        } else {
+            Glide.with(mContext)
+                .load(R.drawable.placeholder_with_bg_80)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.boxImg)
         }
 

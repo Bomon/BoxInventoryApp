@@ -32,7 +32,7 @@ class ItemSelectionAdapter : RecyclerView.Adapter<ItemSelectionAdapter.ItemSelec
     }
 
     fun getSelectedItems(): ArrayList<String> {
-        var selectedItems: ArrayList<String> = ArrayList()
+        val selectedItems: ArrayList<String> = ArrayList()
         for (item in mItemList) {
             if (item.isSelected) {
                 selectedItems.add(item.id)
@@ -108,7 +108,7 @@ class ItemSelectionAdapter : RecyclerView.Adapter<ItemSelectionAdapter.ItemSelec
         var itemName: TextView = itemView.findViewById(R.id.card_item_selection_name)
         var itemImage: ImageView = itemView.findViewById(R.id.card_item_selection_img)
         val itemTags: ChipGroup = itemView.findViewById(R.id.card_item_selection_tags)
-        val itemSelectionMarker: ImageView = itemView.findViewById(R.id.card_item_selection_check)
+        private val itemSelectionMarker: ImageView = itemView.findViewById(R.id.card_item_selection_check)
         val itemTagsContainer: LinearLayout = itemView.findViewById(R.id.card_item_selection_tags_container)
         val itemContainer: MaterialCardView = itemView.findViewById(R.id.card_item_selection_small)
 
