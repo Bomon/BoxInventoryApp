@@ -12,10 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.pixlbee.heros.R
 import com.pixlbee.heros.fragments.BoxEditFragment
+import com.pixlbee.heros.models.BoxItemModel
 import com.pixlbee.heros.models.CompartmentModel
 import com.pixlbee.heros.models.ItemMoveModel
 import com.pixlbee.heros.utility.Animations
@@ -95,11 +98,16 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                 for (c in mCompartmentList) {
                     if (c.name == movedItem.target_compartment) {
                         c.content.add(newItem)
-                        adapter.setFilter(compartment.content)
+                        //adapter.setFilter(compartment.content)
                     }
                     if (c.name == movedItem.src_compartment) {
                         c.content.removeIf { e -> e.numeric_id == newItem.numeric_id }
                     }
+                }
+                if (movedItem.target_compartment !in mCompartmentList.map { cm -> cm.name }) {
+                    var nCmpList = ArrayList<BoxItemModel>()
+                    nCmpList.add(movedItem.item)
+                    mCompartmentList.add(CompartmentModel(movedItem.target_compartment, nCmpList, true))
                 }
             } else {  // move item out of box
                 for (c in mCompartmentList) {
@@ -152,6 +160,7 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
         holder.compartmentDeleteButton.visibility = View.VISIBLE
         holder.compartmentDeleteButton.setOnClickListener { view ->
             if (view != null) {
+                // Init Elements
                 val builder = MaterialAlertDialogBuilder(mContext)
                 builder.setTitle(mContext.resources.getString(R.string.dialog_delete_compartment_title))
 
@@ -175,6 +184,9 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                 val targetCompartmentSelect =
                     viewInflated.findViewById<View>(R.id.dialog_del_comp_dropdown_compartment) as AutoCompleteTextView
 
+                val targetNewCompartmentInput = viewInflated.findViewById<View>(R.id.dialog_move_item_new_compartment) as TextInputEditText
+                val targetNewCompartmentInputContainer = viewInflated.findViewById<View>(R.id.dialog_move_item_new_compartment_container) as TextInputLayout
+
                 moveContainer.visibility = View.GONE
 
                 radioBtnDelete.setOnClickListener {
@@ -184,6 +196,7 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                     moveContainer.visibility = View.VISIBLE
                 }
 
+                // Init the default dropdown selection
                 val allBoxes: HashMap<String, String> = HashMap()
                 val allBoxCompartments: ArrayList<String> = ArrayList()
                 var defaultBox: String = ""
@@ -209,24 +222,48 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                                 allBoxes["$boxId - $boxName"] = boxKey
                                 if (boxId == mBoxId) {
                                     defaultBox = "$boxId - $boxName"
-                                    for (item: DataSnapshot in box.child("content").children) {
+                                    /*for (item: DataSnapshot in box.child("content").children) {
                                         var compartment = item.child("compartment").value.toString()
                                         compartment = if (compartment in defaultCompartmentStrings) mContext.resources.getString(R.string.compartment_default_name) else compartment
                                         if (compartment !in allBoxCompartments) {
                                             allBoxCompartments.add(compartment)
                                         }
-                                    }
+                                    }*/
                                 }
                             }
                         }
 
                         for (newCompartment in mParentFragment.getTempCompartments()) {
-                            allBoxCompartments.add(newCompartment)
+                            val tempComp = if (newCompartment in defaultCompartmentStrings) mContext.resources.getString(R.string.compartment_default_name) else newCompartment
+                            allBoxCompartments.add(tempComp)
                         }
 
-                        val arrayAdapterCompartment =
-                            ArrayAdapter(mContext, R.layout.dropdown_item, allBoxCompartments)
-                        targetCompartmentSelect.setText(defaultCompartment, false)
+                        // Add entry for new compartment
+                        allBoxCompartments.add(mContext.resources.getString(R.string.dialog_new_compartment_select))
+
+                        // Init the dropdown default compartment.
+                        targetCompartmentSelect.setText(allBoxCompartments[0], false)
+                        when (allBoxCompartments[0]) {
+                            mContext.resources.getString(R.string.compartment_default_name) -> {
+                                targetCompartment = ""
+                            }
+                            mContext.resources.getString(R.string.dialog_new_compartment_select) -> {
+                                targetNewCompartmentInputContainer.visibility = View.VISIBLE
+                                targetCompartment = "CHECK_NEW_COMP_FIELD"
+                            }
+                            else -> {
+                                targetCompartment = allBoxCompartments[0].toString()
+                            }
+                        }
+                        // If "new compartment" is the only button, set it to visible
+                        if (allBoxCompartments.size == 1) {
+                            targetNewCompartmentInputContainer.visibility = View.VISIBLE
+                        } else {
+                            targetNewCompartmentInputContainer.visibility = View.GONE
+                        }
+
+                        // Init adapters
+                        val arrayAdapterCompartment = ArrayAdapter(mContext, R.layout.dropdown_item, allBoxCompartments)
                         targetCompartmentSelect.setAdapter(arrayAdapterCompartment)
 
                         val arrayAdapterBox = ArrayAdapter(
@@ -257,27 +294,32 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                                                 targetBoxKey = boxKey
                                                 if (clickedBox == boxTitle) {
                                                     allBoxCompartments.clear()
-                                                    for (item: DataSnapshot in box.child("content").children) {
-                                                        var compartment = item.child("compartment").value.toString()
-                                                        compartment = if (compartment in defaultCompartmentStrings) mContext.resources.getString(R.string.compartment_default_name) else compartment
-                                                        if (compartment !in allBoxCompartments) {
-                                                            allBoxCompartments.add(compartment)
-                                                        }
-                                                    }
-                                                    // If we are in our box, add new temp compartments
+                                                    // If we are in our box, add from temp compartments
                                                     if (boxId == mBoxId) {
-                                                        for (newCompartment in mParentFragment.getTempCompartments()) {
-                                                            allBoxCompartments.add(
-                                                                newCompartment
-                                                            )
+                                                        for (newCompartment in mParentFragment.getTempCompartments()){
+                                                            val tempComp = if (newCompartment in defaultCompartmentStrings) mContext.resources.getString(R.string.compartment_default_name) else newCompartment
+                                                            allBoxCompartments.add(tempComp)
+                                                        }
+                                                    }  else {
+                                                        for (item: DataSnapshot in box.child("content").children) {
+                                                            var compartment = item.child("compartment").value.toString()
+                                                            compartment = if (compartment in defaultCompartmentStrings) mContext.resources.getString(R.string.compartment_default_name) else compartment
+                                                            if (compartment !in allBoxCompartments) {
+                                                                allBoxCompartments.add(compartment)
+                                                            }
                                                         }
                                                     }
-                                                    if (allBoxCompartments.size != 0)
-                                                        targetCompartmentSelect.setText(
-                                                            allBoxCompartments[0],
-                                                            false
-                                                        )
+                                                    // Add entry for new compartment
+                                                    allBoxCompartments.add(mContext.resources.getString(R.string.dialog_new_compartment_select))
+
+                                                    targetCompartmentSelect.setText(allBoxCompartments[0], false)
+                                                    if (allBoxCompartments.size == 1) {
+                                                        targetNewCompartmentInputContainer.visibility = View.VISIBLE
+                                                    } else {
+                                                        targetNewCompartmentInputContainer.visibility = View.GONE
+                                                    }
                                                     arrayAdapterCompartment.notifyDataSetChanged()
+
                                                     break
                                                 }
                                             }
@@ -286,14 +328,28 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                                 }
                             }
 
+                        // Handle compartment click
                         targetCompartmentSelect.onItemClickListener =
                             AdapterView.OnItemClickListener { parent, view, position, id ->
-                                val clickedCompartment = parent.adapter.getItem(position)
-                                targetCompartment = clickedCompartment.toString()
+                                targetNewCompartmentInputContainer.visibility = View.GONE
+                                var clickedCompartment = parent.adapter.getItem(position)
+                                when (clickedCompartment) {
+                                    mContext.resources.getString(R.string.compartment_default_name) -> {
+                                        targetCompartment = ""
+                                    }
+                                    mContext.resources.getString(R.string.dialog_new_compartment_select) -> {
+                                        targetNewCompartmentInputContainer.visibility = View.VISIBLE
+                                        targetCompartment = "CHECK_NEW_COMP_FIELD"
+                                    }
+                                    else -> {
+                                        targetCompartment = clickedCompartment.toString()
+                                    }
+                                }
                             }
                     }
                 }
 
+                // Init dialog buttons
                 builder.setView(viewInflated)
                 builder.setPositiveButton(
                     mContext.resources.getString(R.string.dialog_ok),
@@ -307,13 +363,24 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                     b.setOnClickListener {
                         // On Move
                         if (radioBtnMove.isChecked) {
+                            var doMove = false
                             val itemsToMove = ArrayList<ItemMoveModel>()
-                            if (targetCompartment == mContext.resources.getString(R.string.compartment_default_name)) {
-                                targetCompartment = ""
+                            if (targetCompartment != "CHECK_NEW_COMP_FIELD") {
+                                if (mBoxId != targetBoxId || compartment.name != targetCompartment) {
+                                    doMove = true
+                                }
+                            } else {
+                                if (targetNewCompartmentInput.text.toString() in allBoxCompartments || targetNewCompartmentInput.text.toString() == ""){
+                                    targetNewCompartmentInputContainer.isErrorEnabled = true
+                                    targetNewCompartmentInputContainer.error = mContext.resources.getString(R.string.error_dialog_compartment_already_exists)
+                                } else {
+                                    targetCompartment = targetNewCompartmentInput.text.toString()
+                                    doMove = true
+                                }
                             }
-                            if (mBoxId != targetBoxId || compartment.name != targetCompartment) {
+                            if (doMove) {
                                 for (item in compartment.content) {
-                                    val movedItem: ItemMoveModel = ItemMoveModel(
+                                    val movedItem = ItemMoveModel(
                                         item,
                                         mBoxId,
                                         compartment.name,
@@ -328,14 +395,15 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                                 }
                                 mCompartmentList.removeAt(position)
                                 notifyDataSetChanged()
+                                mAlertDialog.dismiss()
                             }
-                            // On Delete
-                        } else {
+                        // On Delete
+                        } else if (radioBtnDelete.isChecked) {
                             mParentFragment.removeTempCompartment(mCompartmentList[position].name)
                             mCompartmentList.removeAt(position)
                             notifyDataSetChanged()
+                            mAlertDialog.dismiss()
                         }
-                        mAlertDialog.dismiss()
                     }
                 }
                 mAlertDialog.show()

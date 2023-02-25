@@ -5,12 +5,18 @@ package com.pixlbee.heros.activities
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.icu.text.SimpleDateFormat
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -21,9 +27,12 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.InstallState
@@ -36,8 +45,12 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.pixlbee.heros.BuildConfig
 import com.pixlbee.heros.R
 import com.pixlbee.heros.databinding.ActivityMainBinding
+import com.pixlbee.heros.models.BugReportModel
+import com.pixlbee.heros.models.DeviceInfoModel
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -175,9 +188,70 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
             }
+            R.id.nav_bug_report -> {
+                openBugReportDialog()
+            }
         }
         menuItem.isChecked = false
         mDrawer.closeDrawers()
+    }
+
+
+    private fun openBugReportDialog(){
+        val builder = MaterialAlertDialogBuilder(this)
+        builder.setTitle(this.resources.getString(R.string.dialog_bug_report_title))
+
+        val viewInflated: View = LayoutInflater.from(this)
+            .inflate(R.layout.dialog_bug_report, null, false)
+
+        val bugDescription = viewInflated.findViewById<View>(R.id.dialog_input_bug_report) as TextInputEditText
+        val bugDescriptionContainer = viewInflated.findViewById<View>(R.id.dialog_input_bug_report_container) as TextInputLayout
+
+        // Init dialog buttons
+        builder.setView(viewInflated)
+        builder.setPositiveButton(this.resources.getString(R.string.dialog_send), null)
+        builder.setNegativeButton(this.resources.getString(R.string.dialog_cancel)) { dialog, _ -> dialog.cancel() }
+
+        val mAlertDialog: AlertDialog = builder.create()
+        mAlertDialog.setOnShowListener {
+            val b: Button = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            b.setOnClickListener {
+                if (bugDescription.text.toString() == ""){
+                    bugDescriptionContainer.isErrorEnabled = true
+                    bugDescriptionContainer.error = this.resources.getString(R.string.error_dialog_bug_report_empty)
+                } else {
+                    var bugData = BugReportModel(
+                        bugDescription.text.toString(),
+                        BuildConfig.VERSION_NAME,
+                        BuildConfig.VERSION_CODE.toString(),
+                        SimpleDateFormat("yyyyMMdd_HHmmss").format(Date()),
+                        DeviceInfoModel(
+                            Build.MANUFACTURER,
+                            Build.BRAND,
+                            Build.MODEL,
+                            Build.BOARD,
+                            Build.HARDWARE,
+                            Build.VERSION.RELEASE,
+                            Build.VERSION.CODENAME,
+                            Build.VERSION.INCREMENTAL,
+                            Build.VERSION.SDK_INT.toString(),
+                            Build.VERSION.BASE_OS,
+                            Build.DISPLAY,
+                            Build.SOC_MANUFACTURER,
+                            Build.SOC_MODEL,
+                            Build.DEVICE,
+                            Build.HOST,
+                            Build.TYPE,
+                            SimpleDateFormat("yyyyMMdd_HHmmss").format(Build.TIME).toString(),
+                        )
+                    )
+                    FirebaseDatabase.getInstance().reference.child("bug_reports").push().setValue(bugData)
+                    mAlertDialog.dismiss()
+                    Toast.makeText(this, resources.getString(R.string.dialog_bug_report_thanks), Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+        mAlertDialog.show()
     }
 
 

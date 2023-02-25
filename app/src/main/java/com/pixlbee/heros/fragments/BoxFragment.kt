@@ -454,12 +454,6 @@ class BoxFragment : Fragment(){
                 // clear old lists
                 mItemList.clear()
                 mCompartmentList.clear()
-                // Add default compartment
-                mCompartmentList.add(CompartmentModel(
-                    "",
-                    ArrayList<BoxItemModel>(),
-                    "" in expandedCompartments)
-                )
 
                 val boxes = dataSnapshot.child(Utils.getCurrentlySelectedOrg(context!!)).child("boxes")
                 for (box: DataSnapshot in boxes.children){
@@ -504,8 +498,10 @@ class BoxFragment : Fragment(){
 
                             // Add compartment if not exist
                             if (compartmentName !in (mCompartmentList.map {model -> model.name })) {
-                                mCompartmentList.add(CompartmentModel(contentItem.compartment, ArrayList<BoxItemModel>(), false))
+                                val newCompName = if (compartmentName == "null") "" else compartmentName
+                                mCompartmentList.add(CompartmentModel(newCompName, ArrayList<BoxItemModel>(), false))
                             }
+
                             mCompartmentList.filter { model -> model.name == compartmentName }[0].content.add(newItem)
 
 

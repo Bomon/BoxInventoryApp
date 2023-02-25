@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
     id 'kotlin-parcelize'
+    // Add the Crashlytics Gradle plugin
+    id 'com.google.firebase.crashlytics'
 }
 
 apply plugin: 'androidx.navigation.safeargs.kotlin'
@@ -59,15 +61,18 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.0'
-    implementation 'com.google.firebase:firebase-database:20.0.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
 
-    implementation platform('com.google.firebase:firebase-bom:30.2.0')
-    implementation 'com.google.firebase:firebase-core'
+    implementation platform('com.google.firebase:firebase-bom:31.2.2')
+
+    implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
+    implementation 'com.google.firebase:firebase-database:20.0.3'
     implementation('com.google.firebase:firebase-auth') {
         exclude module: "play-services-safetynet"
     }
+    //crashlytics
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 
     implementation 'androidx.test:core-ktx:1.4.0'
     implementation 'androidx.core:core:1.6.0'

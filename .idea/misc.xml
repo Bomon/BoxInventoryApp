@@ -13,6 +13,7 @@
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_app_icon_monochrome.xml" value="0.1205" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.2435" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_attachment_24.xml" value="0.226" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_bug_report_24.xml" value="0.2435" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_build_circle_24.xml" value="0.243" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_cancel_24.xml" value="0.342" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/drawable/ic_baseline_cell_tower_24.xml" value="0.344" />
@@ -99,6 +100,7 @@
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_vehicle_compact_old.xml" value="0.223731884057971" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/card_vehicle_old.xml" value="0.3328804347826087" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/dialog_add_invnum.xml" value="0.21693840579710144" />
+        <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/dialog_bug_report.xml" value="0.3546875" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/dialog_changelog.xml" value="0.378125" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/dialog_create_compartment.xml" value="0.375" />
         <entry key="..\:/AndroidApps/herosgitterbox/app/src/main/res/layout/dialog_delete_compartment.xml" value="0.5" />

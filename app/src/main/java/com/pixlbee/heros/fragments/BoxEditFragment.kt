@@ -86,8 +86,6 @@ class BoxEditFragment : Fragment() {
     private var qrList: ArrayList<String> = ArrayList()
     private var idList: ArrayList<String> = ArrayList()
 
-    private var newTempCompartments: ArrayList<String> = ArrayList()
-
     private var movedItemTracker: ArrayList<ItemMoveModel> = ArrayList()
 
     private var isNewBox: Boolean = false
@@ -377,7 +375,6 @@ class BoxEditFragment : Fragment() {
         val itemListArray: Array<BoxItemModel> =
             arguments?.getSerializable("items") as Array<BoxItemModel>
 
-        mCompartmentList.add(CompartmentModel("", ArrayList<BoxItemModel>(), false))
         for (c in mBoxModel.compartments) {
             mCompartmentList.add(CompartmentModel(c, ArrayList<BoxItemModel>(), false))
         }
@@ -735,9 +732,8 @@ class BoxEditFragment : Fragment() {
                     val b: Button = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
                     b.setOnClickListener {
                         val inputText = input.text.toString()
-                        if (inputText != "" && !inputText.contains(";") && inputText !in mCompartmentList.map { t -> t.name } && inputText !in newTempCompartments) {
+                        if (inputText != "" && !inputText.contains(";") && inputText !in mCompartmentList.map { t -> t.name }) {
                             mCompartmentList.add(CompartmentModel(inputText, ArrayList<BoxItemModel>(), true))
-                            newTempCompartments.add(inputText)
                             mBoxCompartmentEditAdapter.setFilter(mCompartmentList)
                             mAlertDialog.dismiss()
                         } else {
@@ -894,12 +890,11 @@ class BoxEditFragment : Fragment() {
         //addItem(item_id.toString())
     }
 
-    fun getTempCompartments(): ArrayList<String> {
-        return newTempCompartments
+    fun getTempCompartments(): List<String> {
+        return mBoxCompartmentEditAdapter.getCurrentStatus().map { c -> c.name }
     }
 
     fun removeTempCompartment(name: String){
-        newTempCompartments.remove(name)
         mCompartmentList.removeIf { it.name == name }
     }
 

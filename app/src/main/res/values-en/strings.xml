@@ -239,4 +239,12 @@
     <string name="error_too_many_images">More than 10 images cannot be added</string>
     <string name="edit_box_add_compartment">Add Compartment</string>
     <string name="error_dialog_field_empty">Field cannot be empty</string>
+    <string name="dialog_compartment_new">New Compartment</string>
+    <string name="dialog_new_compartment_select"><![CDATA[<New Compartment>]]></string>
+    <string name="drawer_bug_report">Report bug</string>
+    <string name="dialog_send">Submit</string>
+    <string name="dialog_bug_report">Bug description</string>
+    <string name="dialog_bug_report_title">Submit Bug Report</string>
+    <string name="error_dialog_bug_report_empty">Bug report is empty</string>
+    <string name="dialog_bug_report_thanks">Thank you for submitting a bug report.</string>
 </resources>

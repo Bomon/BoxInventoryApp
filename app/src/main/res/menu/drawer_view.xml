@@ -12,6 +12,11 @@
             android:icon="@drawable/ic_baseline_settings_24"
             android:checkable="false"
             android:title="@string/drawer_settings" />
+        <item
+            android:id="@+id/nav_bug_report"
+            android:icon="@drawable/ic_baseline_bug_report_24"
+            android:checkable="false"
+            android:title="@string/drawer_bug_report" />
     </group>
     <item android:title="@string/drawer_organizations_title">
         <menu>
