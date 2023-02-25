@@ -220,7 +220,7 @@ class MainActivity : AppCompatActivity() {
                     bugDescriptionContainer.isErrorEnabled = true
                     bugDescriptionContainer.error = this.resources.getString(R.string.error_dialog_bug_report_empty)
                 } else {
-                    var bugData = BugReportModel(
+                    val bugData = BugReportModel(
                         bugDescription.text.toString(),
                         BuildConfig.VERSION_NAME,
                         BuildConfig.VERSION_CODE.toString(),

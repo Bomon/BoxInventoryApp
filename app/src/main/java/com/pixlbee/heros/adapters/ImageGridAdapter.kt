@@ -2,7 +2,6 @@ package com.pixlbee.heros.adapters
 
 import android.content.Context
 import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -137,7 +136,6 @@ class ImageGridAdapter(gridImages: ArrayList<ImageGridElementModel>) : RecyclerV
     }
 
     private fun deleteImage(position: Int) {
-        Log.e("error", "Delete position: $position")
         mImageList.removeAt(position)
         this.notifyItemRemoved(position)
     }

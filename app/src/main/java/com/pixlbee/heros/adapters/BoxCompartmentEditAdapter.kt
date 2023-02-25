@@ -105,7 +105,7 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                     }
                 }
                 if (movedItem.target_compartment !in mCompartmentList.map { cm -> cm.name }) {
-                    var nCmpList = ArrayList<BoxItemModel>()
+                    val nCmpList = ArrayList<BoxItemModel>()
                     nCmpList.add(movedItem.item)
                     mCompartmentList.add(CompartmentModel(movedItem.target_compartment, nCmpList, true))
                 }
@@ -252,7 +252,7 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                                 targetCompartment = "CHECK_NEW_COMP_FIELD"
                             }
                             else -> {
-                                targetCompartment = allBoxCompartments[0].toString()
+                                targetCompartment = allBoxCompartments[0]
                             }
                         }
                         // If "new compartment" is the only button, set it to visible
@@ -332,7 +332,7 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
                         targetCompartmentSelect.onItemClickListener =
                             AdapterView.OnItemClickListener { parent, view, position, id ->
                                 targetNewCompartmentInputContainer.visibility = View.GONE
-                                var clickedCompartment = parent.adapter.getItem(position)
+                                val clickedCompartment = parent.adapter.getItem(position)
                                 when (clickedCompartment) {
                                     mContext.resources.getString(R.string.compartment_default_name) -> {
                                         targetCompartment = ""
@@ -516,6 +516,20 @@ class BoxCompartmentEditAdapter(boxId: String, parentFragment: BoxEditFragment) 
         mCompartmentList.clear()
         mCompartmentList.addAll(compartmentItems)
         this.notifyDataSetChanged()
+    }
+
+    fun addItem(targetCompartment: String, newBoxItem: BoxItemModel) {
+        for (compartment in mCompartmentList) {
+            if (compartment.name == targetCompartment) {
+                compartment.content.add(newBoxItem)
+            }
+        }
+        this.notifyDataSetChanged()
+    }
+
+    fun addCompartment(compartmentModel: CompartmentModel) {
+        mCompartmentList.add(compartmentModel)
+        this.notifyItemInserted(mCompartmentList.size - 1)
     }
 
 }

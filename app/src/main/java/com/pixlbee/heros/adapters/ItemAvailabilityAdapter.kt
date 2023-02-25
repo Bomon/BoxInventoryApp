@@ -2,7 +2,6 @@ package com.pixlbee.heros.adapters
 
 import android.content.Context
 import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -102,7 +101,6 @@ class ItemAvailabilityAdapter : RecyclerView.Adapter<ItemAvailabilityAdapter.Ite
 
         // Add rows
         mItemList[position].taken.forEach { (key, value) ->
-            Log.e("Error", "Add row $key with value $value")
             val row = TableRow(context)
 
             val textViewBox = TextView(context)

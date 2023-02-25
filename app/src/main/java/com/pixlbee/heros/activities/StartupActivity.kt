@@ -15,7 +15,7 @@ class StartupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val packageInfo = packageManager.getPackageInfo(packageName, 0)
-        val versionCode = packageInfo.longVersionCode
+        val versionCode = 5L //packageInfo.longVersionCode
         val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val viewedChangelogVersion = sharedPreferences.getLong("changelog_version", 0)
 

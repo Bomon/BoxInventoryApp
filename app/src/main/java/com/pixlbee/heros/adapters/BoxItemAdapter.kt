@@ -1,7 +1,6 @@
 package com.pixlbee.heros.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -119,7 +118,6 @@ class BoxItemAdapter(boxId: String) : RecyclerView.Adapter<BoxItemAdapter.BoxIte
 
 
     fun updateAmountTaken(position: Int, newTakenAmount: String, iContext: Context) {
-        Log.e("Error", "update amount")
         val boxesRef = FirebaseDatabase.getInstance().reference.child(Utils.getCurrentlySelectedOrg(iContext)).child("boxes")
         boxesRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {

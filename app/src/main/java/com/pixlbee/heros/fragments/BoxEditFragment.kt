@@ -732,9 +732,9 @@ class BoxEditFragment : Fragment() {
                     val b: Button = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
                     b.setOnClickListener {
                         val inputText = input.text.toString()
+                        mCompartmentList = mBoxCompartmentEditAdapter.getCurrentStatus()
                         if (inputText != "" && !inputText.contains(";") && inputText !in mCompartmentList.map { t -> t.name }) {
-                            mCompartmentList.add(CompartmentModel(inputText, ArrayList<BoxItemModel>(), true))
-                            mBoxCompartmentEditAdapter.setFilter(mCompartmentList)
+                            mBoxCompartmentEditAdapter.addCompartment(CompartmentModel(inputText, ArrayList<BoxItemModel>(), true))
                             mAlertDialog.dismiss()
                         } else {
                             if (inputText == "") {
@@ -865,7 +865,7 @@ class BoxEditFragment : Fragment() {
                             val itemTags = item.child("tags").value.toString()
                             for (compartment in mCompartmentList) {
                                 if (compartment.name == targetCompartment) {
-                                    compartment.content.add(BoxItemModel(
+                                    val newBoxItem = BoxItemModel(
                                         (UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE).toString(),
                                         item_id,
                                         "1",
@@ -877,10 +877,10 @@ class BoxEditFragment : Fragment() {
                                         itemDescription,
                                         itemTags,
                                         targetCompartment
-                                    ))
+                                    )
+                                    mBoxCompartmentEditAdapter.addItem(compartment.name, newBoxItem)
                                 }
                             }
-                            mBoxCompartmentEditAdapter.setFilter(mCompartmentList)
                             return@addOnCompleteListener
                         }
                     }

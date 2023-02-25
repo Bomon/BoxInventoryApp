@@ -224,7 +224,7 @@ class BoxItemEditAdapter(
                                 movedItem.target_compartment = "CHECK_NEW_COMP_FIELD"
                             }
                             else -> {
-                                movedItem.target_compartment = allBoxCompartments[0].toString()
+                                movedItem.target_compartment = allBoxCompartments[0]
                             }
                         }
                         // If "new compartment" is the only button, set it to visible
@@ -298,7 +298,7 @@ class BoxItemEditAdapter(
                         targetCompartmentSelect.onItemClickListener =
                             AdapterView.OnItemClickListener { parent, view, position, id ->
                                 targetNewCompartmentInputContainer.visibility = View.GONE
-                                var clickedCompartment = parent.adapter.getItem(position)
+                                val clickedCompartment = parent.adapter.getItem(position)
                                 when (clickedCompartment) {
                                     mContext.resources.getString(R.string.compartment_default_name) -> {
                                         movedItem.target_compartment = ""

@@ -15,41 +15,41 @@ class HerosAppIntro : AppIntro() {
         //isColorTransitionsEnabled = true
 
         val nightModeFlags: Int = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        var imgVehicle = R.drawable.changelog_vehicles_light
-        var imgItem = R.drawable.changelog_item_light
-        var imgSetting = R.drawable.changelog_settings_light
+        var imgCompartments = R.drawable.changelog_compartments_light
+        var imgItems = R.drawable.changelog_items_light
+        var imgDesign = R.drawable.changelog_design_light
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES){
-            imgVehicle = R.drawable.changelog_vehicles_dark
-            imgItem = R.drawable.changelog_item_dark
-            imgSetting = R.drawable.changelog_settings_dark
+            imgCompartments = R.drawable.changelog_compartments_dark
+            imgItems = R.drawable.changelog_items_dark
+            imgDesign = R.drawable.changelog_design_dark
         }
 
 
         // Call addSlide passing your Fragments.
         // You can use AppIntroFragment to use a pre-built fragment
         addSlide(AppIntroFragment.createInstance(
-            title = resources.getString(R.string.changelog_1_2_slide1_title),
+            title = resources.getString(R.string.changelog_1_3_slide1_title),
             imageDrawable  = R.drawable.ic_logo,
             backgroundDrawable = R.drawable.back_slide1,
-            description = resources.getString(R.string.changelog_1_2_slide1_text),
+            description = resources.getString(R.string.changelog_1_3_slide1_text),
         ))
         addSlide(AppIntroFragment.createInstance(
-            title = resources.getString(R.string.changelog_1_2_slide2_title),
-            imageDrawable = imgVehicle,
+            title = resources.getString(R.string.changelog_1_3_slide2_title),
+            imageDrawable = imgCompartments,
             backgroundDrawable = R.drawable.back_slide2,
-            description = resources.getString(R.string.changelog_1_2_slide2_text)
+            description = resources.getString(R.string.changelog_1_3_slide2_text)
         ))
         addSlide(AppIntroFragment.createInstance(
-            title =  resources.getString(R.string.changelog_1_2_slide3_title),
-            imageDrawable = imgSetting,
+            title =  resources.getString(R.string.changelog_1_3_slide3_title),
+            imageDrawable = imgItems,
             backgroundDrawable = R.drawable.back_slide3,
-            description = resources.getString(R.string.changelog_1_2_slide3_text)
+            description = resources.getString(R.string.changelog_1_3_slide3_text)
         ))
         addSlide(AppIntroFragment.createInstance(
-            title =  resources.getString(R.string.changelog_1_2_slide4_title),
-            imageDrawable = imgItem,
+            title =  resources.getString(R.string.changelog_1_3_slide4_title),
+            imageDrawable = imgDesign,
             backgroundDrawable = R.drawable.back_slide4,
-            description = resources.getString(R.string.changelog_1_2_slide4_text)
+            description = resources.getString(R.string.changelog_1_3_slide4_text)
         ))
     }
 

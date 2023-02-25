@@ -3,7 +3,6 @@ package com.pixlbee.heros.fragments
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
@@ -286,7 +285,6 @@ open class ItemsAllFragment : Fragment(), SearchView.OnQueryTextListener {
 
 
     override fun onDestroyView() {
-        Log.e("Error", "Destroy All Fragmebt")
         super.onDestroyView()
         FirebaseDatabase.getInstance().reference.removeEventListener(mFirebaseListener)
     }
